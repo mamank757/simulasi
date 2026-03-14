@@ -1,135 +1,661 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#333" />
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<title>Menu BPP Bola</title>
-
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<title>LCS, Tanggal, Nama Penyuluh</title>
 
 <style>
 
+.col-eviden{
+text-align:center;
+}
+
+.col-eviden input[type="file"]{
+display:block;
+margin:0 auto;
+}
+
+*{box-sizing:border-box;}
+
 body{
-font-family:Arial;
-background:#f4f6f7;
+font-family:'Times New Roman',serif;
 margin:0;
-}
-
-header{
-background:#1B5E20;
-color:white;
-text-align:center;
 padding:20px;
+background:#000000;
 }
 
-/* GRID MENU */
-
-.menu-grid{
-
-display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:15px;
-padding:20px;
-
-}
-
-/* UBIN MENU */
-
-.menu-item{
-
+.container{
+width:95%;
+max-width:1000px;
+margin:auto;
 background:white;
-border-radius:12px;
-padding:20px;
+padding:40px;
+border-radius:8px;
+box-shadow:0 2px 10px rgba(0,0,0,0.1);
+}
+
+.header{
 text-align:center;
-box-shadow:0 4px 10px rgba(0,0,0,0.1);
-transition:0.2s;
-
+margin-bottom:25px;
+padding-bottom:10px;
 }
 
-.menu-item:hover{
-
-transform:translateY(-5px);
-
-}
-
-.menu-item i{
-
-font-size:35px;
-color:#2e7d32;
-margin-bottom:10px;
-
-}
-
-.menu-item p{
-
-margin:0;
+.header h2,.header h3{
+margin:2px 0;
+text-transform:uppercase;
+font-size:1.1rem;
 font-weight:bold;
+}
+
+.info-section{
+display:grid;
+grid-template-columns:180px 20px 1fr;
+gap:2px 0;
+margin-bottom:25px;
+max-width:650px;
+}
+
+.info-section label{
+font-weight:bold;
+font-size:14px;
+display:flex;
+align-items:center;
+}
+
+input[type="text"],
+input[type="date"],
+select,
+textarea{
+padding:6px 10px;
+border:1px solid #000000;
+border-radius:4px;
+width:100%;
+font-family:inherit;
+font-size:14px;
+}
+
+.textarea-container{
+position:relative;
+width:100%;
+}
+
+textarea{
+resize:none;
+display:block;
+min-height:100px;
+text-align:left;
+word-wrap:break-word;
+white-space:pre-wrap;
+padding-bottom:40px !important;
+}
+
+.textarea-actions{
+position:absolute;
+bottom:5px;
+right:5px;
+display:flex;
+gap:5px;
+}
+
+.btn-action{
+padding:4px 8px;
+color:white;
+border:none;
+border-radius:3px;
+font-size:10px;
+cursor:pointer;
+font-weight:bold;
+opacity:0.8;
+transition:0.3s;
+}
+
+.btn-paste{background:#00008B;}
+.btn-clear{background:#8B0000;}
+
+.btn-action:hover{
+opacity:1;
+}
+
+/* TABEL */
+
+table{
+width:100%;
+border-collapse:collapse;
+table-layout:fixed;
+margin:0 auto;
+
+/* PERBAIKAN NOMOR KONTEN */
+counter-reset: nomorKonten;
+}
+
+tr{
+counter-increment: nomorKonten;
+}
+
+th,td{
+border:1px solid #000;
+padding:8px;
+text-align:center;
+vertical-align:middle;
+}
+
+th{
+background:#f2f2f2;
+font-size:12px;
+text-transform:uppercase;
+font-weight:bold;
+}
+
+.col-no{width:40px;}
+.col-date{width:19%;}
+.col-konten{width:24%;}
+.col-eviden{width:15%;}
+
+.preview-box{
+width:100%;
+height:110px;
+border:1px dashed #bbb;
+margin:5px auto;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#fafafa;
+overflow:hidden;
+}
+
+.preview-box img{
+width:100%;
+height:100%;
+display:none;
+object-fit:cover;
+}
+
+input[type="file"]{
+color:transparent;
+width:85px;
+cursor:pointer;
+}
+
+/* TAMPILAN HP */
+
+@media screen and (max-width:768px){
+
+.container{
+padding:15px;
+width:98%;
+}
+
+.info-section{
+grid-template-columns:1fr;
+gap:5px;
+}
+
+.info-section span{
+display:none;
+}
+
+table,thead,tbody,th,td,tr{
+display:block;
+}
+
+thead{
+display:none;
+}
+
+tr{
+margin-bottom:25px;
+border:2px solid #ddd;
+border-radius:12px;
+padding:15px;
+background:#fff;
+}
+
+tr::before{
+content:"Konten #" counter(nomorKonten, decimal-leading-zero);
+display:block;
+font-weight:bold;
+font-size:15px;
+margin-bottom:10px;
+color:#000;
+}
+
+td[data-label="No."]{
+display:none;
+}
+
+td{
+border:none !important;
+width:100% !important;
+padding:0 !important;
+margin-bottom:10px;
+display:block;
+text-align:left !important;
+}
+
+td[data-label="Like"],
+td[data-label="Comment"],
+td[data-label="Share"]{
+display:inline-grid !important;
+width:28% !important;
+margin-right:2%;
+vertical-align:top;
+}
+
+td[data-label="Share"]{
+margin-right:0;
+}
+
+td[data-label="Like"]::before,
+td[data-label="Comment"]::before,
+td[data-label="Share"]::before{
+content:attr(data-label);
+text-align:center;
+font-size:11px;
+font-weight:bold;
+margin-bottom:4px;
+}
+
+}
+
+.controls{
+margin-top:20px;
+display:flex;
+gap:10px;
+}
+
+.btn{
+padding:12px;
+cursor:pointer;
+border:none;
+border-radius:4px;
+font-weight:bold;
+color:white;
+transition:0.3s;
+flex:1;
+}
+
+.btn-add{background:#27ae60;}
+.btn-remove{background:#e74c3c;}
+
+.action-area{
+text-align:center;
+margin-top:30px;
+}
+
+.btn-print{
+background:#2c3e50;
+width:100%;
+padding:15px;
+font-size:16px;
+color:white;
+cursor:pointer;
+border-radius:6px;
+border:none;
+font-weight:bold;
+}
+
+.footer{
+margin-top:30px;
+padding:20px;
+background:white;
+text-align:center;
+font-size:14px;
+border-radius:8px;
+color:#333;
+}
+
+/* PRINT */
+
+@media print{
+
+@page{
+size:A4;
+margin:1.5cm;
+}
+
+thead th{
+background:#00a651 !important;
+color:#000 !important;
+-webkit-print-color-adjust:exact;
+print-color-adjust:exact;
+}
+
+.controls,
+.action-area,
+input[type="file"],
+.textarea-actions,
+.visitor-counter-wrapper,
+.footer{
+display:none !important;
+}
+
+body{
+background:white;
+padding:0;
+margin:0;
+}
+
+.container{
+box-shadow:none;
+border:none;
+width:100%;
+padding:0;
+max-width:100%;
+}
+
+.info-section{
+gap:0px 0;
+margin-bottom:15px;
+}
+
+tr{
+page-break-inside:avoid !important;
+break-inside:avoid !important;
+display:table-row !important;
+}
+
+thead{
+display:table-row-group !important;
+}
+
+input[type="text"],
+input[type="date"],
+select{
+border:none !important;
+background:transparent !important;
+appearance:none;
+padding:2px 0 !important;
+}
+
+table{
+display:table !important;
+table-layout:fixed !important;
+width:100% !important;
+border-collapse:collapse !important;
+}
+
+tbody{
+display:table-row-group !important;
+}
+
+td{
+display:table-cell !important;
+border:1px solid #000 !important;
+padding:6px !important;
+vertical-align:middle !important;
+}
+
+.preview-box{
+border:1px solid #000 !important;
+width:100px !important;
+height:140px !important;
+}
+
+textarea{
+border:none !important;
+padding-bottom:0 !important;
+min-height:100px;
+}
 
 }
 
 </style>
-
 </head>
 
 <body>
 
-<header>
-
-<h2>BPP Bola Kabupaten Wajo</h2>
-
-</header>
-
-<div class="menu-grid">
-
-<div class="menu-item">
-<i class="fa-solid fa-user"></i>
-<p>Profil</p>
+<div class="visitor-counter-wrapper">
+<a href='http://www.freevisitorcounters.com'>Counter</a>
+<script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=a89e5d2c48fde512d9411d388c694afb903a141d'></script>
+<script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1512047/t/1"></script>
 </div>
 
-<div class="menu-item">
-<i class="fa-solid fa-seedling"></i>
-<p>Program</p>
+<div class="container">
+
+<div class="header">
+<h2>LAPORAN PENDERASAN INFORMASI DAN PEMBANGUNAN PERTANIAN</h2>
+<h3>PENYULUH PERTANIAN</h3>
+<h3>TAHUN 2026</h3>
 </div>
 
-<div class="menu-item">
-<i class="fa-solid fa-newspaper"></i>
-<p>Berita</p>
-</div>
+<div class="info-section">
 
-<div class="menu-item">
-<i class="fa-solid fa-chart-line"></i>
-<p>Data</p>
-</div>
+<label>PERIODE</label>
+<span>:</span>
 
-<div class="menu-item">
-<i class="fa-solid fa-image"></i>
-<p>Galeri</p>
-</div>
+<select id="id_periode">
+<option>BULAN JANUARI</option>
+<option>BULAN FEBRUARI</option>
+<option>BULAN MARET</option>
+<option>BULAN APRIL</option>
+<option>BULAN MEI</option>
+<option>BULAN JUNI</option>
+<option>BULAN JULI</option>
+<option>BULAN AGUSTUS</option>
+<option>BULAN SEPTEMBER</option>
+<option>BULAN OKTOBER</option>
+<option>BULAN NOVEMBER</option>
+<option>BULAN DESEMBER</option>
+</select>
 
-<div class="menu-item">
-<i class="fa-solid fa-phone"></i>
-<p>Kontak</p>
-</div>
+<label>NAMA PENYULUH</label>
+<span>:</span>
+<input type="text" id="id_nama" placeholder="Cth: ABDUL RAHMAN, SP">
 
-<div class="menu-item">
-<i class="fa-solid fa-users"></i>
-<p>Kelompok Tani</p>
-</div>
+<label>NIP.</label>
+<span>:</span>
+<input type="text" id="id_nip" placeholder="Cth: 199009202020121001">
 
-<div class="menu-item">
-<i class="fa-solid fa-tractor"></i>
-<p>Alsintan</p>
-</div>
-
-<div class="menu-item">
-<i class="fa-solid fa-right-to-bracket"></i>
-<p>Login</p>
-</div>
+<label>WILBIN/WKPP</label>
+<span>:</span>
+<input type="text" id="id_wilayah" placeholder="Cth: DESA MANURUNG">
 
 </div>
+
+<table>
+
+<thead>
+<tr>
+<th rowspan="2" class="col-no">No.</th>
+<th rowspan="2" class="col-date">TANGGAL</th>
+<th rowspan="2" class="col-konten">JUDUL KONTEN</th>
+<th colspan="3">EVIDEN</th>
+</tr>
+
+<tr>
+<th class="col-eviden">LIKE</th>
+<th class="col-eviden">COMMENT</th>
+<th class="col-eviden">SHARE</th>
+</tr>
+</thead>
+
+<tbody id="tableBody"></tbody>
+
+</table>
+
+<div class="controls">
+<button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris Tabel jika hanya 2 konten hari ini </button>
+<button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris Tabel jika 4 atau lebih konten hari ini</button>
+</div>
+
+<div class="action-area">
+<button class="btn-print" type="button" onclick="cetakLaporan()">SIMPAN/DOWNLOAD PDF</button>
+</div>
+
+</div>
+
+<footer class="footer">
+copyright: King Mamank 2026
+</footer>
+
+<script>
+
+/* SCRIPT ANDA TIDAK SAYA UBAH */
+
+let count=0;
+const tableBody=document.getElementById('tableBody');
+const inputNama=document.getElementById('id_nama');
+
+function getTglHariIni(){
+const d=new Date();
+return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+}
+
+function autoResize(textarea){
+textarea.style.height='auto';
+textarea.style.height=textarea.scrollHeight+'px';
+}
+
+async function pasteText(btn){
+try{
+const text=await navigator.clipboard.readText();
+const textarea=btn.closest('.textarea-container').querySelector('textarea');
+textarea.value=text;
+autoResize(textarea);
+}catch(err){
+alert('Gagal menempel teks.');
+}
+}
+
+function clearText(btn){
+const textarea=btn.closest('.textarea-container').querySelector('textarea');
+textarea.value="";
+autoResize(textarea);
+}
+
+function addRow(showAlert=false){
+
+count++;
+
+const tr=document.createElement('tr');
+
+tr.innerHTML=`
+
+<td data-label="No.">${count}.</td>
+
+<td data-label="Tanggal" class="col-date">
+<input type="date" value="${new Date().toISOString().split('T')[0]}">
+</td>
+
+<td data-label="Judul Konten" class="col-konten">
+
+<div class="textarea-container">
+
+<select class="no-print judul-select" onchange="const ta=this.nextElementSibling; ta.value=this.value; autoResize(ta);">
+
+<option value="">List Judul Konten</option>
+
+<option value="251 (Instagram: kompascom) Kelakar Bahlil 'Uang Terus' saat Menteri Pertanian ajukan Pinjaman ke Purbaya"></option>
+
+<option value="252 (Instagram: puslatan_bppsdmp) Stok Pangan Aman, Bikin Nyaman sampai Lebaran"></option>
+
+<option value="253 belum update"></option>
+
+</select>
+
+<textarea oninput="autoResize(this)" placeholder="Pilih di atas atau ketik/paste manual jika belum update"></textarea>
+
+<div class="textarea-actions no-print">
+<button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
+<button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
+</div>
+
+</div>
+
+</td>
+
+<td data-label="Like">
+<input type="file" accept="image/*" onchange="pv(this,'l${count}')">
+<div class="preview-box"><img id="l${count}"></div>
+</td>
+
+<td data-label="Comment">
+<input type="file" accept="image/*" onchange="pv(this,'c${count}')">
+<div class="preview-box"><img id="c${count}"></div>
+</td>
+
+<td data-label="Share">
+<input type="file" accept="image/*" onchange="pv(this,'s${count}')">
+<div class="preview-box"><img id="s${count}"></div>
+</td>
+
+`;
+
+tableBody.appendChild(tr);
+
+tr.querySelectorAll('.judul-select option').forEach(opt=>{
+if(opt.value!==""){
+opt.textContent=opt.value;
+}
+});
+
+if(showAlert)alert("Baris berhasil ditambahkan.");
+
+}
+
+function removeRow(){
+
+if(count>2){
+
+if(confirm("Hapus baris terakhir?")){
+tableBody.removeChild(tableBody.lastChild);
+count--;
+}
+
+}else{
+
+alert("Minimal harus tersisa 2 baris.");
+
+}
+
+}
+
+function pv(input,id){
+
+const file=input.files[0];
+
+if(file){
+
+const reader=new FileReader();
+
+reader.onload=(e)=>{
+
+const img=document.getElementById(id);
+img.src=e.target.result;
+img.style.display='block';
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+}
+
+function cetakLaporan(){
+
+const namaVal=inputNama.value.trim()||"Nama Penyuluh";
+const tgl=getTglHariIni();
+
+document.title=`LCS, ${tgl}, ${namaVal}`;
+
+window.print();
+
+}
+
+document.addEventListener('DOMContentLoaded',()=>{
+addRow();
+addRow();
+addRow();
+});
+
+</script>
 
 </body>
 </html>
