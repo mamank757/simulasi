@@ -506,20 +506,19 @@ let cacheJudul = "";
 
 async function loadJudulKonten(){
 
-if(cacheJudul!==""){
-document.querySelectorAll(".judul-select").forEach(select=>{
-select.innerHTML=cacheJudul;
-});
-return;
-}
+// 1. Tambahkan parameter waktu (timestamp) agar data selalu segar
+const timestamp = new Date().getTime();
+const url = `https://api.allorigins.win/raw?url=${encodeURIComponent('https://www.bppbola.my.id/judul-konten')}?v=${timestamp}`;
 
-const url="https://api.allorigins.win/raw?url=https://www.bppbola.my.id/judul-konten";
-
-try{
-
-const res=await fetch(url);
-const html=await res.text();
-
+try {
+    // 2. Tambahkan header cache-control agar browser tidak menyimpan data lama
+    const res = await fetch(url, {
+        cache: 'no-store' 
+    });
+    
+    const html = await res.text();
+    // ... sisa kode Anda selanjutnya ...
+    
 const parser=new DOMParser();
 const doc=parser.parseFromString(html,"text/html");
 
