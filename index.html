@@ -502,8 +502,16 @@ copyright: King Mamank 2026
 </footer>
 
 <script>
+let cacheJudul = "";
 
 async function loadJudulKonten(){
+
+if(cacheJudul!==""){
+document.querySelectorAll(".judul-select").forEach(select=>{
+select.innerHTML=cacheJudul;
+});
+return;
+}
 
 const url="https://api.allorigins.win/raw?url=https://www.bppbola.my.id/judul-konten";
 
@@ -515,7 +523,6 @@ const html=await res.text();
 const parser=new DOMParser();
 const doc=parser.parseFromString(html,"text/html");
 
-/* ambil meta og:description */
 const meta = doc.querySelector('meta[property="og:description"]');
 
 let options='<option value="">List Judul Konten</option>';
@@ -523,8 +530,6 @@ let options='<option value="">List Judul Konten</option>';
 if(meta){
 
 const isi = meta.getAttribute("content");
-
-/* pecah berdasarkan baris */
 const list = isi.split("\n");
 
 list.forEach(item=>{
@@ -539,15 +544,14 @@ options+=`<option value="${teks}">${teks}</option>`;
 
 }
 
-/* isi semua dropdown judul */
+cacheJudul = options;
+
 document.querySelectorAll(".judul-select").forEach(select=>{
 select.innerHTML=options;
 });
 
 }catch(err){
-
 console.log("Gagal mengambil judul",err);
-
 }
 
 }
