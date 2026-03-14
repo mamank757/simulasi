@@ -314,18 +314,23 @@ color:#333;
 
 /* PRINT */
 
-@media print{
+@media print {
 
-@page{
-size:A4;
-margin:1.5cm;
+.judul-select{
+display:none !important;
 }
 
+.no-print{
+display:none !important;
+}
+  
+@page { size: A4; margin: 1.5cm; }
+
 thead th{
-background:#00a651 !important;
-color:#000 !important;
--webkit-print-color-adjust:exact;
-print-color-adjust:exact;
+background: #00a651 !important;
+color: #000 !important;
+-webkit-print-color-adjust: exact;
+print-color-adjust: exact;
 }
 
 .controls,
