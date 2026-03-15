@@ -273,17 +273,12 @@ const inputNama = document.getElementById('id_nama');
 /* mengambil judul dari bppbola */
 async function loadJudulKonten(){
 
-if(cacheJudul){
-document.querySelectorAll(".judul-select").forEach(select=>{
-select.innerHTML=cacheJudul;
-});
-return;
-}
-
 try{
 
 const target="https://www.bppbola.my.id/judul-konten";
-const url="https://api.allorigins.win/raw?url="+encodeURIComponent(target)+"&t="+Date.now();
+
+/* proxy lebih cepat */
+const url="https://corsproxy.io/?"+encodeURIComponent(target)+"&t="+Date.now();
 
 const res=await fetch(url,{cache:"no-store"});
 const html=await res.text();
@@ -291,6 +286,7 @@ const html=await res.text();
 const parser=new DOMParser();
 const doc=parser.parseFromString(html,"text/html");
 
+/* ambil meta description */
 const meta=doc.querySelector('meta[property="og:description"]');
 
 let options='<option value="">List Judul Konten</option>';
@@ -298,19 +294,22 @@ let options='<option value="">List Judul Konten</option>';
 if(meta){
 
 const isi=meta.getAttribute("content");
+
 const list=isi.split("\n");
 
 list.forEach(item=>{
+
 const teks=item.trim();
+
 if(teks){
 options+=`<option value="${teks}">${teks}</option>`;
 }
+
 });
 
 }
 
-cacheJudul=options;
-
+/* isi semua dropdown */
 document.querySelectorAll(".judul-select").forEach(select=>{
 select.innerHTML=options;
 });
