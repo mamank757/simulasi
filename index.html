@@ -270,21 +270,23 @@ th.col-konten{
     let daftarJudulGlobal = []; // Akan diisi dari JSON
 
     async function sinkronisasiJudul() {
-        const url = "https://raw.githubusercontent.com/mamank757/pusat-data/refs/heads/main/data.json";
-        try {
-            const response = await fetch(url + "?t=" + new Date().getTime());
-            const data = await response.json();
-            daftarJudulGlobal = data.pilihan_judul;
-            
-            // Update semua select yang sudah ada di tabel
-            document.querySelectorAll('.judul-select').forEach(select => {
-                isiOpsiSelect(select);
+    const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec"; // URL yang sama
+    try {
+        const response = await fetch(url);
+        const listJudul = await response.json();
+        
+        // Update semua select di tabel
+        document.querySelectorAll('.judul-select').forEach(select => {
+            select.innerHTML = '<option value="">List Judul Konten</option>';
+            listJudul.forEach(judul => {
+                const opt = document.createElement('option');
+                opt.value = judul;
+                opt.textContent = judul;
+                select.appendChild(opt);
             });
-            console.log("Judul berhasil disinkronkan dari GitHub.");
-        } catch (e) {
-            console.error("Gagal mengambil data dari GitHub:", e);
-        }
-    }
+        });
+    } catch (e) { console.error(e); }
+}
 
     function isiOpsiSelect(selectElement) {
         // Simpan value lama agar tidak reset saat update
