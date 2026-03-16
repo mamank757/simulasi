@@ -267,29 +267,27 @@ th.col-konten{
 
 <script>
     // --- PUSAT DATA KONFIGURASI ---
-    let daftarJudulGlobal = []; // Akan diisi dari JSON
+    let daftarJudulGlobal = []; 
 
     async function sinkronisasiJudul() {
-    const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec"; // URL yang sama
-    try {
-        const response = await fetch(url);
-        const listJudul = await response.json();
-        
-        // Update semua select di tabel
-        document.querySelectorAll('.judul-select').forEach(select => {
-            select.innerHTML = '<option value="">List Judul Konten</option>';
-            listJudul.forEach(judul => {
-                const opt = document.createElement('option');
-                opt.value = judul;
-                opt.textContent = judul;
-                select.appendChild(opt);
+        // Web App URL dari Google Apps Script
+        const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
+        try {
+            const response = await fetch(url + "?t=" + new Date().getTime());
+            const listJudul = await response.json();
+            daftarJudulGlobal = listJudul; // Masukkan hasil fetch ke variabel global
+            
+            // Update semua dropdown yang sudah ada
+            document.querySelectorAll('.judul-select').forEach(select => {
+                isiOpsiSelect(select);
             });
-        });
-    } catch (e) { console.error(e); }
-}
+            console.log("Judul berhasil dimuat dari Pusat Data.");
+        } catch (e) {
+            console.error("Gagal sinkronisasi:", e);
+        }
+    }
 
     function isiOpsiSelect(selectElement) {
-        // Simpan value lama agar tidak reset saat update
         const currentVal = selectElement.value;
         selectElement.innerHTML = '<option value="">List Judul Konten</option>';
         
@@ -367,7 +365,7 @@ th.col-konten{
         `;
         tableBody.appendChild(tr);
 
-        // Isi opsi select untuk baris baru ini
+        // Langsung isi opsi dropdown untuk baris baru
         const newSelect = tr.querySelector('.judul-select');
         isiOpsiSelect(newSelect);
 
@@ -405,8 +403,8 @@ th.col-konten{
         window.print();
     }
 
-    // Jalankan sinkronisasi dan tambahkan baris awal
     document.addEventListener('DOMContentLoaded', async () => {
+        // Sinkronisasi data dulu, baru tambahkan baris awal
         await sinkronisasiJudul();
         addRow(); addRow(); addRow();
     });
