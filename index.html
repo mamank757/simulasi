@@ -91,6 +91,10 @@
         th, td { border: 1px solid #000; padding: 6px; text-align: center; vertical-align: middle; }
         th { background: #f2f2f2; font-size: 12px; text-transform: uppercase; font-weight: bold; }
 
+th.col-konten{
+    vertical-align: middle !important;
+    text-align: center;
+}
         .col-no { width: 35px; }
         .col-date { width: 15%; }
         .col-eviden { width: 19%; }
@@ -115,7 +119,6 @@
             td { border: none; border-bottom: 1px solid #eee; position: relative; padding-left: 45% !important; text-align: left !important; min-height: 45px; display: flex; align-items: center; width: 100% !important; }
             td:before { position: absolute; left: 10px; width: 40%; font-weight: bold; font-size: 10px; content: attr(data-label); color: #2c3e50; text-transform: uppercase; }
         }
-
         .controls { margin-top: 15px; display: flex; gap: 10px; }
         .btn { padding: 12px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; color: white; transition: 0.3s; flex: 1; }
         .btn-add { background: #27ae60; }
@@ -198,37 +201,36 @@
         <label>NAMA PENYULUH</label> <span>:</span> 
             <select id="id_nama">
             <option>ABDUL RAHMAN, SP</option>
-            <option>ANDI AGUS SALIM, SP</option>
-            <option>HAMKA RAHMAN</option>
-            <option>MUNIRAH</option>
-            <option>M. ASRI</option>
-            <option>RUDIANYAH</option>
-            <option>SAMAILA</option>
-            <option>SITTI ROSIDA, SP</option>
+            <option>ANDI LUTHFIAH, SP</option>
+            <option>INDRA YULIANA, S.TP., M.Si.</option>
+            <option>NURUL FAHMI, S.P.</option>
+            <option>REZKI RAHAYU, S.P.</option>
+            <option>RIZAL SMITH ANUGRAH SYAM, S.P.</option>
+            <option>SUHADY HAMDAN, S.P.</option>
+            <option>SURAHMAN, S.TP</option>
         </select>
         
         <label>NIP.</label> <span>:</span> 
-        <select id="id_nip">
+            <select id="id_nip">
             <option>199009202020121001</option>
-            <option>198508162025211004</option>
-            <option>196807282014061001</option>
-            <option>198202092014062001</option>
-            <option>197705012014061002</option>
-            <option>198212202014061001</option>
-            <option>197104142014061001</option>
-            <option>198203152014062001</option>
+            <option>199307162020122003</option>
+            <option>199307062020122001</option>
+            <option>198911142020122002</option>
+            <option>199507052020122003</option>
+            <option>199005152020121001</option>
+            <option>199202072020121001</option>
+            <option>199203122020121003</option>
         </select>
-
         <label>WILBIN/WKPP</label> <span>:</span> 
-        <select id="id_wilayah">
+            <select id="id_wilayah">
             <option>DESA MANURUNG</option>
-            <option>DESA LEMPONG</option>
-            <option>KELURAHAN SOLO</option>
-            <option>DESA BOLA</option>
-            <option>DESA BALIELO</option>
-            <option>DESA PASIR PUTIH & PATTANGNGAE</option>
-            <option>DESA SANRESENG ADE & DESA LATTIMU</option>
-            <option>DESA UJUNG TANAH & RESA RAJA MAWELLANG</option>
+            <option>DESA MANNAGAE & DESA ASSORAJANG</option>
+            <option>DESA ALEWADENG</option>
+            <option>DESA BOTTOBENTENG & DESA RUMPIA</option>
+            <option>KELURAHAN MAPPADAELO</option>
+            <option>DESA WORONGNGE</option>
+            <option>DESA PASELLORENG & KELURAHAN GILIRENG</option>
+            <option>DESA BARANGMAMASE</option>
         </select>
     </div>
 
@@ -250,8 +252,8 @@
     </table>
 
     <div class="controls">
-        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris Tabel Jika hanya 2 Konten</button>
-        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris Tabel Jika lebih 3 Konten</button>
+        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris Tabel jika hanya 2 Konten</button>
+        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris Tabel jika lebih 3 Konten</button>
     </div>
 
     <div class="action-area">
@@ -264,225 +266,148 @@
 </footer>
 
 <script>
-
-let cacheJudul="";
-let count = 0;
-const tableBody = document.getElementById('tableBody');
-const inputNama = document.getElementById('id_nama');
-
-/* mengambil judul dari bppbola */
-async function loadJudulKonten(){
-
-if(cacheJudul){
-document.querySelectorAll(".judul-select").forEach(select=>{
-select.innerHTML=cacheJudul;
-});
-return;
-}
-
-try{
-
-const target="https://www.bppbola.my.id/home/judul-konten";
-const url="https://corsproxy.io/?"+encodeURIComponent(target)+"&t="+Date.now();
-
-const res=await fetch(url,{cache:"no-store"});
-const html=await res.text();
-
-const parser=new DOMParser();
-const doc=parser.parseFromString(html,"text/html");
-
-const meta=doc.querySelector('meta[property="og:description"]');
-
-let options='<option value="">List Judul Konten</option>';
-
-if(meta){
-
-const isi=meta.getAttribute("content");
-const list=isi.split("\n");
-
-list.forEach(item=>{
-const teks=item.trim();
-if(teks){
-options+=`<option value="${teks}">${teks}</option>`;
-}
-});
-
-}
-
-cacheJudul=options;
-
-document.querySelectorAll(".judul-select").forEach(select=>{
-select.innerHTML=options;
-});
-
-}catch(err){
-
-console.log("Gagal mengambil judul",err);
-
-}
-
-}
-/* isi semua dropdown */
-document.querySelectorAll(".judul-select").forEach(select=>{
-select.innerHTML=options;
-});
-
-}catch(err){
-
-console.log("Gagal mengambil judul",err);
-
-}
-
-}
-
-function getTglHariIni() {
-const d = new Date();
-return `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
-}
-
-function autoResize(textarea){
-textarea.style.height='auto';
-textarea.style.height=textarea.scrollHeight+'px';
-}
-
-async function pasteText(btn){
-try{
-const text=await navigator.clipboard.readText();
-const textarea=btn.closest('.textarea-container').querySelector('textarea');
-textarea.value=text;
-autoResize(textarea);
-}catch(err){
-alert('Gagal menempel teks.');
-}
-}
-
-function clearText(btn){
-const textarea=btn.closest('.textarea-container').querySelector('textarea');
-textarea.value="";
-autoResize(textarea);
-}
-
-function addRow(showAlert=false){
-
-count++;
-
-const tr=document.createElement('tr');
-
-tr.innerHTML=`
-
-<td data-label="No.">${count}.</td>
-
-<td data-label="Tanggal" class="col-date">
-<input type="date" value="${new Date().toISOString().split('T')[0]}">
-</td>
-
-<td data-label="Judul Konten" class="col-konten">
-
-<div class="textarea-container">
-
-<select class="no-print judul-select"
-onchange="const ta=this.nextElementSibling; ta.value=this.value; autoResize(ta);">
-
-<option value="">Memuat judul...</option>
-
-</select>
-
-<textarea oninput="autoResize(this)" placeholder="Pilih di atas atau ketik/paste manual jika belum update"></textarea>
-
-<div class="textarea-actions no-print">
-<button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
-<button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
-</div>
-
-</div>
-
-</td>
-
-<td data-label="Like">
-<input type="file" accept="image/*" onchange="pv(this,'l${count}')">
-<div class="preview-box"><img id="l${count}"></div>
-</td>
-
-<td data-label="Comment">
-<input type="file" accept="image/*" onchange="pv(this,'c${count}')">
-<div class="preview-box"><img id="c${count}"></div>
-</td>
-
-<td data-label="Share">
-<input type="file" accept="image/*" onchange="pv(this,'s${count}')">
-<div class="preview-box"><img id="s${count}"></div>
-</td>
-
-`;
-
-tableBody.appendChild(tr);
-
-loadJudulKonten();
-
-if(showAlert)alert("Baris berhasil ditambahkan.");
-
-}
-
-function removeRow(){
-
-if(count>2){
-
-if(confirm("Hapus baris terakhir?")){
-tableBody.removeChild(tableBody.lastChild);
-count--;
-}
-
-}else{
-
-alert("Minimal harus tersisa 2 baris.");
-
-}
-
-}
-
-function pv(input,id){
-
-const file=input.files[0];
-
-if(file){
-
-const reader=new FileReader();
-
-reader.onload=(e)=>{
-
-const img=document.getElementById(id);
-img.src=e.target.result;
-img.style.display='block';
-
-};
-
-reader.readAsDataURL(file);
-
-}
-
-}
-
-function cetakLaporan(){
-
-const namaVal=inputNama.value.trim()||"Nama Penyuluh";
-const tgl=getTglHariIni();
-
-document.title=`LCS, ${tgl}, ${namaVal}`;
-
-window.print();
-
-}
-
-document.addEventListener('DOMContentLoaded',()=>{
-
-loadJudulKonten();
-
-addRow();
-addRow();
-addRow();
-
-});
-
+    // --- PUSAT DATA KONFIGURASI ---
+    let daftarJudulGlobal = []; // Akan diisi dari JSON
+
+    async function sinkronisasiJudul() {
+        const url = "https://raw.githubusercontent.com/mamank757/pusat-data/refs/heads/main/data.json";
+        try {
+            const response = await fetch(url + "?t=" + new Date().getTime());
+            const data = await response.json();
+            daftarJudulGlobal = data.pilihan_judul;
+            
+            // Update semua select yang sudah ada di tabel
+            document.querySelectorAll('.judul-select').forEach(select => {
+                isiOpsiSelect(select);
+            });
+            console.log("Judul berhasil disinkronkan dari GitHub.");
+        } catch (e) {
+            console.error("Gagal mengambil data dari GitHub:", e);
+        }
+    }
+
+    function isiOpsiSelect(selectElement) {
+        // Simpan value lama agar tidak reset saat update
+        const currentVal = selectElement.value;
+        selectElement.innerHTML = '<option value="">List Judul Konten</option>';
+        
+        daftarJudulGlobal.forEach(judul => {
+            const opt = document.createElement('option');
+            opt.value = judul;
+            opt.textContent = judul;
+            selectElement.appendChild(opt);
+        });
+        selectElement.value = currentVal;
+    }
+    // ------------------------------
+
+    let count = 0;
+    const tableBody = document.getElementById('tableBody');
+    const inputNama = document.getElementById('id_nama');
+
+    function getTglHariIni() {
+        const d = new Date();
+        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+    }
+
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
+
+    async function pasteText(btn) {
+        try {
+            const text = await navigator.clipboard.readText();
+            const textarea = btn.closest('.textarea-container').querySelector('textarea');
+            textarea.value = text;
+            autoResize(textarea);
+        } catch (err) {
+            alert('Gagal menempel teks.');
+        }
+    }
+
+    function clearText(btn) {
+        const textarea = btn.closest('.textarea-container').querySelector('textarea');
+        textarea.value = "";
+        autoResize(textarea);
+    }
+
+    function addRow(showAlert = false) {
+        count++;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td data-label="No.">${count}.</td>
+            <td data-label="Tanggal" class="col-date"><input type="date" value="${new Date().toISOString().split('T')[0]}"></td>
+            <td data-label="Judul Konten" class="col-konten">
+                <div class="textarea-container">
+                    <select class="no-print judul-select" onchange="const ta=this.nextElementSibling; ta.value=this.value; autoResize(ta);">
+                        <option value="">List Judul Konten</option>
+                    </select>
+                    <textarea oninput="autoResize(this)" placeholder="Pilih di atas atau ketik/paste manual jika belum update"></textarea>
+                    <div class="textarea-actions no-print">
+                        <button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
+                        <button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
+                    </div>
+                </div>
+            </td>
+            <td data-label="Like">
+                <input type="file" accept="image/*" onchange="pv(this, 'l${count}')">
+                <div class="preview-box"><img id="l${count}"></div>
+            </td>
+            <td data-label="Comment">
+                <input type="file" accept="image/*" onchange="pv(this, 'c${count}')">
+                <div class="preview-box"><img id="c${count}"></div>
+            </td>
+            <td data-label="Share">
+                <input type="file" accept="image/*" onchange="pv(this, 's${count}')">
+                <div class="preview-box"><img id="s${count}"></div>
+            </td>
+        `;
+        tableBody.appendChild(tr);
+
+        // Isi opsi select untuk baris baru ini
+        const newSelect = tr.querySelector('.judul-select');
+        isiOpsiSelect(newSelect);
+
+        if (showAlert) alert("Baris berhasil ditambahkan.");
+    }
+
+    function removeRow() {
+        if (count > 2) { 
+            if (confirm("Hapus baris terakhir?")) {
+                tableBody.removeChild(tableBody.lastChild); 
+                count--; 
+            }
+        } else { 
+            alert("Minimal harus tersisa 2 baris."); 
+        }
+    }
+
+    function pv(input, id) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.getElementById(id);
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function cetakLaporan() {
+        const namaVal = inputNama.value.trim() || "Nama Penyuluh";
+        const tgl = getTglHariIni();
+        document.title = `LCS, ${tgl}, ${namaVal}`;
+        window.print();
+    }
+
+    // Jalankan sinkronisasi dan tambahkan baris awal
+    document.addEventListener('DOMContentLoaded', async () => {
+        await sinkronisasiJudul();
+        addRow(); addRow(); addRow();
+    });
 </script>
 </body>
 </html>
