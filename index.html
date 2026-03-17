@@ -250,39 +250,107 @@ th.col-konten{
 </footer>
 
 <script>
-
-const dataPenyuluh = {
-    "...": { nip: "...", wilayah: "..." }
-};
+let dataPenyuluh = {}; // Database lokal akan diisi dari Spreadsheet
+let daftarJudulGlobal = [];
+let count = 0;
 
 const selectNama = document.getElementById("id_nama");
 const inputNip = document.getElementById("id_nip");
 const inputWilayah = document.getElementById("id_wilayah");
+const tableBody = document.getElementById('tableBody');
 
-// Event Listener untuk update NIP & Wilayah otomatis
+// --- 1. SINKRONISASI DATA DARI SPREADSHEET (SAAT WEB DIBUKA) ---
+async function sinkronisasiData() {
+    // Ganti URL ini dengan URL Web App GAS Anda
+    const url = "https://script.google.com/macros/s/AKfycbwPrpxIOtWSU4-gMFrXfxxo7NZVZeFX43pIUmq1RSCXyGttc9EHE4S26tUK9iR5YO0L/exec";
+    
+    try {
+        const response = await fetch(url + "?t=" + new Date().getTime());
+        const list = await response.json();
+        
+        // Bersihkan dropdown dulu
+        selectNama.innerHTML = '<option value="">Pilih Nama Penyuluh</option>';
+        
+        list.forEach(p => {
+            // Masukkan ke database lokal
+            dataPenyuluh[p.nama] = { nip: p.nip, wilayah: p.wilbin };
+            
+            // Masukkan ke dropdown
+            const opt = document.createElement("option");
+            opt.value = p.nama;
+            opt.textContent = p.nama;
+            selectNama.appendChild(opt);
+        });
+        console.log("Data Penyuluh berhasil disinkronkan.");
+    } catch (e) {
+        console.error("Gagal mengambil data penyuluh:", e);
+    }
+}
+
+// Update NIP & Wilayah otomatis saat nama dipilih
 selectNama.addEventListener("change", function() {
     const data = dataPenyuluh[this.value];
     if (data) {
         inputNip.value = data.nip;
         inputWilayah.value = data.wilayah;
+    } else {
+        inputNip.value = "";
+        inputWilayah.value = "";
     }
 });
 
-let daftarJudulGlobal = [];
-let count = 0;
-const tableBody = document.getElementById('tableBody');
+// --- 2. TAMBAH PENYULUH BARU (KIRIM KE SPREADSHEET) ---
+async function tambahPenyuluhBaru() {
+    const nama = document.getElementById("namaBaru").value.trim();
+    const nip = document.getElementById("nipBaru").value.trim();
+    const wilbin = document.getElementById("wilbinBaru").value.trim();
 
-// Sinkronisasi Judul dari Google Sheet
+    if (!nama || !nip || !wilbin) {
+        alert("Semua kolom harus diisi!");
+        return;
+    }
+
+    const url = "https://script.google.com/macros/s/AKfycbwO1SUI-5hHM31xkbB0LDoivqThpVIQoCHvQWquM5-1_Ezc-xuQIlCglYl8SYLJ0f24/exec";
+
+    try {
+        await fetch(url, {
+            method: "POST",
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
+            body: JSON.stringify({ action: "tambahPenyuluh", nama, nip, wilbin })
+        });
+
+        // Update Tampilan Langsung tanpa nunggu refresh
+        dataPenyuluh[nama] = { nip: nip, wilayah: wilbin };
+        const opt = document.createElement("option");
+        opt.value = nama;
+        opt.textContent = nama;
+        selectNama.appendChild(opt);
+        
+        // Langsung pilih nama yang baru dibuat
+        selectNama.value = nama;
+        inputNip.value = nip;
+        inputWilayah.value = wilbin;
+
+        alert("Berhasil! '" + nama + "' sudah tersimpan di Spreadsheet dan Daftar.");
+        
+        // Reset form input
+        document.getElementById("namaBaru").value = "";
+        document.getElementById("nipBaru").value = "";
+        document.getElementById("wilbinBaru").value = "";
+    } catch (e) {
+        alert("Gagal koneksi ke server.");
+    }
+}
+
+// --- 3. LOGIKA TABEL & KONTEN ---
 async function sinkronisasiJudul() {
     const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
     try {
         const response = await fetch(url + "?t=" + new Date().getTime());
-        const listJudul = await response.json();
-        daftarJudulGlobal = listJudul;
+        daftarJudulGlobal = await response.json();
         document.querySelectorAll('.judul-select').forEach(select => isiOpsiSelect(select));
-    } catch (e) {
-        console.error("Gagal sinkronisasi judul:", e);
-    }
+    } catch (e) { console.error("Gagal judul:", e); }
 }
 
 function isiOpsiSelect(selectElement) {
@@ -297,68 +365,6 @@ function isiOpsiSelect(selectElement) {
     selectElement.value = currentVal;
 }
 
-// FUNGSI UTAMA: Tambah Penyuluh Baru ke Spreadsheet
-async function tambahPenyuluhBaru() {
-    const nama = document.getElementById("namaBaru").value.trim();
-    const nip = document.getElementById("nipBaru").value.trim();
-    const wilbin = document.getElementById("wilbinBaru").value.trim();
-
-    if (!nama || !nip || !wilbin) {
-        alert("Semua kolom harus diisi!");
-        return;
-    }
-
-    // URL Web App GAS Anda
-    const url = "https://script.google.com/macros/s/AKfycbwO1SUI-5hHM31xkbB0LDoivqThpVIQoCHvQWquM5-1_Ezc-xuQIlCglYl8SYLJ0f24/exec";
-
-    try {
-        await fetch(url, {
-            method: "POST",
-            mode: "no-cors",
-            headers: { "Content-Type": "text/plain" },
-            body: JSON.stringify({ action: "tambahPenyuluh", nama, nip, wilbin })
-        });
-
-        // Update dropdown lokal tanpa refresh
-        dataPenyuluh[nama] = { nip: nip, wilayah: wilbin };
-        const opt = document.createElement("option");
-        opt.value = nama;
-        opt.textContent = nama;
-        selectNama.appendChild(opt);
-
-        alert("Penyuluh '" + nama + "' berhasil disimpan!");
-        
-        // Reset form
-        document.getElementById("namaBaru").value = "";
-        document.getElementById("nipBaru").value = "";
-        document.getElementById("wilbinBaru").value = "";
-    } catch (e) {
-        console.error(e);
-        alert("Terjadi kesalahan teknis.");
-    }
-}
-
-// Fungsi bantu lainnya
-function autoResize(textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
-}
-
-async function pasteText(btn) {
-    try {
-        const text = await navigator.clipboard.readText();
-        const textarea = btn.closest('.textarea-container').querySelector('textarea');
-        textarea.value = text;
-        autoResize(textarea);
-    } catch (err) { alert('Gagal menempel teks.'); }
-}
-
-function clearText(btn) {
-    const textarea = btn.closest('.textarea-container').querySelector('textarea');
-    textarea.value = "";
-    autoResize(textarea);
-}
-
 function addRow(showAlert = false) {
     count++;
     const tr = document.createElement('tr');
@@ -368,7 +374,7 @@ function addRow(showAlert = false) {
         <td data-label="Judul Konten" class="col-konten">
             <div class="textarea-container">
                 <select class="no-print judul-select" onchange="const ta=this.nextElementSibling; ta.value=this.value; autoResize(ta);"></select>
-                <textarea oninput="autoResize(this)" placeholder="Tulis judul di sini..."></textarea>
+                <textarea oninput="autoResize(this)" placeholder="Tulis judul..."></textarea>
                 <div class="textarea-actions no-print">
                     <button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
                     <button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
@@ -384,35 +390,32 @@ function addRow(showAlert = false) {
     if (showAlert) alert("Baris ditambahkan.");
 }
 
-function removeRow() {
-    if (count > 2) {
-        if (confirm("Hapus baris terakhir?")) {
-            tableBody.removeChild(tableBody.lastChild);
-            count--;
-        }
-    } else { alert("Minimal 2 baris."); }
+// Fungsi pendukung lainnya (Paste, Clear, Resize, PV, Cetak)
+function autoResize(ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
+async function pasteText(btn) { 
+    try { 
+        const txt = await navigator.clipboard.readText(); 
+        const ta = btn.closest('.textarea-container').querySelector('textarea'); 
+        ta.value = txt; autoResize(ta); 
+    } catch(e) { alert("Gagal paste"); }
 }
-
+function clearText(btn) { const ta = btn.closest('.textarea-container').querySelector('textarea'); ta.value = ""; autoResize(ta); }
+function removeRow() { if(count > 2) { tableBody.removeChild(tableBody.lastChild); count--; } }
 function pv(input, id) {
     const file = input.files[0];
     if (file) {
         const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = document.getElementById(id);
-            img.src = e.target.result;
-            img.style.display = 'block';
-        };
+        reader.onload = (e) => { const img = document.getElementById(id); img.src = e.target.result; img.style.display = 'block'; };
         reader.readAsDataURL(file);
     }
 }
+function cetakLaporan() { window.print(); }
 
-function cetakLaporan() {
-    window.print();
-}
-
+// --- INISIALISASI SAAT HALAMAN DIBUKA ---
 document.addEventListener('DOMContentLoaded', async () => {
-    await sinkronisasiJudul();
-    addRow(); addRow(); addRow();
+    await sinkronisasiData(); // Ambil Nama Penyuluh dari Sheet
+    await sinkronisasiJudul(); // Ambil Daftar Judul
+    addRow(); addRow(); addRow(); // Tambah baris awal
 });
 </script>
 </body>
