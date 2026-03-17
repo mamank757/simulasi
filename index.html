@@ -416,8 +416,16 @@ function pv(input, id) {
         const reader = new FileReader();
         reader.onload = (e) => {
             const img = document.getElementById(id);
+            // Memberikan sumber gambar
             img.src = e.target.result;
-            img.style.display = 'block'; // Ini akan memunculkan gambar di layar browser
+            
+            // Memaksa browser menampilkan gambar di HP
+            img.style.display = "block";
+            img.style.width = "100%";
+            img.style.height = "100%";
+            
+            // Menghilangkan teks/ikon dashed jika perlu
+            img.parentElement.style.background = "white";
         };
         reader.readAsDataURL(file);
     }
