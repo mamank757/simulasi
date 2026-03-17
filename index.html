@@ -59,31 +59,41 @@
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th, td { border: 1px solid #000; padding: 6px; text-align: center; vertical-align: middle; }
         
-        /* HEADER TABEL BERWARNA HIJAU DENGAN TEKS HITAM */
         th { 
             background: #27ae60 !important; 
-            color: #000000 !important; /* Teks Hitam */
+            color: #000000 !important; 
             font-size: 12px; 
             text-transform: uppercase; 
             font-weight: bold; 
         }
 
-        /* Khusus Header Judul Konten agar Pas di Tengah */
-        th.col-konten {
-            vertical-align: middle !important;
-            text-align: center;
-        }
+        th.col-konten { vertical-align: middle !important; text-align: center; }
 
         .col-no { width: 35px; }
         .col-date { width: 15%; }
-        .col-eviden { width: 21%; }
-        .col-konten { width: 19%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; }
+        .col-eviden { width: 19%; }
+        .col-konten { width: 22%; word-wrap: break-word; overflow-wrap: break-word; white-space: normal; }
 
         .preview-box { 
-            width: 120px; height: 140px; border: 1px dashed #bbb; margin: 5px auto; 
-            display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden;
+            width: 100%; 
+            max-width: 150px; 
+            height: 180px;    
+            border: 1px dashed #bbb; 
+            margin: 5px auto; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            background: #fafafa; 
+            overflow: hidden;
+            padding: 2px; 
         }
-        .preview-box img { width: 100%; height: 100%; display: none; object-fit: cover; }
+        
+        .preview-box img { 
+            max-width: 100%; 
+            max-height: 100%; 
+            display: none; 
+            object-fit: contain; 
+        }
 
         .visitor-counter-wrapper { text-align: center; margin-bottom: 10px; font-size: 12px; }
 
@@ -108,7 +118,11 @@
         .footer { margin-top: 30px; padding: 20px; background: white; text-align: center; font-size: 14px; border-radius: 8px; color: #333; }
 
         @media print {
-            @page { size: A4; margin: 2cm; }
+            /* PENGATURAN MARGIN KERTAS 2CM KANAN KIRI */
+            @page { 
+                size: A4; 
+                margin: 1cm 2cm 1cm 2cm; /* Atas Kanan Bawah Kiri */
+            }
             
             th { 
                 background-color: #27ae60 !important; 
@@ -123,10 +137,30 @@
             .info-section { display: grid !important; grid-template-columns: 150px 20px 1fr !important; }
             input, select, textarea { border: none !important; background: transparent !important; padding: 0 !important; appearance: none !important; resize: none !important; }
             textarea { overflow: visible !important; height: auto !important; font-size: 11px !important; }
+            
+            /* Agar header tidak muncul di halaman kedua */
             table { display: table !important; table-layout: fixed !important; width: 100% !important; }
-            thead { display: table-header-group !important; } 
+            thead { display: table-row-group !important; } 
+            
             tr { display: table-row !important; border: 1px solid #000 !important; page-break-inside: avoid; }
-            td { display: table-cell !important; border: 1px solid #000 !important; }
+            td { display: table-cell !important; border: 1px solid #000 !important; padding: 4px !important; }
+            
+            /* Menghilangkan bingkai foto namun tetap dalam sel */
+            .preview-box { 
+                border: none !important; 
+                background: transparent !important;
+                height: 140px !important; 
+                width: 100% !important; 
+                max-width: 130px !important;
+                padding: 0 !important;
+            }
+            .preview-box img { 
+                max-width: 100% !important; 
+                max-height: 90% !important; 
+                object-fit: contain !important; 
+                display: block !important;
+                margin: auto;
+            }
         }
     </style>
 </head>
@@ -349,15 +383,15 @@ function addRow(showAlert = false) {
             </div>
         </td>
         <td data-label="Like">
-            <input type="file" accept="image/*" onchange="pv(this, 'l${count}')">
+            <input type="file" accept="image/*" class="no-print" onchange="pv(this, 'l${count}')">
             <div class="preview-box"><img id="l${count}"></div>
         </td>
         <td data-label="Comment">
-            <input type="file" accept="image/*" onchange="pv(this, 'c${count}')">
+            <input type="file" accept="image/*" class="no-print" onchange="pv(this, 'c${count}')">
             <div class="preview-box"><img id="c${count}"></div>
         </td>
         <td data-label="Share">
-            <input type="file" accept="image/*" onchange="pv(this, 's${count}')">
+            <input type="file" accept="image/*" class="no-print" onchange="pv(this, 's${count}')">
             <div class="preview-box"><img id="s${count}"></div>
         </td>
     `;
