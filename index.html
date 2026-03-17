@@ -88,12 +88,13 @@
             padding: 2px; 
         }
         
-        .preview-box img { 
-            max-width: 100%; 
-            max-height: 100%; 
-            display: block; 
-            object-fit: contain; 
-        }
+       .preview-box img { 
+    max-width: 100%; 
+    max-height: 100%; 
+    display: block;      /* Ubah dari none ke block */
+    object-fit: contain;
+    margin: auto;        /* Tambahan agar gambar di tengah */
+}
 
         .visitor-counter-wrapper { text-align: center; margin-bottom: 10px; font-size: 12px; }
 
