@@ -252,237 +252,168 @@ th.col-konten{
 <script>
 
 const dataPenyuluh = {
-"...": {
-    nip: "...",
-    wilayah: "..."
-}
+    "...": { nip: "...", wilayah: "..." }
 };
+
 const selectNama = document.getElementById("id_nama");
 const inputNip = document.getElementById("id_nip");
 const inputWilayah = document.getElementById("id_wilayah");
 
-selectNama.addEventListener("change", function(){
+// Event Listener untuk update NIP & Wilayah otomatis
+selectNama.addEventListener("change", function() {
     const data = dataPenyuluh[this.value];
-
-    if(data){
+    if (data) {
         inputNip.value = data.nip;
         inputWilayah.value = data.wilayah;
     }
 });
 
- 
-    // --- PUSAT DATA KONFIGURASI ---
-    let daftarJudulGlobal = []; 
+let daftarJudulGlobal = [];
+let count = 0;
+const tableBody = document.getElementById('tableBody');
 
-    async function sinkronisasiJudul() {
-        // Web App URL dari Google Apps Script
-        const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
-        try {
-            const response = await fetch(url + "?t=" + new Date().getTime());
-            const listJudul = await response.json();
-            daftarJudulGlobal = listJudul; // Masukkan hasil fetch ke variabel global
-            
-            // Update semua dropdown yang sudah ada
-            document.querySelectorAll('.judul-select').forEach(select => {
-                isiOpsiSelect(select);
-            });
-            console.log("Judul berhasil dimuat dari Pusat Data.");
-        } catch (e) {
-            console.error("Gagal sinkronisasi:", e);
-        }
+// Sinkronisasi Judul dari Google Sheet
+async function sinkronisasiJudul() {
+    const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
+    try {
+        const response = await fetch(url + "?t=" + new Date().getTime());
+        const listJudul = await response.json();
+        daftarJudulGlobal = listJudul;
+        document.querySelectorAll('.judul-select').forEach(select => isiOpsiSelect(select));
+    } catch (e) {
+        console.error("Gagal sinkronisasi judul:", e);
     }
+}
 
-    function isiOpsiSelect(selectElement) {
-        const currentVal = selectElement.value;
-        selectElement.innerHTML = '<option value="">List Judul Konten</option>';
-        
-        daftarJudulGlobal.forEach(judul => {
-            const opt = document.createElement('option');
-            opt.value = judul;
-            opt.textContent = judul;
-            selectElement.appendChild(opt);
-        });
-        selectElement.value = currentVal;
-    }
-    // ------------------------------
+function isiOpsiSelect(selectElement) {
+    const currentVal = selectElement.value;
+    selectElement.innerHTML = '<option value="">List Judul Konten</option>';
+    daftarJudulGlobal.forEach(judul => {
+        const opt = document.createElement('option');
+        opt.value = judul;
+        opt.textContent = judul;
+        selectElement.appendChild(opt);
+    });
+    selectElement.value = currentVal;
+}
 
-    let count = 0;
-    const tableBody = document.getElementById('tableBody');
-    const inputNama = document.getElementById('id_nama');
-
-    function getTglHariIni() {
-        const d = new Date();
-        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
-    }
-
-    function autoResize(textarea) {
-        textarea.style.height = 'auto';
-        textarea.style.height = textarea.scrollHeight + 'px';
-    }
-
+// FUNGSI UTAMA: Tambah Penyuluh Baru ke Spreadsheet
 async function tambahPenyuluhBaru() {
     const nama = document.getElementById("namaBaru").value.trim();
     const nip = document.getElementById("nipBaru").value.trim();
     const wilbin = document.getElementById("wilbinBaru").value.trim();
 
-    if(!nama || !nip || !wilbin){
+    if (!nama || !nip || !wilbin) {
         alert("Semua kolom harus diisi!");
         return;
     }
 
+    // URL Web App GAS Anda
     const url = "https://script.google.com/macros/s/AKfycbwO1SUI-5hHM31xkbB0LDoivqThpVIQoCHvQWquM5-1_Ezc-xuQIlCglYl8SYLJ0f24/exec";
 
     try {
-        // Gunakan await agar browser menunggu respon dari Google
-        const response = await fetch(url, {
+        await fetch(url, {
             method: "POST",
-            mode: "no-cors", // Google Script membutuhkan ini untuk request lintas domain
-            headers: {
-                "Content-Type": "text/plain" 
-            },
+            mode: "no-cors",
+            headers: { "Content-Type": "text/plain" },
             body: JSON.stringify({ action: "tambahPenyuluh", nama, nip, wilbin })
         });
-        
-        // Update tampilan dropdown secara instan setelah kirim data
+
+        // Update dropdown lokal tanpa refresh
         dataPenyuluh[nama] = { nip: nip, wilayah: wilbin };
         const opt = document.createElement("option");
         opt.value = nama;
         opt.textContent = nama;
         selectNama.appendChild(opt);
 
-        alert("Penyuluh berhasil ditambahkan ke Spreadsheet!");
-        
-        // Reset form input
-        document.getElementById("namaBaru").value = "";
-        document.getElementById("nipBaru").value = "";
-        document.getElementById("wilbinBaru").value = "";
-    } catch(e){
-        console.error("Detail Error:", e);
-        alert("Gagal menyimpan data. Pastikan URL Script benar dan sudah di-Deploy sebagai 'Anyone'.");
-    }
-}
-    try {
-               // Ganti bagian fetch di fungsi tambahPenyuluhBaru Anda dengan ini:
-fetch(url, {
-  method: "POST",
-  mode: "no-cors", // Tetap no-cors jika Anda tidak ingin pusing dengan kebijakan CORS
-  headers: {
-    "Content-Type": "text/plain" // Google Script lebih stabil menerima JSON dalam bentuk plain text
-  },
-  body: JSON.stringify({ action: "tambahPenyuluh", nama, nip, wilbin })
-});
-        
-        // Update tampilan lokal
-        dataPenyuluh[nama] = { nip: nip, wilayah: wilbin };
-        const opt = document.createElement("option");
-        opt.value = nama;
-        opt.textContent = nama;
-        selectNama.appendChild(opt);
-
-        alert("Penyuluh berhasil ditambahkan ke Spreadsheet!");
+        alert("Penyuluh '" + nama + "' berhasil disimpan!");
         
         // Reset form
         document.getElementById("namaBaru").value = "";
         document.getElementById("nipBaru").value = "";
         document.getElementById("wilbinBaru").value = "";
-    } catch(e){
+    } catch (e) {
         console.error(e);
-        alert("Gagal menyimpan data. Cek koneksi atau URL Script.");
+        alert("Terjadi kesalahan teknis.");
     }
 }
-    async function pasteText(btn) {
-        try {
-            const text = await navigator.clipboard.readText();
-            const textarea = btn.closest('.textarea-container').querySelector('textarea');
-            textarea.value = text;
-            autoResize(textarea);
-        } catch (err) {
-            alert('Gagal menempel teks.');
-        }
-    }
 
-    function clearText(btn) {
+// Fungsi bantu lainnya
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+async function pasteText(btn) {
+    try {
+        const text = await navigator.clipboard.readText();
         const textarea = btn.closest('.textarea-container').querySelector('textarea');
-        textarea.value = "";
+        textarea.value = text;
         autoResize(textarea);
-    }
+    } catch (err) { alert('Gagal menempel teks.'); }
+}
 
-    function addRow(showAlert = false) {
-        count++;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td data-label="No.">${count}.</td>
-            <td data-label="Tanggal" class="col-date"><input type="date" value="${new Date().toISOString().split('T')[0]}"></td>
-            <td data-label="Judul Konten" class="col-konten">
-                <div class="textarea-container">
-                    <select class="no-print judul-select" onchange="const ta=this.nextElementSibling; ta.value=this.value; autoResize(ta);">
-                        <option value="">List Judul Konten</option>
-                    </select>
-                    <textarea oninput="autoResize(this)" placeholder="Pilih di atas atau ketik/paste manual jika belum update"></textarea>
-                    <div class="textarea-actions no-print">
-                        <button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
-                        <button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
-                    </div>
+function clearText(btn) {
+    const textarea = btn.closest('.textarea-container').querySelector('textarea');
+    textarea.value = "";
+    autoResize(textarea);
+}
+
+function addRow(showAlert = false) {
+    count++;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td data-label="No.">${count}.</td>
+        <td data-label="Tanggal" class="col-date"><input type="date" value="${new Date().toISOString().split('T')[0]}"></td>
+        <td data-label="Judul Konten" class="col-konten">
+            <div class="textarea-container">
+                <select class="no-print judul-select" onchange="const ta=this.nextElementSibling; ta.value=this.value; autoResize(ta);"></select>
+                <textarea oninput="autoResize(this)" placeholder="Tulis judul di sini..."></textarea>
+                <div class="textarea-actions no-print">
+                    <button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
+                    <button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
                 </div>
-            </td>
-            <td data-label="Like">
-                <input type="file" accept="image/*" onchange="pv(this, 'l${count}')">
-                <div class="preview-box"><img id="l${count}"></div>
-            </td>
-            <td data-label="Comment">
-                <input type="file" accept="image/*" onchange="pv(this, 'c${count}')">
-                <div class="preview-box"><img id="c${count}"></div>
-            </td>
-            <td data-label="Share">
-                <input type="file" accept="image/*" onchange="pv(this, 's${count}')">
-                <div class="preview-box"><img id="s${count}"></div>
-            </td>
-        `;
-        tableBody.appendChild(tr);
+            </div>
+        </td>
+        <td data-label="Like"><input type="file" accept="image/*" onchange="pv(this, 'l${count}')"><div class="preview-box"><img id="l${count}"></div></td>
+        <td data-label="Comment"><input type="file" accept="image/*" onchange="pv(this, 'c${count}')"><div class="preview-box"><img id="c${count}"></div></td>
+        <td data-label="Share"><input type="file" accept="image/*" onchange="pv(this, 's${count}')"><div class="preview-box"><img id="s${count}"></div></td>
+    `;
+    tableBody.appendChild(tr);
+    isiOpsiSelect(tr.querySelector('.judul-select'));
+    if (showAlert) alert("Baris ditambahkan.");
+}
 
-        // Langsung isi opsi dropdown untuk baris baru
-        const newSelect = tr.querySelector('.judul-select');
-        isiOpsiSelect(newSelect);
-
-        if (showAlert) alert("Baris berhasil ditambahkan.");
-    }
-
-    function removeRow() {
-        if (count > 2) { 
-            if (confirm("Hapus baris terakhir?")) {
-                tableBody.removeChild(tableBody.lastChild); 
-                count--; 
-            }
-        } else { 
-            alert("Minimal harus tersisa 2 baris."); 
+function removeRow() {
+    if (count > 2) {
+        if (confirm("Hapus baris terakhir?")) {
+            tableBody.removeChild(tableBody.lastChild);
+            count--;
         }
-    }
+    } else { alert("Minimal 2 baris."); }
+}
 
-    function pv(input, id) {
-        const file = input.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const img = document.getElementById(id);
-                img.src = e.target.result;
-                img.style.display = 'block';
-            };
-            reader.readAsDataURL(file);
-        }
+function pv(input, id) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = document.getElementById(id);
+            img.src = e.target.result;
+            img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
     }
+}
 
-    function cetakLaporan() {
-        const namaVal = inputNama.value.trim() || "Nama Penyuluh";
-        const tgl = getTglHariIni();
-        document.title = `LCS, ${tgl}, ${namaVal}`;
-        window.print();
-    }
+function cetakLaporan() {
+    window.print();
+}
 
-    document.addEventListener('DOMContentLoaded', async () => {
-        // Sinkronisasi data dulu, baru tambahkan baris awal
-        await sinkronisasiJudul();
-        addRow(); addRow(); addRow();
-    });
+document.addEventListener('DOMContentLoaded', async () => {
+    await sinkronisasiJudul();
+    addRow(); addRow(); addRow();
+});
 </script>
 </body>
 </html>
