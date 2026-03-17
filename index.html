@@ -340,11 +340,15 @@ async function tambahPenyuluhBaru() {
     formData.append("wilbin", wilbin);
 
     try {
-        // Kita gunakan mode 'cors' dan method POST
-        await fetch(url, {
-            method: "POST",
-            body: JSON.stringify({ action: "tambahPenyuluh", nama, nip, wilbin })
-        });
+               // Ganti bagian fetch di fungsi tambahPenyuluhBaru Anda dengan ini:
+fetch(url, {
+  method: "POST",
+  mode: "no-cors", // Tetap no-cors jika Anda tidak ingin pusing dengan kebijakan CORS
+  headers: {
+    "Content-Type": "text/plain" // Google Script lebih stabil menerima JSON dalam bentuk plain text
+  },
+  body: JSON.stringify({ action: "tambahPenyuluh", nama, nip, wilbin })
+});
         
         // Update tampilan lokal
         dataPenyuluh[nama] = { nip: nip, wilayah: wilbin };
