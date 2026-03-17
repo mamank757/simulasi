@@ -330,15 +330,37 @@ async function tambahPenyuluhBaru() {
         return;
     }
 
-    const url = "https://script.google.com/macros/s/AKfycbzIHCPiiEJ3QFPS5LjfJdVpgIXwQEu-dlFPdQRBRXqtdyUxR1Fu7dTI6G4n4o385fhG/exec"; // Ganti dengan URL Google Script Anda
+    const url = "https://script.google.com/macros/s/AKfycbwO1SUI-5hHM31xkbB0LDoivqThpVIQoCHvQWquM5-1_Ezc-xuQIlCglYl8SYLJ0f24/exec";
 
-    // Gunakan URLSearchParams agar data terkirim sebagai form data (lebih kompatibel dengan Apps Script)
-    const formData = new FormData();
-    formData.append("action", "tambahPenyuluh");
-    formData.append("nama", nama);
-    formData.append("nip", nip);
-    formData.append("wilbin", wilbin);
+    try {
+        // Gunakan await agar browser menunggu respon dari Google
+        const response = await fetch(url, {
+            method: "POST",
+            mode: "no-cors", // Google Script membutuhkan ini untuk request lintas domain
+            headers: {
+                "Content-Type": "text/plain" 
+            },
+            body: JSON.stringify({ action: "tambahPenyuluh", nama, nip, wilbin })
+        });
+        
+        // Update tampilan dropdown secara instan setelah kirim data
+        dataPenyuluh[nama] = { nip: nip, wilayah: wilbin };
+        const opt = document.createElement("option");
+        opt.value = nama;
+        opt.textContent = nama;
+        selectNama.appendChild(opt);
 
+        alert("Penyuluh berhasil ditambahkan ke Spreadsheet!");
+        
+        // Reset form input
+        document.getElementById("namaBaru").value = "";
+        document.getElementById("nipBaru").value = "";
+        document.getElementById("wilbinBaru").value = "";
+    } catch(e){
+        console.error("Detail Error:", e);
+        alert("Gagal menyimpan data. Pastikan URL Script benar dan sudah di-Deploy sebagai 'Anyone'.");
+    }
+}
     try {
                // Ganti bagian fetch di fungsi tambahPenyuluhBaru Anda dengan ini:
 fetch(url, {
