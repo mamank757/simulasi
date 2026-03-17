@@ -188,8 +188,7 @@ th.col-konten{
         <h3>PENYULUH PERTANIAN</h3>
         <h3>TAHUN 2026</h3>
     </div>
-
-    <div class="no-print admin-panel-box">
+ <div class="no-print admin-panel-box">
         <h4>Tambah Nama Penyuluh</h4>
         <div class="admin-input-group">
             <input type="text" id="namaBaru" placeholder="Nama Penyuluh">
@@ -198,41 +197,33 @@ th.col-konten{
             <button type="button" onclick="tambahPenyuluhBaru()">Simpan</button>
         </div>
     </div>
-
     <div class="info-section">
         <label>PERIODE</label> <span>:</span>
         <select id="id_periode">
             <option>BULAN MARET</option>
-            <option>BULAN APRIL</option>
-            <option>BULAN MEI</option>
-            <option>BULAN JUNI</option>
-            <option>BULAN JULI</option>
-            <option>BULAN AGUSTUS</option>
-            <option>BULAN SEPTEMBER</option>
-            <option>BULAN OKTOBER</option>
-            <option>BULAN NOVEMBER</option>
-            <option>BULAN DESEMBER</option>
+            <option>BULAN APRIL</option><option>BULAN MEI</option><option>BULAN JUNI</option>
+            <option>BULAN JULI</option><option>BULAN AGUSTUS</option><option>BULAN SEPTEMBER</option>
+            <option>BULAN OKTOBER</option><option>BULAN NOVEMBER</option><option>BULAN DESEMBER</option>
         </select>
 
         <label>NAMA PENYULUH</label> <span>:</span>
-        <select id="id_nama">
-            <option value="">-- Pilih Nama --</option>
-            <option>ABDUL RAHMAN, SP</option>
-            <option>ANDI AGUS SALIM, SP</option>
-            <option>HAMKA RAHMAN</option>
-            <option>MUNIRAH</option>
-            <option>M. ASRI</option>
-            <option>RUDIANSYAH</option>
-            <option>SAMAILA</option>
-            <option>SITTI ROSIDA, SP</option>
-        </select>
+<select id="id_nama">
+    <option>ABDUL RAHMAN, SP</option>
+    <option>ANDI AGUS SALIM, SP</option>
+    <option>HAMKA RAHMAN</option>
+    <option>MUNIRAH</option>
+    <option>M. ASRI</option>
+    <option>RUDIANSYAH</option>
+    <option>SAMAILA</option>
+    <option>SITTI ROSIDA, SP</option>
+</select>
         
-        <label>NIP. <span class="no-print">(otomatis)</span></label> <span>:</span>
-        <input type="text" id="id_nip" readonly>
+        <label>NIP. <span class="no-print">(otomatis akan terisi)</span></label> <span>:</span>
+<input type="text" id="id_nip" readonly>
 
-        <label>WILBIN/WKPP <span class="no-print">(otomatis)</span></label> <span>:</span>
-        <input type="text" id="id_wilayah" readonly>
-    </div>
+<label>WILBIN/WKPP <span class="no-print">(otomatis akan terisi)</span></label> <span>:</span>
+<input type="text" id="id_wilayah" readonly>
+          </div>
 
     <table>
         <thead>
@@ -252,8 +243,8 @@ th.col-konten{
     </table>
 
     <div class="controls">
-        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris Terakhir</button>
-        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris Tabel</button>
+        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris Tabel jika hanya 2 Konten</button>
+        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris Tabel jika lebih 3 Konten</button>
     </div>
 
     <div class="action-area">
@@ -266,63 +257,103 @@ th.col-konten{
 </footer>
 
 <script>
-const dataPenyuluh = {
-    "ABDUL RAHMAN, SP": { nip: "199009202020121001", wilayah: "DESA MANURUNG" },
-    "ANDI AGUS SALIM, SP": { nip: "198508162025211004", wilayah: "DESA LEMPONG" },
-    "HAMKA RAHMAN": { nip: "196807282014061001", wilayah: "KELURAHAN SOLO" },
-    "MUNIRAH": { nip: "198202092014062001", wilayah: "DESA BOLA" },
-    "M. ASRI": { nip: "197705012014061002", wilayah: "DESA BALIELO" },
-    "RUDIANSYAH": { nip: "198212202014061001", wilayah: "DESA PASIR PUTIH & DESA PATTANGNGAE" },
-    "SAMAILA": { nip: "197104142014061001", wilayah: "DESA SANRESENG ADE & DESA LATTIMU" },
-    "SITTI ROSIDA, SP": { nip: "198203152014062001", wilayah: "DESA UJUNG TANAH & DESA RAJA MAWELLANG" }
-};
 
+const dataPenyuluh = {
+"ABDUL RAHMAN, SP": {
+    nip: "199009202020121001",
+    wilayah: "DESA MANURUNG"
+},
+"ANDI AGUS SALIM, SP": {
+    nip: "198508162025211004",
+    wilayah: "DESA LEMPONG"
+},
+"HAMKA RAHMAN": {
+    nip: "196807282014061001",
+    wilayah: "KELURAHAN SOLO"
+},
+"MUNIRAH": {
+    nip: "198202092014062001",
+    wilayah: "DESA BOLA"
+},
+"M. ASRI": {
+    nip: "197705012014061002",
+    wilayah: "DESA BALIELO"
+},
+"RUDIANSYAH": {
+    nip: "198212202014061001",
+    wilayah: "DESA PASIR PUTIH & DESA PATTANGNGAE"
+},
+"SAMAILA": {
+    nip: "197104142014061001",
+    wilayah: "DESA SANRESENG ADE & DESA LATTIMU"
+},
+"SITTI ROSIDA, SP": {
+    nip: "19820315201406200",
+    wilayah: "DESA UJUNG TANAH & DESA RAJA MAWELLANG"
+}
+};
 const selectNama = document.getElementById("id_nama");
 const inputNip = document.getElementById("id_nip");
 const inputWilayah = document.getElementById("id_wilayah");
 
 selectNama.addEventListener("change", function(){
     const data = dataPenyuluh[this.value];
+
     if(data){
         inputNip.value = data.nip;
         inputWilayah.value = data.wilayah;
-    } else {
-        inputNip.value = "";
-        inputWilayah.value = "";
     }
 });
 
-let daftarJudulGlobal = []; 
+ 
+    // --- PUSAT DATA KONFIGURASI ---
+    let daftarJudulGlobal = []; 
 
-async function sinkronisasiJudul() {
-    const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
-    try {
-        const response = await fetch(url + "?t=" + new Date().getTime());
-        const listJudul = await response.json();
-        daftarJudulGlobal = listJudul;
-        document.querySelectorAll('.judul-select').forEach(select => { isiOpsiSelect(select); });
-    } catch (e) { console.error("Gagal sinkronisasi judul."); }
-}
+    async function sinkronisasiJudul() {
+        // Web App URL dari Google Apps Script
+        const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
+        try {
+            const response = await fetch(url + "?t=" + new Date().getTime());
+            const listJudul = await response.json();
+            daftarJudulGlobal = listJudul; // Masukkan hasil fetch ke variabel global
+            
+            // Update semua dropdown yang sudah ada
+            document.querySelectorAll('.judul-select').forEach(select => {
+                isiOpsiSelect(select);
+            });
+            console.log("Judul berhasil dimuat dari Pusat Data.");
+        } catch (e) {
+            console.error("Gagal sinkronisasi:", e);
+        }
+    }
 
-function isiOpsiSelect(selectElement) {
-    const currentVal = selectElement.value;
-    selectElement.innerHTML = '<option value="">List Judul Konten</option>';
-    daftarJudulGlobal.forEach(judul => {
-        const opt = document.createElement('option');
-        opt.value = judul;
-        opt.textContent = judul;
-        selectElement.appendChild(opt);
-    });
-    selectElement.value = currentVal;
-}
+    function isiOpsiSelect(selectElement) {
+        const currentVal = selectElement.value;
+        selectElement.innerHTML = '<option value="">List Judul Konten</option>';
+        
+        daftarJudulGlobal.forEach(judul => {
+            const opt = document.createElement('option');
+            opt.value = judul;
+            opt.textContent = judul;
+            selectElement.appendChild(opt);
+        });
+        selectElement.value = currentVal;
+    }
+    // ------------------------------
 
-let count = 0;
-const tableBody = document.getElementById('tableBody');
+    let count = 0;
+    const tableBody = document.getElementById('tableBody');
+    const inputNama = document.getElementById('id_nama');
 
-function autoResize(textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
-}
+    function getTglHariIni() {
+        const d = new Date();
+        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+    }
+
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
 
 async function tambahPenyuluhBaru() {
     const nama = document.getElementById("namaBaru").value.trim();
@@ -358,7 +389,7 @@ async function tambahPenyuluhBaru() {
     }
 }
 
- async function pasteText(btn) {
+    async function pasteText(btn) {
         try {
             const text = await navigator.clipboard.readText();
             const textarea = btn.closest('.textarea-container').querySelector('textarea');
