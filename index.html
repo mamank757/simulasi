@@ -20,7 +20,6 @@
         .header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 10px; }
         .header h2, .header h3 { margin: 2px 0; text-transform: uppercase; font-size: 1.1rem; font-weight: bold; }
 
-        /* Perbaikan Struktur Info Section agar Sejajar */
         .info-section { 
             display: grid; 
             grid-template-columns: 200px 20px 1fr; 
@@ -91,10 +90,10 @@
         th, td { border: 1px solid #000; padding: 6px; text-align: center; vertical-align: middle; }
         th { background: #f2f2f2; font-size: 12px; text-transform: uppercase; font-weight: bold; }
 
-th.col-konten{
-    vertical-align: middle !important;
-    text-align: center;
-}
+        th.col-konten{
+            vertical-align: middle !important;
+            text-align: center;
+        }
         .col-no { width: 35px; }
         .col-date { width: 15%; }
         .col-eviden { width: 19%; }
@@ -149,7 +148,6 @@ th.col-konten{
             body { background: white; padding: 0; margin: 0; }
             .container { box-shadow: none; border: none; width: 100%; padding: 0; max-width: 100%; }
             
-            /* Menjaga struktur identitas saat print */
             .info-section { 
                 display: grid !important; 
                 grid-template-columns: 150px 20px 1fr !important; 
@@ -188,15 +186,17 @@ th.col-konten{
         <h3>PENYULUH PERTANIAN</h3>
         <h3>TAHUN 2026</h3>
     </div>
- <div class="no-print admin-panel-box">
-        <h4>Tambah Nama Penyuluh</h4>
-        <div class="admin-input-group">
-            <input type="text" id="namaBaru" placeholder="Nama Penyuluh">
-            <input type="text" id="nipBaru" placeholder="NIP">
-            <input type="text" id="wilbinBaru" placeholder="Wilbin/WKPP">
-            <button type="button" onclick="tambahPenyuluhBaru()">Simpan</button>
+
+    <div class="no-print admin-panel-box" style="margin-bottom: 20px; padding: 15px; background: #f9f9f9; border: 1px solid #ddd; border-radius: 5px;">
+        <h4 style="margin-top:0">Tambah Nama Penyuluh Baru</h4>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <input type="text" id="namaBaru" placeholder="Nama Penyuluh" style="flex:1; min-width: 150px;">
+            <input type="text" id="nipBaru" placeholder="NIP" style="flex:1; min-width: 150px;">
+            <input type="text" id="wilbinBaru" placeholder="Wilbin/WKPP" style="flex:1; min-width: 150px;">
+            <button type="button" onclick="tambahPenyuluhBaru()" style="background: #27ae60; color:white; border:none; padding: 8px 15px; border-radius:4px; cursor:pointer; font-weight:bold;">SIMPAN</button>
         </div>
     </div>
+
     <div class="info-section">
         <label>PERIODE</label> <span>:</span>
         <select id="id_periode">
@@ -207,16 +207,16 @@ th.col-konten{
         </select>
 
         <label>NAMA PENYULUH</label> <span>:</span>
-<select id="id_nama">
-    <option>...</option>
-    </select>
+        <select id="id_nama">
+            <option value="">Memuat data...</option>
+        </select>
         
-        <label>NIP. <span class="no-print">(otomatis akan terisi)</span></label> <span>:</span>
-<input type="text" id="id_nip" readonly>
+        <label>NIP. <span class="no-print">(otomatis)</span></label> <span>:</span>
+        <input type="text" id="id_nip" readonly>
 
-<label>WILBIN/WKPP <span class="no-print">(otomatis akan terisi)</span></label> <span>:</span>
-<input type="text" id="id_wilayah" readonly>
-          </div>
+        <label>WILBIN/WKPP <span class="no-print">(otomatis)</span></label> <span>:</span>
+        <input type="text" id="id_wilayah" readonly>
+    </div>
 
     <table>
         <thead>
@@ -236,8 +236,8 @@ th.col-konten{
     </table>
 
     <div class="controls">
-        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris Tabel jika hanya 2 Konten</button>
-        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris Tabel jika lebih 3 Konten</button>
+        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris</button>
+        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris</button>
     </div>
 
     <div class="action-area">
@@ -250,7 +250,7 @@ th.col-konten{
 </footer>
 
 <script>
-let dataPenyuluh = {}; // Database lokal akan diisi dari Spreadsheet
+let dataPenyuluh = {}; 
 let daftarJudulGlobal = [];
 let count = 0;
 
@@ -259,31 +259,30 @@ const inputNip = document.getElementById("id_nip");
 const inputWilayah = document.getElementById("id_wilayah");
 const tableBody = document.getElementById('tableBody');
 
-// --- 1. SINKRONISASI DATA DARI SPREADSHEET (SAAT WEB DIBUKA) ---
+// GANTI URL INI DENGAN URL WEB APP GAS ANDA YANG SUDAH DI-DEPLOY ULANG
+const URL_WEB_APP = "https://script.google.com/macros/s/AKfycbxPCq2X63iuW5p4OwXh3BHy0tUobE6bbhooWLAZQpJHAk6-N-wzvCyIgpBVxEZ3JByv/exec";
+
+// 1. SINKRONISASI DATA DARI SPREADSHEET (SAAT HALAMAN DIBUKA)
 async function sinkronisasiData() {
-    // Ganti URL ini dengan URL Web App GAS Anda
-    const url = "https://script.google.com/macros/s/AKfycbwPrpxIOtWSU4-gMFrXfxxo7NZVZeFX43pIUmq1RSCXyGttc9EHE4S26tUK9iR5YO0L/exec";
-    
     try {
-        const response = await fetch(url + "?t=" + new Date().getTime());
+        const response = await fetch(URL_WEB_APP + "?t=" + new Date().getTime());
         const list = await response.json();
         
-        // Bersihkan dropdown dulu
         selectNama.innerHTML = '<option value="">Pilih Nama Penyuluh</option>';
         
         list.forEach(p => {
-            // Masukkan ke database lokal
-            dataPenyuluh[p.nama] = { nip: p.nip, wilayah: p.wilbin };
-            
-            // Masukkan ke dropdown
-            const opt = document.createElement("option");
-            opt.value = p.nama;
-            opt.textContent = p.nama;
-            selectNama.appendChild(opt);
+            if(p.nama && p.nama !== "Timestamp") { // Abaikan header atau timestamp
+                dataPenyuluh[p.nama] = { nip: p.nip, wilayah: p.wilbin };
+                const opt = document.createElement("option");
+                opt.value = p.nama;
+                opt.textContent = p.nama;
+                selectNama.appendChild(opt);
+            }
         });
-        console.log("Data Penyuluh berhasil disinkronkan.");
+        console.log("Sinkronisasi penyuluh berhasil.");
     } catch (e) {
-        console.error("Gagal mengambil data penyuluh:", e);
+        console.error("Gagal sinkronisasi data:", e);
+        selectNama.innerHTML = '<option value="">Gagal memuat data</option>';
     }
 }
 
@@ -299,7 +298,7 @@ selectNama.addEventListener("change", function() {
     }
 });
 
-// --- 2. TAMBAH PENYULUH BARU (KIRIM KE SPREADSHEET) ---
+// 2. TAMBAH PENYULUH BARU
 async function tambahPenyuluhBaru() {
     const nama = document.getElementById("namaBaru").value.trim();
     const nip = document.getElementById("nipBaru").value.trim();
@@ -310,47 +309,44 @@ async function tambahPenyuluhBaru() {
         return;
     }
 
-    const url = "https://script.google.com/macros/s/AKfycbwO1SUI-5hHM31xkbB0LDoivqThpVIQoCHvQWquM5-1_Ezc-xuQIlCglYl8SYLJ0f24/exec";
-
     try {
-        await fetch(url, {
+        // Kirim data ke Spreadsheet
+        await fetch(URL_WEB_APP, {
             method: "POST",
             mode: "no-cors",
             headers: { "Content-Type": "text/plain" },
             body: JSON.stringify({ action: "tambahPenyuluh", nama, nip, wilbin })
         });
 
-        // Update Tampilan Langsung tanpa nunggu refresh
+        // Update tampilan lokal tanpa nunggu refresh
         dataPenyuluh[nama] = { nip: nip, wilayah: wilbin };
         const opt = document.createElement("option");
         opt.value = nama;
         opt.textContent = nama;
         selectNama.appendChild(opt);
         
-        // Langsung pilih nama yang baru dibuat
         selectNama.value = nama;
         inputNip.value = nip;
         inputWilayah.value = wilbin;
 
-        alert("Berhasil! '" + nama + "' sudah tersimpan di Spreadsheet dan Daftar.");
+        alert("Data '" + nama + "' berhasil disimpan!");
         
-        // Reset form input
         document.getElementById("namaBaru").value = "";
         document.getElementById("nipBaru").value = "";
         document.getElementById("wilbinBaru").value = "";
     } catch (e) {
-        alert("Gagal koneksi ke server.");
+        alert("Terjadi kesalahan koneksi.");
     }
 }
 
-// --- 3. LOGIKA TABEL & KONTEN ---
+// 3. LOGIKA JUDUL & TABEL
 async function sinkronisasiJudul() {
-    const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
+    const urlJudul = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
     try {
-        const response = await fetch(url + "?t=" + new Date().getTime());
+        const response = await fetch(urlJudul + "?t=" + new Date().getTime());
         daftarJudulGlobal = await response.json();
         document.querySelectorAll('.judul-select').forEach(select => isiOpsiSelect(select));
-    } catch (e) { console.error("Gagal judul:", e); }
+    } catch (e) { console.error("Gagal sinkronisasi judul."); }
 }
 
 function isiOpsiSelect(selectElement) {
@@ -390,17 +386,16 @@ function addRow(showAlert = false) {
     if (showAlert) alert("Baris ditambahkan.");
 }
 
-// Fungsi pendukung lainnya (Paste, Clear, Resize, PV, Cetak)
 function autoResize(ta) { ta.style.height = 'auto'; ta.style.height = ta.scrollHeight + 'px'; }
 async function pasteText(btn) { 
     try { 
         const txt = await navigator.clipboard.readText(); 
         const ta = btn.closest('.textarea-container').querySelector('textarea'); 
         ta.value = txt; autoResize(ta); 
-    } catch(e) { alert("Gagal paste"); }
+    } catch(e) { alert("Gagal menempel teks."); }
 }
 function clearText(btn) { const ta = btn.closest('.textarea-container').querySelector('textarea'); ta.value = ""; autoResize(ta); }
-function removeRow() { if(count > 2) { tableBody.removeChild(tableBody.lastChild); count--; } }
+function removeRow() { if(count > 2) { tableBody.removeChild(tableBody.lastChild); count--; } else { alert("Minimal 2 baris."); } }
 function pv(input, id) {
     const file = input.files[0];
     if (file) {
@@ -411,11 +406,10 @@ function pv(input, id) {
 }
 function cetakLaporan() { window.print(); }
 
-// --- INISIALISASI SAAT HALAMAN DIBUKA ---
 document.addEventListener('DOMContentLoaded', async () => {
-    await sinkronisasiData(); // Ambil Nama Penyuluh dari Sheet
-    await sinkronisasiJudul(); // Ambil Daftar Judul
-    addRow(); addRow(); addRow(); // Tambah baris awal
+    await sinkronisasiData();
+    await sinkronisasiJudul();
+    addRow(); addRow(); addRow(); 
 });
 </script>
 </body>
