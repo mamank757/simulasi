@@ -330,30 +330,40 @@ async function tambahPenyuluhBaru() {
         return;
     }
 
-    const url = "https://script.google.com/macros/s/AKfycbxpmrR_j_hTZU1IBrLaYD9CeLbde1-Lt08717zfW3nt2oduAFLFe2fuI3QEoI-3FpF2/exec";
+    const url = "https://script.google.com/macros/s/AKfycbzIHCPiiEJ3QFPS5LjfJdVpgIXwQEu-dlFPdQRBRXqtdyUxR1Fu7dTI6G4n4o385fhG/exec"; // Ganti dengan URL Google Script Anda
+
+    // Gunakan URLSearchParams agar data terkirim sebagai form data (lebih kompatibel dengan Apps Script)
+    const formData = new FormData();
+    formData.append("action", "tambahPenyuluh");
+    formData.append("nama", nama);
+    formData.append("nip", nip);
+    formData.append("wilbin", wilbin);
 
     try {
+        // Kita gunakan mode 'cors' dan method POST
         await fetch(url, {
             method: "POST",
-            mode: "no-cors",
             body: JSON.stringify({ action: "tambahPenyuluh", nama, nip, wilbin })
         });
         
+        // Update tampilan lokal
         dataPenyuluh[nama] = { nip: nip, wilayah: wilbin };
         const opt = document.createElement("option");
         opt.value = nama;
         opt.textContent = nama;
         selectNama.appendChild(opt);
 
-        alert("Penyuluh berhasil ditambahkan!");
+        alert("Penyuluh berhasil ditambahkan ke Spreadsheet!");
+        
+        // Reset form
         document.getElementById("namaBaru").value = "";
         document.getElementById("nipBaru").value = "";
         document.getElementById("wilbinBaru").value = "";
     } catch(e){
-        alert("Gagal menyimpan data.");
+        console.error(e);
+        alert("Gagal menyimpan data. Cek koneksi atau URL Script.");
     }
 }
-
     async function pasteText(btn) {
         try {
             const text = await navigator.clipboard.readText();
