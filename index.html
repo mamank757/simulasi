@@ -2,105 +2,117 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EVIDEN LCS DIGITAL - King Mamank</title>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         * { box-sizing: border-box; }
-        body { font-family: 'Times New Roman', Times, serif; background: #f0f0f0; margin: 0; padding: 0; }
+        body { font-family: 'Times New Roman', Times, serif; background: #000; margin: 0; padding: 0; }
         
-        /* TOMBOL HOME */
+        /* TOMBOL HOME MELAYANG */
         .btn-home {
             position: fixed;
-            bottom: 20px;
-            left: 20px;
+            bottom: 80px; /* Di atas tombol tambah baris agar tidak tabrakan di mobile */
+            right: 20px;
             background: #27ae60;
             color: white;
-            width: 45px;
-            height: 45px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             justify-content: center;
             align-items: center;
             text-decoration: none;
-            font-size: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-size: 24px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             z-index: 10001;
             border: 2px solid white;
+            transition: 0.3s;
         }
 
-        /* PANEL KENDALI MOBILE */
+        .btn-home:hover { transform: scale(1.1); background: #ffffff; color: #27ae60; }
+
+        /* PANEL KENDALI */
         .panel-kendali {
             background: #ffffff; 
             padding: 10px; 
             display: flex; 
-            gap: 5px;
+            justify-content: space-between; 
+            align-items: center;
             position: sticky; 
             top: 0; 
             z-index: 9999;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            width: 100%;
         }
         
-        button { padding: 10px 5px; cursor: pointer; border-radius: 6px; border: none; color: white; font-weight: bold; font-size: 10px; text-transform: uppercase; }
-        .btn-print { background: #0b544e; flex: 2; }
+        button { padding: 10px 12px; cursor: pointer; border-radius: 6px; border: none; color: white; font-weight: bold; font-size: 11px; }
+        .btn-print { background: #0b544e; flex: 2; margin: 0 5px; }
         .btn-add { background: #27ae60; flex: 1; }
         .btn-reset { background: #dc3545; flex: 1; }
 
-        /* KERTAS & LAYOUT */
-        .kertas-wrapper { width: 100%; padding: 0; display: flex; justify-content: center; }
+        .kertas-wrapper { padding: 10px; display: flex; justify-content: center; }
         
         .kertas-a4 { 
-            width: 100%; 
-            max-width: 210mm; /* Standar A4 saat diprint */
+            width: 210mm; 
             min-height: 297mm; 
-            padding: 15px; 
+            padding: 10mm 15mm; 
             background: white; 
-            box-sizing: border-box;
-            margin: 0 auto;
+            box-sizing: border-box; 
         }
 
-        .judul-laporan { text-align: center; font-weight: bold; font-size: 11pt; margin-bottom: 20px; text-transform: uppercase; color:#000; line-height: 1.2; }
+        .judul-laporan { text-align: center; font-weight: bold; font-size: 13pt; margin-bottom: 25px; text-transform: uppercase; color:#000; line-height: 1.2; }
         
-        /* IDENTITAS */
-        .identitas { width: 100%; border-collapse: collapse; margin-bottom: 15px; font-size: 10pt; }
-        .identitas td { padding: 4px 0; vertical-align: middle; border: none !important; }
-        .label-id { width: 100px; font-weight: bold; }
-        .titik-id { width: 15px; text-align: center; }
+        .identitas { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11pt; color:#000; }
+        .identitas td { padding: 5px 0; vertical-align: middle; border: none !important; }
+        
+        .label-id { width: 180px; font-weight: bold; white-space: nowrap; }
+        .titik-id { width: 20px; text-align: center; font-weight: bold; }
+        
         .identitas input, .identitas select { 
-            width: 100%; border: none; border-bottom: 1px solid #eee; font-size: 10pt; padding: 2px; font-family: inherit; outline: none;
+            width: 100%; border: none; font-size: 11pt; padding: 2px; font-family: inherit; background: transparent; outline: none; color: black;
         }
 
-        /* TABEL DATA MOBILE OPTIMIZED */
-        table.tabel-data { width: 100%; border-collapse: collapse; border: 1px solid black; table-layout: fixed; }
-        table.tabel-data th { background-color: #2ecc71 !important; color: black; padding: 5px 2px; border: 1px solid black; font-size: 8pt; }
-        table.tabel-data td { border: 1px solid black; padding: 3px; vertical-align: middle; font-size: 8pt; text-align: center; }
+        table.tabel-data { width: 100%; border-collapse: collapse; border: 1.5px solid black; table-layout: fixed; }
+        table.tabel-data th { background-color: #2ecc71 !important; color: black; padding: 8px 2px; border: 1px solid black; font-size: 10pt; text-transform: uppercase; }
+        
+        table.tabel-data td { 
+            border: 1px solid black; 
+            padding: 4px; 
+            vertical-align: middle; 
+            font-size: 9pt; 
+            text-align: center; 
+            height: auto; 
+        }
 
-        /* PENGATURAN KOLOM AGAR PAS DI HP */
+        table.tabel-data tr { page-break-inside: avoid; }
+
         .col-no { width: 25px; }
-        .col-tgl { width: 75px; }
-        .col-judul { width: auto; } /* Judul akan fleksibel mengambil sisa ruang */
-        .col-eviden { width: 55px; } /* Lebar kolom Like, Com, Share disamakan */
+        .col-tgl { width: 180px; }
+        .col-judul { width: auto; }
+        .col-foto { width: 90px; }
 
-        .input-tgl { width: 100%; border: none; text-align: center; font-size: 8pt; font-family: inherit; background: transparent; }
+        .input-tgl { width: 100%; border: none; text-align: center; font-size: 9pt; font-family: inherit; background: transparent; }
         
         textarea.input-judul { 
-            width: 100%; 
-            min-height: 60px;
+            width: 95%; 
+            height: auto; 
             border: none; 
             resize: none; 
-            font-size: 9pt; 
+            font-size: 10pt; 
             font-family: inherit; 
-            padding: 2px; 
+            padding: 5px; 
             background: transparent; 
+            overflow: hidden; 
         }
 
-        /* FOTO BOX */
         .foto-container { 
             width: 100%; 
-            height: 60px; /* Diperkecil untuk tampilan HP agar tidak terlalu panjang kebawah */
+            height: 160px; 
             border: 1px dashed #ccc; 
+            margin: auto; 
             position: relative; 
             background: #fafafa; 
             display: flex; 
@@ -111,32 +123,37 @@
         
         .img-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
         .file-input { position: absolute; width: 100%; height: 100%; opacity: 0; z-index: 10; cursor: pointer; }
-        .label-foto { font-size: 6pt; color: #888; text-align: center; line-height: 1; }
+        .label-foto { font-size: 8pt; color: #888; text-align: center; font-weight: bold; }
 
-        /* KHUSUS CETAK PDF */
-        @media print {
-            body { background: white; }
-            .panel-kendali, .btn-home { display: none !important; }
-            .kertas-a4 { width: 210mm; padding: 10mm; }
-            .foto-container { height: 100px; } /* Kembali agak besar saat di PDF */
+     @media screen and (max-width: 768px)
+        { .kertas-a4 { width: 100% !important; padding: 10px !important; min-height: auto; }
+          .label-id { width: 110px; font-size: 8pt; }
+          .col-tgl { width: 70px; }
+          .col-foto { width: auto; } th { font-size: 8pt !important; }
+          .foto-container { width: 100%; height: 110px; } table.tabel-data td { height: 130px; }
+          textarea.input-judul { height: 110px; font-size: 9pt; } 
+          .btn-home { bottom: 20px; width: 45px; height: 45px; font-size: 20px; }
         }
+
+    .no-export { display: none !important; }
     </style>
 </head>
 <body onload="muatDataLokal()">
 
-    <a href="https://mamank757.github.io/PPL" class="btn-home" id="home-btn">🏠</a>
+    <a href="https://mamank757.github.io/PPL" class="btn-home" id="home-btn" title="Dashboard">🏠</a>
 
     <div class="panel-kendali" id="toolbar">
-        <button class="btn-add" onclick="tambahBaris()">+ Baris</button>
-        <button class="btn-print" onclick="simpanPDFAndroid()">💾 Simpan PDF</button>
-        <button class="btn-reset" onclick="tampilkanPopup()">🔄 Reset</button>
+        <button class="btn-add" onclick="tambahBaris()">+ BARIS</button>
+        <button class="btn-print" onclick="simpanPDFAndroid()">💾 SIMPAN PDF</button>
+        <button class="btn-reset" onclick="tampilkanPopup()">🔄 RESET</button>
     </div>
 
     <div class="kertas-wrapper" id="capture-area">
         <div class="kertas-a4">
             <div class="judul-laporan">
                 LAPORAN PENDERASAN INFORMASI DAN PEMBANGUNAN PERTANIAN<br>
-                PENYULUH PERTANIAN TAHUN 2026
+                PENYULUH PERTANIAN<br>
+                TAHUN 2026
             </div>
 
             <table class="identitas">
@@ -153,9 +170,9 @@
                         </select>
                     </td>
                 </tr>
-                <tr><td class="label-id">NAMA</td><td class="titik-id">:</td><td><input type="text" id="id_nama" placeholder="Nama Lengkap" oninput="simpanTeks('id_nama')"></td></tr>
-                <tr><td class="label-id">NIP</td><td class="titik-id">:</td><td><input type="text" id="id_nip" placeholder="NIP" oninput="formatNIP(this); simpanTeks('id_nip')"></td></tr>
-                <tr><td class="label-id">WILBIN</td><td class="titik-id">:</td><td><input type="text" id="id_wilayah" placeholder="Wilayah Kerja" oninput="simpanTeks('id_wilayah')"></td></tr>
+                <tr><td class="label-id">NAMA PENYULUH</td><td class="titik-id">:</td><td><input type="text" id="id_nama" placeholder="Cth. ABDUL RAHMAN, SP" oninput="simpanTeks('id_nama')"></td></tr>
+                <tr><td class="label-id">NIP</td><td class="titik-id">:</td><td><input type="text" id="id_nip" placeholder="Cth. 199009202020121001" oninput="formatNIP(this); simpanTeks('id_nip')"></td></tr>
+                <tr><td class="label-id">WILBIN/WKPP</td><td class="titik-id">:</td><td><input type="text" id="id_wilayah" placeholder="Cth. DESA MANURUNG" oninput="simpanTeks('id_wilayah')"></td></tr>
             </table>
 
             <table class="tabel-data">
@@ -167,9 +184,9 @@
                         <th colspan="3">EVIDEN</th>
                     </tr>
                     <tr>
-                        <th class="col-eviden">LIKE</th>
-                        <th class="col-eviden">CMNT</th>
-                        <th class="col-eviden">SHRE</th>
+                        <th class="col-foto">LIKE</th>
+                        <th class="col-foto">COMMENT</th>
+                        <th class="col-foto">SHARE</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"></tbody>
@@ -178,28 +195,47 @@
     </div>
 
     <div id="popup-reset" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center;">
-        <div style="background:white; padding:20px; border-radius:10px; text-align:center; width:80%;">
-            <p style="color:black; font-weight:bold;">Hapus semua data?</p>
+        <div style="background:white; padding:20px; border-radius:10px; text-align:center; max-width:80%;">
+            <p style="color:black; font-weight:bold;">Bersihkan data laporan?</p>
             <div style="display:flex; gap:10px;">
-                <button onclick="konfirmasiReset()" style="background:#dc3545; flex:1;">Ya</button>
+                <button onclick="konfirmasiReset()" style="background:#dc3545; flex:1;">Ya, Hapus</button>
                 <button onclick="tutupPopup()" style="background:#6c757d; flex:1;">Batal</button>
             </div>
         </div>
     </div>
 
   <script>
+    function tanggalHariIniFormatFile() {
+        const today = new Date();
+        const hari = String(today.getDate()).padStart(2, '0');
+        const bulan = String(today.getMonth() + 1).padStart(2, '0');
+        const tahun = today.getFullYear();
+        return `${hari}-${bulan}-${tahun}`;
+    }
+
+    function tanggalHariIni() {
+        const today = new Date();
+        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`; 
+    }
+
     const tbody = document.getElementById('table-body');
     let jumlahBaris = parseInt(localStorage.getItem('jumlahBaris')) || 3;
 
-    function renderBaris(i) {
+    function formatTanggalIndonesia(tgl) {
+        if (!tgl) return "";
+        const [tahun, bulan, hari] = tgl.split("-");
+        return `${hari}-${bulan}-${tahun}`;
+    }
+
+   function renderBaris(i) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${i}</td>
-            <td><input type="date" id="tgl_${i}" class="input-tgl" value="${new Date().toISOString().split('T')[0]}" oninput="simpanTeks('tgl_${i}')"></td>
-            <td><textarea id="judul_${i}" class="input-judul" placeholder="..." oninput="simpanTeks('judul_${i}')"></textarea></td>
-            <td><div class="foto-container"><span class="label-foto label-eviden">L</span><img id="img_like_${i}" class="img-preview"><input type="file" class="file-input" onchange="prosesGambar(this, 'img_like_${i}')"></div></td>
-            <td><div class="foto-container"><span class="label-foto label-eviden">C</span><img id="img_comen_${i}" class="img-preview"><input type="file" class="file-input" onchange="prosesGambar(this, 'img_comen_${i}')"></div></td>
-            <td><div class="foto-container"><span class="label-foto label-eviden">S</span><img id="img_share_${i}" class="img-preview"><input type="file" class="file-input" onchange="prosesGambar(this, 'img_share_${i}')"></div></td>
+            <td><input type="date" id="tgl_${i}" class="input-tgl" value="${tanggalHariIni()}" oninput="simpanTeks('tgl_${i}')"></td>
+            <td><textarea id="judul_${i}" class="input-judul" placeholder="Isi judul..." oninput="simpanTeks('judul_${i}')"></textarea></td>
+            <td><div class="foto-container"><span class="label-foto label-eviden">FOTO<br>LIKE</span><img id="img_like_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_like_${i}')"></div></td>
+            <td><div class="foto-container"><span class="label-foto label-eviden">FOTO<br>COMMENT</span><img id="img_comen_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_comen_${i}')"></div></td>
+            <td><div class="foto-container"><span class="label-foto label-eviden">FOTO<br>SHARE</span><img id="img_share_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_share_${i}')"></div></td>
         `;
         return tr;
     }
@@ -208,8 +244,10 @@
         tbody.innerHTML = "";
         for (let i = 1; i <= jumlahBaris; i++) {
             tbody.appendChild(renderBaris(i));
-            if(localStorage.getItem(`tgl_${i}`)) document.getElementById(`tgl_${i}`).value = localStorage.getItem(`tgl_${i}`);
-            if(localStorage.getItem(`judul_${i}`)) document.getElementById(`judul_${i}`).value = localStorage.getItem(`judul_${i}`);
+            const tglSimpan = localStorage.getItem(`tgl_${i}`);
+            if(tglSimpan) document.getElementById(`tgl_${i}`).value = tglSimpan;
+            const judulSimpan = localStorage.getItem(`judul_${i}`);
+            if(judulSimpan) document.getElementById(`judul_${i}`).value = judulSimpan;
             ['like', 'comen', 'share'].forEach(type => {
                 const savedImg = localStorage.getItem(`img_${type}_${i}`);
                 if(savedImg) {
@@ -220,7 +258,8 @@
             });
         }
         ['id_periode', 'id_nama', 'id_nip', 'id_wilayah'].forEach(id => {
-            if(localStorage.getItem(id)) document.getElementById(id).value = localStorage.getItem(id);
+            const val = localStorage.getItem(id);
+            if(val) document.getElementById(id).value = val;
         });
     }
 
@@ -239,7 +278,7 @@
                 const img = document.getElementById(imgId);
                 img.src = e.target.result;
                 img.style.display = 'block';
-                localStorage.setItem(imgId, e.target.result);
+                try { localStorage.setItem(imgId, e.target.result); } catch(err) { alert("Memori penuh, gambar tidak tersimpan permanen."); }
             }
             reader.readAsDataURL(input.files[0]);
         }
@@ -247,6 +286,7 @@
 
     function formatNIP(input) {
         let val = input.value.replace(/\D/g, '');
+        if (val.length > 18) val = val.substr(0, 18);
         input.value = val.replace(/(\d{8})(\d{6})(\d{1})(\d{3})/, '$1 $2 $3 $4');
     }
 
@@ -255,24 +295,44 @@
         const toolbar = document.getElementById('toolbar');
         const homeBtn = document.getElementById('home-btn');
         const labels = document.querySelectorAll('.label-eviden');
+        const nama = document.getElementById('id_nama').value || "PPL";
         
+        // Sembunyikan elemen navigasi sebelum export
         toolbar.style.display = 'none';
         homeBtn.style.display = 'none';
         labels.forEach(el => el.style.display = 'none');
 
+        const semuaTanggal = document.querySelectorAll('input[type="date"]');
+        semuaTanggal.forEach(input => {
+            const val = input.value;
+            if(val){
+                input.setAttribute("data-asli", val);
+                input.type = "text";
+                input.value = formatTanggalIndonesia(val);
+            }
+        });
+
         const opt = {
-            margin: [10, 5, 10, 5],
-            filename: `LCS_${document.getElementById('id_nama').value || 'User'}.pdf`,
-            image: { type: 'jpeg', quality: 0.95 },
+            margin: [8, 10, 8, 10],
+            filename: `LCS_${tanggalHariIniFormatFile()}_${nama}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
+            semuaTanggal.forEach(input => {
+                const asli = input.getAttribute("data-asli");
+                if(asli){
+                    input.type = "date";
+                    input.value = asli;
+                }
+            });
+
             toolbar.style.display = 'flex';
             homeBtn.style.display = 'flex';
             labels.forEach(el => el.style.display = '');
-            alert("PDF Berhasil Disimpan!");
+            alert("Laporan PDF berhasil disimpan!");
         });
     }
 
