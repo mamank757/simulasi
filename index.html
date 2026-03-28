@@ -3,342 +3,275 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EVIDEN LCS DIGITAL - King Mamank</title>
-    
+    <title>LCS, Tanggal, Nama Penyuluh</title>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
+        /* --- SEMUA CSS ASLI ANDA TETAP DI SINI (TIDAK BERUBAH) --- */
+        .col-eviden { text-align: center; }
+        .col-konten textarea { font-size: 11px; }
+        .col-eviden input[type="file"] { display: block; margin: 0 auto; }
         * { box-sizing: border-box; }
-        body { font-family: 'Times New Roman', Times, serif; background: #000; margin: 0; padding: 0; }
-        
-        /* TOMBOL HOME MELAYANG */
-        .btn-home {
-            position: fixed;
-            bottom: 80px; /* Di atas tombol tambah baris agar tidak tabrakan di mobile */
-            right: 20px;
-            background: #27ae60;
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            font-size: 24px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 10001;
-            border: 2px solid white;
-            transition: 0.3s;
+        body { font-family: 'Times New Roman', serif; margin: 0; padding: 20px; background: #000000; }
+        .container { width: 95%; max-width: 1000px; margin: auto; background: white; padding: 40px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .header { text-align: center; margin-bottom: 25px; padding-bottom: 10px; }
+        .header h2, .header h3 { margin: 2px 0; text-transform: uppercase; font-size: 1.1rem; font-weight: bold; }
+        .info-section { display: grid; grid-template-columns: 180px 20px 1fr; gap: 2px 0; margin-bottom: 25px; max-width: 650px; }
+        .info-section label { font-weight: bold; font-size: 14px; display: flex; align-items: center; }
+        input[type="text"], input[type="date"], select, textarea { padding: 6px 10px; border: 1px solid #000000; border-radius: 4px; width: 100%; font-family: inherit; font-size: 14px; }
+        .textarea-container { position: relative; width: 100%; }
+        textarea { resize: none; display: block; min-height: 100px; text-align: left; word-wrap: break-word; white-space: pre-wrap; padding-bottom: 40px !important; }
+        .textarea-actions { position: absolute; bottom: 5px; right: 5px; display: flex; gap: 5px; }
+        .btn-action { padding: 4px 8px; color: white; border: none; border-radius: 3px; font-size: 10px; cursor: pointer; font-weight: bold; opacity: 0.8; transition: 0.3s; }
+        .btn-paste { background: #00008B; }
+        .btn-clear { background: #8B0000; }
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; margin: 0 auto; counter-reset: nomorKonten; }
+        tr { counter-increment: nomorKonten; }
+        th, td { border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; }
+        th { background: #f2f2f2; font-size: 12px; text-transform: uppercase; font-weight: bold; }
+        .col-no { width: 40px; }
+        .col-date { width: 19%; }
+        .col-konten { width: 24%; }
+        .col-eviden { width: 15%; }
+        .preview-box { width: 100%; height: 110px; border: 1px dashed #bbb; margin: 5px auto; display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden; }
+        .preview-box img { width: 100%; height: 100%; display: none; object-fit: cover; }
+        input[type="file"] { color: transparent; width: 85px; cursor: pointer; }
+
+        /* Tampilan Mobile Anda */
+        @media screen and (max-width: 768px) {
+            .container { padding: 15px; width: 98%; }
+            .info-section { grid-template-columns: 1fr; gap: 5px; }
+            .info-section span { display: none; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            tr { margin-bottom: 25px; border: 2px solid #ddd; border-radius: 12px; padding: 15px; background: #fff; }
+            tr::before { content: "Konten #" counter(nomorKonten, decimal-leading-zero); display: block; font-weight: bold; font-size: 15px; margin-bottom: 11px; color: #000; }
+            td[data-label="No."] { display: none; }
+            td { border: none !important; width: 100% !important; padding: 0 !important; margin-bottom: 10px; display: block; text-align: left !important; }
+            td[data-label="Like"], td[data-label="Comment"], td[data-label="Share"] { display: inline-grid !important; width: 28% !important; margin-right: 2%; vertical-align: top; }
+            td[data-label="Share"] { margin-right: 0; }
+            td[data-label="Like"]::before, td[data-label="Comment"]::before, td[data-label="Share"]::before { content: attr(data-label); text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 4px; }
         }
 
-        .btn-home:hover { transform: scale(1.1); background: #ffffff; color: #27ae60; }
+        .controls { margin-top: 20px; display: flex; gap: 10px; }
+        .btn { padding: 12px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; color: white; transition: 0.3s; flex: 1; }
+        .btn-add { background: #27ae60; }
+        .btn-remove { background: #e74c3c; }
+        .action-area { text-align: center; margin-top: 30px; }
+        .btn-print { background: #2c3e50; width: 100%; padding: 15px; font-size: 16px; color: white; cursor: pointer; border-radius: 6px; border: none; font-weight: bold; }
+        .footer { margin-top: 30px; padding: 20px; background: white; text-align: center; font-size: 14px; border-radius: 8px; color: #333; }
 
-        /* PANEL KENDALI */
-        .panel-kendali {
-            background: #ffffff; 
-            padding: 10px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            position: sticky; 
-            top: 0; 
-            z-index: 9999;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            width: 100%;
-        }
+        /* --- CSS TAMBAHAN HANYA UNTUK PROSES CETAK --- */
+        .temp-text { display: none; text-align: left; font-size: 12px; white-space: pre-wrap; }
         
-        button { padding: 10px 12px; cursor: pointer; border-radius: 6px; border: none; color: white; font-weight: bold; font-size: 11px; }
-        .btn-print { background: #0b544e; flex: 2; margin: 0 5px; }
-        .btn-add { background: #27ae60; flex: 1; }
-        .btn-reset { background: #dc3545; flex: 1; }
-
-        .kertas-wrapper { padding: 10px; display: flex; justify-content: center; }
-        
-        .kertas-a4 { 
-            width: 210mm; 
-            min-height: 297mm; 
-            padding: 10mm 15mm; 
-            background: white; 
-            box-sizing: border-box; 
-        }
-
-        .judul-laporan { text-align: center; font-weight: bold; font-size: 13pt; margin-bottom: 25px; text-transform: uppercase; color:#000; line-height: 1.2; }
-        
-        .identitas { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11pt; color:#000; }
-        .identitas td { padding: 5px 0; vertical-align: middle; border: none !important; }
-        
-        .label-id { width: 180px; font-weight: bold; white-space: nowrap; }
-        .titik-id { width: 20px; text-align: center; font-weight: bold; }
-        
-        .identitas input, .identitas select { 
-            width: 100%; border: none; font-size: 11pt; padding: 2px; font-family: inherit; background: transparent; outline: none; color: black;
-        }
-
-        table.tabel-data { width: 100%; border-collapse: collapse; border: 1.5px solid black; table-layout: fixed; }
-        table.tabel-data th { background-color: #2ecc71 !important; color: black; padding: 8px 2px; border: 1px solid black; font-size: 9pt; text-transform: uppercase; }
-        
-        table.tabel-data td { 
-            border: 1px solid black; 
-            padding: 4px; 
-            vertical-align: middle; 
-            font-size: 9pt; 
-            text-align: center; 
-            height: auto; 
-        }
-
-        table.tabel-data tr { page-break-inside: avoid; }
-
-        .col-no { width: 25px; }
-        .col-tgl { width: 180px; }
-        .col-judul { width: auto; }
-        .col-foto { width: auto; }
-
-        .input-tgl { width: 100%; border: none; text-align: center; font-size: 8pt; font-family: inherit; background: transparent; }
-        
-        textarea.input-judul { 
-            width: 95%; 
-            height: auto; 
-            border: none; 
-            resize: none; 
-            font-size: 10pt; 
-            font-family: inherit; 
-            padding: 5px; 
-            background: transparent; 
-            overflow: hidden; 
-        }
-
-        .foto-container { 
-            width: 100%; 
-            height: 160px; 
-            border: 1px dashed #ccc; 
-            margin: auto; 
-            position: relative; 
-            background: #fafafa; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden; 
-        }
-        
-        .img-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .file-input { position: absolute; width: 100%; height: 100%; opacity: 0; z-index: 10; cursor: pointer; }
-        .label-foto { font-size: 8pt; color: #888; text-align: center; font-weight: bold; }
-
-     @media screen and (max-width: 768px)
-        { .kertas-a4 { width: 100% !important; padding: 10px !important; min-height: auto; }
-          .label-id { width: 110px; font-size: 8pt; }
-          .col-tgl { width: 70px; }
-          .col-foto { width: auto; } th { font-size: 8pt !important; }
-          .foto-container { width: 100%; height: 110px; } table.tabel-data td { height: 130px; }
-          textarea.input-judul { height: 110px; font-size: 9pt; } 
-          .btn-home { bottom: 20px; width: 45px; height: 45px; font-size: 20px; }
-        }
-
-    .no-export { display: none !important; }
+        .pdf-mode table { display: table !important; width: 100% !important; }
+        .pdf-mode thead { display: table-header-group !important; }
+        .pdf-mode tr { display: table-row !important; page-break-inside: avoid !important; }
+        .pdf-mode td, .pdf-mode th { display: table-cell !important; border: 1px solid #000 !important; }
+        .pdf-mode .preview-box { width: 100px !important; height: 130px !important; border: 1px solid #000 !important; }
+        .pdf-mode tr::before { content: none !important; }
     </style>
 </head>
-<body onload="muatDataLokal()">
 
-    <a href="https://mamank757.github.io/PPL" class="btn-home" id="home-btn" title="Dashboard">🏠</a>
+<body>
 
-    <div class="panel-kendali" id="toolbar">
-        <button class="btn-add" onclick="tambahBaris()">+ BARIS</button>
-        <button class="btn-print" onclick="simpanPDFAndroid()">💾 SIMPAN PDF</button>
-        <button class="btn-reset" onclick="tampilkanPopup()">🔄 RESET</button>
+<div class="container" id="contentToExport">
+    <div class="header">
+        <h2>LAPORAN PENDERASAN INFORMASI DAN PEMBANGUNAN PERTANIAN</h2>
+        <h3>PENYULUH PERTANIAN</h3>
+        <h3>TAHUN 2026</h3>
     </div>
 
-    <div class="kertas-wrapper" id="capture-area">
-        <div class="kertas-a4">
-            <div class="judul-laporan">
-                LAPORAN PENDERASAN INFORMASI DAN PEMBANGUNAN PERTANIAN<br>
-                PENYULUH PERTANIAN<br>
-                TAHUN 2026
+    <div class="info-section">
+        <label>PERIODE</label>
+        <span>:</span>
+        <select id="id_periode">
+            <option>BULAN JANUARI</option><option>BULAN FEBRUARI</option><option>BULAN MARET</option>
+            <option>BULAN APRIL</option><option>BULAN MEI</option><option>BULAN JUNI</option>
+            <option>BULAN JULI</option><option>BULAN AGUSTUS</option><option>BULAN SEPTEMBER</option>
+            <option>BULAN OKTOBER</option><option>BULAN NOVEMBER</option><option>BULAN DESEMBER</option>
+        </select>
+
+        <label>NAMA PENYULUH</label>
+        <span>:</span>
+        <input type="text" id="id_nama" placeholder="Cth: ABDUL RAHMAN, SP">
+
+        <label>NIP.</label>
+        <span>:</span>
+        <input type="text" id="id_nip" placeholder="Cth: 199009202020121001">
+
+        <label>WILBIN/WKPP</label>
+        <span>:</span>
+        <input type="text" id="id_wilayah" placeholder="Cth: DESA MANURUNG">
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2" class="col-no">No.</th>
+                <th rowspan="2" class="col-date">TANGGAL</th>
+                <th rowspan="2" class="col-konten">JUDUL KONTEN</th>
+                <th colspan="3">EVIDEN</th>
+            </tr>
+            <tr>
+                <th class="col-eviden">LIKE</th>
+                <th class="col-eviden">COMMENT</th>
+                <th class="col-eviden">SHARE</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <div class="controls no-print">
+        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris</button>
+        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris</button>
+    </div>
+
+    <div class="action-area no-print">
+        <button class="btn-print" type="button" onclick="cetakLaporan()">SIMPAN/DOWNLOAD PDF</button>
+    </div>
+</div>
+
+<footer class="footer no-print">
+    copyright: King Mamank 2026
+</footer>
+
+<script>
+// Logic sinkronisasi judul Anda tetap sama
+let daftarJudulGlobal = [];
+async function sinkronisasiJudul() {
+    const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
+    try {
+        const response = await fetch(url + "?t=" + new Date().getTime());
+        daftarJudulGlobal = await response.json();
+        document.querySelectorAll('.judul-select').forEach(select => isiOpsiSelect(select));
+    } catch (e) { console.error("Gagal sinkronisasi:", e); }
+}
+
+function isiOpsiSelect(selectElement) {
+    const currentVal = selectElement.value;
+    selectElement.innerHTML = '<option value="">List Judul Konten</option>';
+    daftarJudulGlobal.forEach(judul => {
+        const opt = document.createElement('option');
+        opt.value = judul; opt.textContent = judul;
+        selectElement.appendChild(opt);
+    });
+    selectElement.value = currentVal;
+}
+
+let count = 0;
+const tableBody = document.getElementById('tableBody');
+
+function addRow(showAlert = false) {
+    count++;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td data-label="No.">${count}.</td>
+        <td data-label="Tanggal" class="col-date">
+            <input type="date" class="inp-tgl" value="${new Date().toISOString().split('T')[0]}">
+            <div class="temp-text temp-tgl-display"></div>
+        </td>
+        <td data-label="Judul Konten" class="col-konten">
+            <div class="textarea-container">
+                <select class="no-print judul-select" onchange="const ta=this.nextElementSibling; ta.value=this.value; ta.dispatchEvent(new Event('input'));">
+                    <option value="">List Judul Konten</option>
+                </select>
+                <textarea class="inp-judul" placeholder="Pilih atau ketik manual"></textarea>
+                <div class="temp-text temp-judul-display"></div>
+                <div class="textarea-actions no-print">
+                    <button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
+                    <button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
+                </div>
             </div>
+        </td>
+        <td data-label="Like"><input type="file" accept="image/*" onchange="pv(this,'l${count}')" class="no-print"><div class="preview-box"><img id="l${count}"></div></td>
+        <td data-label="Comment"><input type="file" accept="image/*" onchange="pv(this,'c${count}')" class="no-print"><div class="preview-box"><img id="c${count}"></div></td>
+        <td data-label="Share"><input type="file" accept="image/*" onchange="pv(this,'s${count}')" class="no-print"><div class="preview-box"><img id="s${count}"></div></td>
+    `;
+    tableBody.appendChild(tr);
+    isiOpsiSelect(tr.querySelector('.judul-select'));
+    if (showAlert) alert("Baris ditambahkan.");
+}
 
-            <table class="identitas">
-                <tr>
-                    <td class="label-id">PERIODE</td>
-                    <td class="titik-id">:</td>
-                    <td>
-                        <select id="id_periode" onchange="simpanTeks('id_periode')">
-                            <option value="">-- Pilih Bulan --</option>
-                            <option>JANUARI</option><option>FEBRUARI</option><option>MARET</option>
-                            <option>APRIL</option><option>MEI</option><option>JUNI</option>
-                            <option>JULI</option><option>AGUSTUS</option><option>SEPTEMBER</option>
-                            <option>OKTOBER</option><option>NOVEMBER</option><option>DESEMBER</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr><td class="label-id">NAMA PENYULUH</td><td class="titik-id">:</td><td><input type="text" id="id_nama" placeholder="Cth. ABDUL RAHMAN, SP" oninput="simpanTeks('id_nama')"></td></tr>
-                <tr><td class="label-id">NIP</td><td class="titik-id">:</td><td><input type="text" id="id_nip" placeholder="Cth. 199009202020121001" oninput="formatNIP(this); simpanTeks('id_nip')"></td></tr>
-                <tr><td class="label-id">WILBIN/WKPP</td><td class="titik-id">:</td><td><input type="text" id="id_wilayah" placeholder="Cth. DESA MANURUNG" oninput="simpanTeks('id_wilayah')"></td></tr>
-            </table>
+function removeRow() {
+    if (count > 2) {
+        if (confirm("Hapus baris terakhir?")) { tableBody.removeChild(tableBody.lastChild); count--; }
+    } else { alert("Minimal 2 baris."); }
+}
 
-            <table class="tabel-data">
-                <thead>
-                    <tr>
-                        <th class="col-no" rowspan="2">NO</th>
-                        <th class="col-tgl" rowspan="2">TANGGAL</th>
-                        <th class="col-judul" rowspan="2">JUDUL KONTEN</th>
-                        <th colspan="3">EVIDEN</th>
-                    </tr>
-                    <tr>
-                        <th class="col-foto">LIKE</th>
-                        <th class="col-foto">COMMENT</th>
-                        <th class="col-foto">SHARE</th>
-                    </tr>
-                </thead>
-                <tbody id="table-body"></tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="popup-reset" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center;">
-        <div style="background:white; padding:20px; border-radius:10px; text-align:center; max-width:80%;">
-            <p style="color:black; font-weight:bold;">Bersihkan data laporan?</p>
-            <div style="display:flex; gap:10px;">
-                <button onclick="konfirmasiReset()" style="background:#dc3545; flex:1;">Ya, Hapus</button>
-                <button onclick="tutupPopup()" style="background:#6c757d; flex:1;">Batal</button>
-            </div>
-        </div>
-    </div>
-
-  <script>
-    function tanggalHariIniFormatFile() {
-        const today = new Date();
-        const hari = String(today.getDate()).padStart(2, '0');
-        const bulan = String(today.getMonth() + 1).padStart(2, '0');
-        const tahun = today.getFullYear();
-        return `${hari}-${bulan}-${tahun}`;
-    }
-
-    function tanggalHariIni() {
-        const today = new Date();
-        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`; 
-    }
-
-    const tbody = document.getElementById('table-body');
-    let jumlahBaris = parseInt(localStorage.getItem('jumlahBaris')) || 3;
-
-    function formatTanggalIndonesia(tgl) {
-        if (!tgl) return "";
-        const [tahun, bulan, hari] = tgl.split("-");
-        return `${hari}-${bulan}-${tahun}`;
-    }
-
-   function renderBaris(i) {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${i}</td>
-            <td><input type="date" id="tgl_${i}" class="input-tgl" value="${tanggalHariIni()}" oninput="simpanTeks('tgl_${i}')"></td>
-            <td><textarea id="judul_${i}" class="input-judul" placeholder="Isi judul..." oninput="simpanTeks('judul_${i}')"></textarea></td>
-            <td><div class="foto-container"><span class="label-foto label-eviden">FOTO<br>LIKE</span><img id="img_like_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_like_${i}')"></div></td>
-            <td><div class="foto-container"><span class="label-foto label-eviden">FOTO<br>COMMENT</span><img id="img_comen_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_comen_${i}')"></div></td>
-            <td><div class="foto-container"><span class="label-foto label-eviden">FOTO<br>SHARE</span><img id="img_share_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_share_${i}')"></div></td>
-        `;
-        return tr;
-    }
-
-    function muatDataLokal() {
-        tbody.innerHTML = "";
-        for (let i = 1; i <= jumlahBaris; i++) {
-            tbody.appendChild(renderBaris(i));
-            const tglSimpan = localStorage.getItem(`tgl_${i}`);
-            if(tglSimpan) document.getElementById(`tgl_${i}`).value = tglSimpan;
-            const judulSimpan = localStorage.getItem(`judul_${i}`);
-            if(judulSimpan) document.getElementById(`judul_${i}`).value = judulSimpan;
-            ['like', 'comen', 'share'].forEach(type => {
-                const savedImg = localStorage.getItem(`img_${type}_${i}`);
-                if(savedImg) {
-                    const imgEl = document.getElementById(`img_${type}_${i}`);
-                    imgEl.src = savedImg;
-                    imgEl.style.display = 'block';
-                }
-            });
-        }
-        ['id_periode', 'id_nama', 'id_nip', 'id_wilayah'].forEach(id => {
-            const val = localStorage.getItem(id);
-            if(val) document.getElementById(id).value = val;
-        });
-    }
-
-    function tambahBaris() {
-        jumlahBaris++;
-        localStorage.setItem('jumlahBaris', jumlahBaris);
-        tbody.appendChild(renderBaris(jumlahBaris));
-    }
-
-    function simpanTeks(id) { localStorage.setItem(id, document.getElementById(id).value); }
-
-    function prosesGambar(input, imgId) {
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.getElementById(imgId);
-                img.src = e.target.result;
-                img.style.display = 'block';
-                try { localStorage.setItem(imgId, e.target.result); } catch(err) { alert("Memori penuh, gambar tidak tersimpan permanen."); }
-            }
-            reader.readAsDataURL(input.files[0]);
-        }
-    }
-
-    function formatNIP(input) {
-        let val = input.value.replace(/\D/g, '');
-        if (val.length > 18) val = val.substr(0, 18);
-        input.value = val.replace(/(\d{8})(\d{6})(\d{1})(\d{3})/, '$1 $2 $3 $4');
-    }
-
-    function simpanPDFAndroid() {
-        const element = document.getElementById('capture-area');
-        const toolbar = document.getElementById('toolbar');
-        const homeBtn = document.getElementById('home-btn');
-        const labels = document.querySelectorAll('.label-eviden');
-        const nama = document.getElementById('id_nama').value || "PPL";
-        
-        // Sembunyikan elemen navigasi sebelum export
-        toolbar.style.display = 'none';
-        homeBtn.style.display = 'none';
-        labels.forEach(el => el.style.display = 'none');
-
-        const semuaTanggal = document.querySelectorAll('input[type="date"]');
-        semuaTanggal.forEach(input => {
-            const val = input.value;
-            if(val){
-                input.setAttribute("data-asli", val);
-                input.type = "text";
-                input.value = formatTanggalIndonesia(val);
-            }
-        });
-
-        const opt = {
-            margin: [8, 10, 8, 10],
-            filename: `LCS_${tanggalHariIniFormatFile()}_${nama}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+function pv(input, id) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = document.getElementById(id);
+            img.src = e.target.result; img.style.display = 'block';
         };
-
-        html2pdf().set(opt).from(element).save().then(() => {
-            semuaTanggal.forEach(input => {
-                const asli = input.getAttribute("data-asli");
-                if(asli){
-                    input.type = "date";
-                    input.value = asli;
-                }
-            });
-
-            toolbar.style.display = 'flex';
-            homeBtn.style.display = 'flex';
-            labels.forEach(el => el.style.display = '');
-            alert("Laporan PDF berhasil disimpan!");
-        });
+        reader.readAsDataURL(file);
     }
+}
 
-    function tampilkanPopup() { document.getElementById('popup-reset').style.display = 'flex'; }
-    function tutupPopup() { document.getElementById('popup-reset').style.display = 'none'; }
-    function konfirmasiReset() { localStorage.clear(); location.reload(); }
+function clearText(btn) { btn.closest('.textarea-container').querySelector('textarea').value = ""; }
+async function pasteText(btn) {
+    try {
+        const text = await navigator.clipboard.readText();
+        btn.closest('.textarea-container').querySelector('textarea').value = text;
+    } catch (err) { alert('Gagal paste.'); }
+}
+
+// --- PERBAIKAN PERINTAH DOWNLOAD PDF ---
+async function cetakLaporan() {
+    const element = document.getElementById('contentToExport');
+    const namaPenyuluh = document.getElementById('id_nama').value || "Penyuluh";
+    
+    // 1. Ubah format tampilan sebelum download
+    document.querySelectorAll('tr').forEach(row => {
+        const tglInp = row.querySelector('.inp-tgl');
+        const tglDisp = row.querySelector('.temp-tgl-display');
+        const jdlInp = row.querySelector('.inp-judul');
+        const jdlDisp = row.querySelector('.temp-judul-display');
+
+        if(tglInp && tglDisp) {
+            const d = new Date(tglInp.value);
+            tglDisp.innerText = `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}`;
+            tglDisp.style.display = 'block';
+            tglInp.style.display = 'none';
+        }
+        if(jdlInp && jdlDisp) {
+            jdlDisp.innerText = jdlInp.value;
+            jdlDisp.style.display = 'block';
+            jdlInp.style.display = 'none';
+        }
+    });
+
+    // Sembunyikan tombol-tombol
+    document.querySelectorAll('.no-print').forEach(el => el.style.display = 'none');
+    element.classList.add('pdf-mode');
+
+    const opt = {
+        margin: [10, 5, 10, 5],
+        filename: `LCS_2026_${namaPenyuluh}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+
+    try {
+        await html2pdf().set(opt).from(element).save();
+    } finally {
+        // Kembalikan ke tampilan normal setelah download selesai
+        element.classList.remove('pdf-mode');
+        document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
+        document.querySelectorAll('.inp-tgl, .inp-judul').forEach(el => el.style.display = 'block');
+        document.querySelectorAll('.temp-text').forEach(el => el.style.display = 'none');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await sinkronisasiJudul();
+    addRow(); addRow(); addRow();
+});
 </script>
 </body>
 </html>
