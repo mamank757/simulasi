@@ -64,10 +64,7 @@
     max-width: 210mm !important; 
     padding: 10mm !important;
     background: white !important;
-    /* Tambahkan ini agar tidak merusak tampilan layar HP saat proses */
-    position: absolute !important; 
-    left: -9999px !important; /* Pindahkan "bayangan" PDF ke luar layar */
-    top: 0 !important;
+    display: block !important; /* Jangan pakai absolute atau hidden */
 }
 
 /* Tambahkan class baru untuk pembungkus sementara */
@@ -254,23 +251,22 @@ async function pasteText(btn) {
 }
 
 async function cetakLaporan() {
-    const originalElement = document.getElementById('contentToExport');
+    const element = document.getElementById('contentToExport');
     const namaPenyuluh = document.getElementById('id_nama').value || "Penyuluh";
     
-    // Tampilkan indikator loading (opsional tapi disarankan)
-    const loader = document.createElement('div');
-    loader.className = 'pdf-container-wrapper';
-    loader.innerHTML = '<h3>Sedang Memproses PDF... Mohon Tunggu</h3>';
-    document.body.appendChild(loader);
+    // 1. Simpan posisi scroll asli
+    const scrollY = window.scrollY;
+    window.scrollTo(0, 0);
 
-    // 1. Buat DUPLIKAT (Clone) elemen agar layar asli tidak berantakan
-    const cln = originalElement.cloneNode(true);
-    cln.id = "contentToClone";
-    cln.classList.add('pdf-mode'); // Berikan gaya tabel A4
-    document.body.appendChild(cln);
+    // 2. Beri tanda Loading agar user tahu proses sedang berjalan
+    const btnPrint = document.querySelector('.btn-print');
+    const originalBtnText = btnPrint.innerText;
+    btnPrint.innerText = "Mencetak PDF... Mohon Tunggu";
+    btnPrint.disabled = true;
 
-    // 2. Rapikan tampilan di elemen DUPLIKAT (bukan yang asli)
-    cln.querySelectorAll('tr').forEach(row => {
+    // 3. Persiapan Data (Ubah Input ke Teks)
+    const allRows = document.querySelectorAll('#tableBody tr');
+    allRows.forEach(row => {
         const tglInp = row.querySelector('.inp-tgl');
         const tglDisp = row.querySelector('.temp-tgl-display');
         const jdlInp = row.querySelector('.inp-judul');
@@ -279,23 +275,33 @@ async function cetakLaporan() {
         if(tglInp && tglDisp) {
             const d = new Date(tglInp.value);
             tglDisp.innerText = tglInp.value ? `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}` : "";
-            tglDisp.style.display = 'block';
-            tglInp.remove(); // Hapus input di clone
+            tglDisp.style.setProperty('display', 'block', 'important');
+            tglInp.style.setProperty('display', 'none', 'important');
         }
         if(jdlInp && jdlDisp) {
             jdlDisp.innerText = jdlInp.value;
-            jdlDisp.style.display = 'block';
-            jdlInp.remove(); // Hapus textarea di clone
+            jdlDisp.style.setProperty('display', 'block', 'important');
+            jdlInp.style.setProperty('display', 'none', 'important');
         }
-        
-        // Hapus tombol-tombol dan input file di clone
-        row.querySelectorAll('.no-print, input[type="file"]').forEach(el => el.remove());
     });
 
-    // Pastikan tabel di clone berbentuk tabel
-    const tableCln = cln.querySelector('table');
-    tableCln.style.display = 'table';
+    // 4. AKTIFKAN MODE PDF (Ini yang akan mengubah kartu jadi tabel)
+    element.classList.add('pdf-mode');
+    
+    // Paksa tabel tampil horizontal (Penting untuk iPhone)
+    const mainTable = element.querySelector('table');
+    mainTable.style.setProperty('display', 'table', 'important');
+    mainTable.style.setProperty('width', '100%', 'important');
 
+    // Sembunyikan elemen yang tidak perlu dicetak
+    document.querySelectorAll('.no-print').forEach(el => {
+        el.style.setProperty('display', 'none', 'important');
+    });
+
+    // Jeda 500ms agar browser (terutama iPhone) sempat merender ulang CSS tabel
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // 5. Konfigurasi PDF
     const opt = {
         margin: [10, 5, 10, 5],
         filename: `LCS_2026_${namaPenyuluh}.pdf`,
@@ -304,22 +310,41 @@ async function cetakLaporan() {
             scale: 2, 
             useCORS: true, 
             letterRendering: true,
-            width: 793, // Lebar pixel standar A4 (210mm)
+            scrollX: 0,
+            scrollY: 0,
+            // Hilangkan windowWidth agar dia mengikuti elemen .pdf-mode yang sudah kita set 210mm
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
-        // Ambil dari elemen CLONE
-        await html2pdf().set(opt).from(cln).save();
+        // Eksekusi Pembuatan PDF
+        await html2pdf().set(opt).from(element).save();
     } catch (err) {
-        console.error("PDF Error:", err);
-        alert("Gagal download.");
+        console.error("Gagal cetak:", err);
+        alert("Gagal mengunduh PDF.");
     } finally {
-        // 3. Bersihkan - Hapus elemen duplikat dan loader
-        document.body.removeChild(cln);
-        document.body.removeChild(loader);
-        alert("Download Selesai!");
+        // 6. KEMBALIKAN KE TAMPILAN NORMAL (Mobile Mode)
+        element.classList.remove('pdf-mode');
+        mainTable.style.display = '';
+        
+        document.querySelectorAll('.no-print').forEach(el => {
+            el.style.display = '';
+        });
+        
+        document.querySelectorAll('.inp-tgl, .inp-judul').forEach(el => {
+            el.style.display = 'block';
+        });
+        
+        document.querySelectorAll('.temp-text').forEach(el => {
+            el.style.display = 'none';
+        });
+
+        btnPrint.innerText = originalBtnText;
+        btnPrint.disabled = false;
+        
+        // Kembalikan scroll ke posisi semula
+        window.scrollTo(0, scrollY);
     }
 }
 document.addEventListener('DOMContentLoaded', async () => {
