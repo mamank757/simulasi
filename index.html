@@ -11,41 +11,19 @@
         * { box-sizing: border-box; }
         body { font-family: 'Times New Roman', Times, serif; background: #000; margin: 0; padding: 0; }
         
-        /* TOMBOL HOME MELAYANG */
         .btn-home {
-            position: fixed;
-            bottom: 80px; /* Di atas tombol tambah baris agar tidak tabrakan di mobile */
-            right: 20px;
-            background: #27ae60;
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            text-decoration: none;
-            font-size: 24px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            z-index: 10001;
+            position: fixed; bottom: 80px; right: 20px; background: #27ae60; color: white;
+            width: 50px; height: 50px; border-radius: 50%; display: flex;
+            justify-content: center; align-items: center; text-decoration: none;
+            font-size: 24px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); z-index: 10001;
             border: 2px solid white;
-            transition: 0.3s;
         }
 
-        .btn-home:hover { transform: scale(1.1); background: #ffffff; color: #27ae60; }
-
-        /* PANEL KENDALI */
         .panel-kendali {
-            background: #ffffff; 
-            padding: 10px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center;
-            position: sticky; 
-            top: 0; 
-            z-index: 9999;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            width: 100%;
+            background: #ffffff; padding: 10px; display: flex; 
+            justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 9999;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3); width: 100%;
         }
         
         button { padding: 10px 12px; cursor: pointer; border-radius: 6px; border: none; color: white; font-weight: bold; font-size: 11px; }
@@ -54,99 +32,73 @@
         .btn-reset { background: #dc3545; flex: 1; }
 
         .kertas-wrapper { padding: 10px; display: flex; justify-content: center; }
-        
         .kertas-a4 { 
-            width: 210mm; 
-            min-height: 297mm; 
-            padding: 10mm 15mm; 
-            background: white; 
-            box-sizing: border-box; 
+            width: 210mm; min-height: 297mm; padding: 10mm 15mm; 
+            background: white; box-sizing: border-box; color: black;
         }
 
-        .judul-laporan { text-align: center; font-weight: bold; font-size: 13pt; margin-bottom: 25px; text-transform: uppercase; color:#000; line-height: 1.2; }
+        .judul-laporan { text-align: center; font-weight: bold; font-size: 13pt; margin-bottom: 25px; text-transform: uppercase; line-height: 1.2; }
         
-        .identitas { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11pt; color:#000; }
-        .identitas td { padding: 5px 0; vertical-align: middle; border: none !important; }
-        
-        .label-id { width: 180px; font-weight: bold; white-space: nowrap; }
-        .titik-id { width: 20px; text-align: center; font-weight: bold; }
-        
+        .identitas { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11pt; }
+        .identitas td { padding: 5px 0; vertical-align: middle; }
+        .label-id { width: 180px; font-weight: bold; }
+        .titik-id { width: 20px; text-align: center; }
         .identitas input, .identitas select { 
-            width: 100%; border: none; font-size: 11pt; padding: 2px; font-family: inherit; background: transparent; outline: none; color: black;
+            width: 100%; border: none; font-size: 11pt; font-family: inherit; background: transparent; outline: none;
         }
 
-        table.tabel-data { width: 100%; border-collapse: collapse; border: 1.5px solid black; table-layout: fixed; }
-        table.tabel-data th { background-color: #2ecc71 !important; color: black; padding: 8px 2px; border: 1px solid black; font-size: 10pt; text-transform: uppercase; }
-        
+        /* TABEL TANPA FIXED LAYOUT */
+        table.tabel-data { width: 100%; border-collapse: collapse; border: 1.5px solid black; }
+        table.tabel-data th { background-color: #2ecc71 !important; padding: 8px 2px; border: 1px solid black; font-size: 10pt; }
         table.tabel-data td { 
-            border: 1px solid black; 
-            padding: 4px; 
-            vertical-align: middle; 
-            font-size: 9pt; 
-            text-align: center; 
-            height: auto; 
+            border: 1px solid black; padding: 8px 5px; vertical-align: middle; 
+            font-size: 9pt; text-align: center; 
         }
 
-        table.tabel-data tr { page-break-inside: avoid; }
+        .col-no { width: 30px; }
+        .col-tgl { width: 100px; }
+        .col-judul { text-align: center !important; width: 250px; position: relative; } 
+        .col-foto { width: 90px; }
 
-        .col-no { width: 25px; }
-        .col-tgl { width: 160px; }
-       /* Pastikan kolom judul bisa fleksibel namun tetap memecah kata */
-.col-judul { 
-    width: 250px; /* Berikan lebar yang pasti agar tidak menciut */
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-}
+        /* INPUT TANGGAL & TEXTAREA */
+        .input-tgl { width: 100%; border: none; text-align: center; font-family: inherit; font-size: 9pt; background: transparent; }
+        
+        textarea.input-judul { 
+            width: 100%; min-height: 40px; border: none; resize: none; 
+            font-size: 10pt; font-family: 'Times New Roman', serif; 
+            background: transparent; overflow: hidden; display: block;
+            padding: 0; margin: 0;
+        }
 
-textarea.input-judul { 
-    width: 100%; 
-    height: auto; 
-    border: none; 
-    resize: none; 
-    font-size: 10pt; 
-    font-family: inherit; 
-    padding: 5px; 
-    background: transparent; 
-    overflow: hidden;
-    display: block;
-    /* Tambahkan ini agar teks membungkus dengan benar */
-    white-space: pre-wrap; 
-    word-break: break-word;
-}
+        /* DIV KHUSUS UNTUK CETAK (GHOST ELEMENT) */
+        .print-only-text {
+            display: none; /* Sembunyi saat di layar */
+            white-space: pre-wrap; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+            font-size: 10pt;
+            line-height: 1.4;
+            color: black;
+            width: 100%;
+        }
 
         .foto-container { 
-            width: 100%; 
-            height: 160px; 
-            border: 1px dashed #ccc; 
-            margin: auto; 
-            position: relative; 
-            background: #fafafa; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            overflow: hidden; 
+            width: 100%; height: 140px; border: 1px dashed #ccc; 
+            position: relative; background: #fafafa; display: flex; 
+            align-items: center; justify-content: center; overflow: hidden; 
         }
-        
         .img-preview { width: 100%; height: 100%; object-fit: cover; display: none; }
-        .file-input { position: absolute; width: 100%; height: 100%; opacity: 0; z-index: 10; cursor: pointer; }
-        .label-foto { font-size: 8pt; color: #888; text-align: center; font-weight: bold; }
+        .file-input { position: absolute; width: 100%; height: 100%; opacity: 0; cursor: pointer; z-index: 5; }
+        .label-foto { font-size: 8pt; color: #888; font-weight: bold; }
 
-     @media screen and (max-width: 768px)
-        { .kertas-a4 { width: 100% !important; padding: 10px !important; min-height: auto; }
-          .label-id { width: 110px; font-size: 8pt; }
-          .col-tgl { width: 70px; }
-          .col-foto { width: auto; } th { font-size: 8pt !important; }
-          .foto-container { width: 100%; height: 110px; } table.tabel-data td { height: 130px; }
-          textarea.input-judul { height: 110px; font-size: 9pt; } 
-          .btn-home { bottom: 20px; width: 45px; height: 45px; font-size: 20px; }
+        @media screen and (max-width: 768px) { 
+            .kertas-a4 { width: 100% !important; padding: 10px !important; }
         }
-
-    .no-export { display: none !important; }
     </style>
 </head>
 <body onload="muatDataLokal()">
 
-    <a href="https://mamank757.github.io/PPL" class="btn-home" id="home-btn" title="Dashboard">🏠</a>
+    <a href="https://mamank757.github.io/PPL" class="btn-home" id="home-btn">🏠</a>
 
     <div class="panel-kendali" id="toolbar">
         <button class="btn-add" onclick="tambahBaris()">+ BARIS</button>
@@ -158,27 +110,14 @@ textarea.input-judul {
         <div class="kertas-a4">
             <div class="judul-laporan">
                 LAPORAN PENDERASAN INFORMASI DAN PEMBANGUNAN PERTANIAN<br>
-                PENYULUH PERTANIAN<br>
-                TAHUN 2026
+                PENYULUH PERTANIAN TAHUN 2026
             </div>
 
             <table class="identitas">
-                <tr>
-                    <td class="label-id">PERIODE</td>
-                    <td class="titik-id">:</td>
-                    <td>
-                        <select id="id_periode" onchange="simpanTeks('id_periode')">
-                            <option value="">-- Pilih Bulan --</option>
-                            <option>JANUARI</option><option>FEBRUARI</option><option>MARET</option>
-                            <option>APRIL</option><option>MEI</option><option>JUNI</option>
-                            <option>JULI</option><option>AGUSTUS</option><option>SEPTEMBER</option>
-                            <option>OKTOBER</option><option>NOVEMBER</option><option>DESEMBER</option>
-                        </select>
-                    </td>
-                </tr>
-                <tr><td class="label-id">NAMA PENYULUH</td><td class="titik-id">:</td><td><input type="text" id="id_nama" placeholder="Cth. ABDUL RAHMAN, SP" oninput="simpanTeks('id_nama')"></td></tr>
-                <tr><td class="label-id">NIP</td><td class="titik-id">:</td><td><input type="text" id="id_nip" placeholder="Cth. 199009202020121001" oninput="formatNIP(this); simpanTeks('id_nip')"></td></tr>
-                <tr><td class="label-id">WILBIN/WKPP</td><td class="titik-id">:</td><td><input type="text" id="id_wilayah" placeholder="Cth. DESA MANURUNG" oninput="simpanTeks('id_wilayah')"></td></tr>
+                <tr><td class="label-id">PERIODE</td><td class="titik-id">:</td><td><select id="id_periode" onchange="simpanTeks('id_periode')"><option value="">-- Pilih Bulan --</option><option>JANUARI</option><option>FEBRUARI</option><option>MARET</option><option>APRIL</option><option>MEI</option><option>JUNI</option><option>JULI</option><option>AGUSTUS</option><option>SEPTEMBER</option><option>OKTOBER</option><option>NOVEMBER</option><option>DESEMBER</option></select></td></tr>
+                <tr><td class="label-id">NAMA PENYULUH</td><td class="titik-id">:</td><td><input type="text" id="id_nama" placeholder="Nama Lengkap" oninput="simpanTeks('id_nama')"></td></tr>
+                <tr><td class="label-id">NIP</td><td class="titik-id">:</td><td><input type="text" id="id_nip" placeholder="NIP" oninput="formatNIP(this); simpanTeks('id_nip')"></td></tr>
+                <tr><td class="label-id">WILBIN/WKPP</td><td class="titik-id">:</td><td><input type="text" id="id_wilayah" placeholder="Wilayah Kerja" oninput="simpanTeks('id_wilayah')"></td></tr>
             </table>
 
             <table class="tabel-data">
@@ -201,81 +140,63 @@ textarea.input-judul {
     </div>
 
     <div id="popup-reset" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; justify-content:center; align-items:center;">
-        <div style="background:white; padding:20px; border-radius:10px; text-align:center; max-width:80%;">
+        <div style="background:white; padding:20px; border-radius:10px; text-align:center;">
             <p style="color:black; font-weight:bold;">Bersihkan data laporan?</p>
-            <div style="display:flex; gap:10px;">
-                <button onclick="konfirmasiReset()" style="background:#dc3545; flex:1;">Ya, Hapus</button>
-                <button onclick="tutupPopup()" style="background:#6c757d; flex:1;">Batal</button>
-            </div>
+            <button onclick="konfirmasiReset()" style="background:#dc3545;">Ya, Hapus</button>
+            <button onclick="tutupPopup()" style="background:#6c757d;">Batal</button>
         </div>
     </div>
 
-  <script>
-    function tanggalHariIniFormatFile() {
-        const today = new Date();
-        const hari = String(today.getDate()).padStart(2, '0');
-        const bulan = String(today.getMonth() + 1).padStart(2, '0');
-        const tahun = today.getFullYear();
-        return `${hari}-${bulan}-${tahun}`;
-    }
-
-    function tanggalHariIni() {
-        const today = new Date();
-        return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`; 
-    }
-
+<script>
     const tbody = document.getElementById('table-body');
     let jumlahBaris = parseInt(localStorage.getItem('jumlahBaris')) || 3;
 
-    function formatTanggalIndonesia(tgl) {
-        if (!tgl) return "";
-        const [tahun, bulan, hari] = tgl.split("-");
-        return `${hari}-${bulan}-${tahun}`;
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = (textarea.scrollHeight) + 'px';
     }
 
-   function renderBaris(i) {
+    function formatTanggalIndo(tgl) {
+        if(!tgl) return "";
+        const [y, m, d] = tgl.split("-");
+        return `${d}-${m}-${y}`;
+    }
+
+    function renderBaris(i) {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${i}</td>
-            <td><input type="date" id="tgl_${i}" class="input-tgl" value="${tanggalHariIni()}" oninput="simpanTeks('tgl_${i}')"></td>
-            // Pada fungsi renderBaris, bagian textarea:
-<td>
-    <textarea id="judul_${i}" 
-              class="input-judul" 
-              placeholder="Isi judul..." 
-              oninput="simpanTeks('judul_${i}'); autoResize(this)" 
-              rows="1"></textarea>
-</td>
-            <td><div class="foto-container"><span class="label-foto label-eviden">FOTO<br>LIKE</span><img id="img_like_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_like_${i}')"></div></td>
-            <td><div class="foto-container"><span class="label-foto label-eviden">FOTO<br>COMMENT</span><img id="img_comen_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_comen_${i}')"></div></td>
-            <td><div class="foto-container"><span class="label-foto label-eviden">FOTO<br>SHARE</span><img id="img_share_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_share_${i}')"></div></td>
+            <td class="col-tgl">
+                <input type="date" id="tgl_${i}" class="input-tgl" value="${new Date().toISOString().split('T')[0]}" oninput="simpanTeks('tgl_${i}')">
+                <div id="tgl_text_${i}" class="print-only-text" style="text-align:center"></div>
+            </td>
+            <td class="col-judul">
+                <textarea id="judul_${i}" class="input-judul" placeholder="Isi judul..." oninput="simpanTeks('judul_${i}'); autoResize(this)" rows="1"></textarea>
+                <div id="judul_text_${i}" class="print-only-text"></div>
+            </td>
+            <td><div class="foto-container"><span class="label-foto label-eviden">LIKE</span><img id="img_like_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_like_${i}')"></div></td>
+            <td><div class="foto-container"><span class="label-foto label-eviden">COM</span><img id="img_comen_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_comen_${i}')"></div></td>
+            <td><div class="foto-container"><span class="label-foto label-eviden">SHR</span><img id="img_share_${i}" class="img-preview"><input type="file" class="file-input label-eviden" onchange="prosesGambar(this, 'img_share_${i}')"></div></td>
         `;
         return tr;
     }
 
-  // Tambahkan fungsi auto-resize sederhana
-function autoResize(textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
-}
-
-// Update fungsi muatDataLokal pada bagian judul
-function muatDataLokal() {
-    // ... kode yang sudah ada ...
-    for (let i = 1; i <= jumlahBaris; i++) {
-        // ...
-        const judulSimpan = localStorage.getItem(`judul_${i}`);
-        if(judulSimpan) {
-            const el = document.getElementById(`judul_${i}`);
-            el.value = judulSimpan;
-            autoResize(el); // Sesuaikan tinggi saat muat
+    function muatDataLokal() {
+        tbody.innerHTML = "";
+        for (let i = 1; i <= jumlahBaris; i++) {
+            tbody.appendChild(renderBaris(i));
+            const ts = localStorage.getItem(`tgl_${i}`); if(ts) document.getElementById(`tgl_${i}`).value = ts;
+            const js = localStorage.getItem(`judul_${i}`); if(js) {
+                const el = document.getElementById(`judul_${i}`);
+                el.value = js; autoResize(el);
+            }
+            ['like', 'comen', 'share'].forEach(type => {
+                const imgS = localStorage.getItem(`img_${type}_${i}`);
+                if(imgS) { const img = document.getElementById(`img_${type}_${i}`); img.src = imgS; img.style.display = 'block'; }
+            });
         }
-        // ...
-    }
-}
         ['id_periode', 'id_nama', 'id_nip', 'id_wilayah'].forEach(id => {
-            const val = localStorage.getItem(id);
-            if(val) document.getElementById(id).value = val;
+            const v = localStorage.getItem(id); if(v) document.getElementById(id).value = v;
         });
     }
 
@@ -290,66 +211,72 @@ function muatDataLokal() {
     function prosesGambar(input, imgId) {
         if (input.files && input.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = (e) => {
                 const img = document.getElementById(imgId);
-                img.src = e.target.result;
-                img.style.display = 'block';
-                try { localStorage.setItem(imgId, e.target.result); } catch(err) { alert("Memori penuh, gambar tidak tersimpan permanen."); }
+                img.src = e.target.result; img.style.display = 'block';
+                try { localStorage.setItem(imgId, e.target.result); } catch(err) { alert("Memori penuh!"); }
             }
             reader.readAsDataURL(input.files[0]);
         }
     }
 
     function formatNIP(input) {
-        let val = input.value.replace(/\D/g, '');
-        if (val.length > 18) val = val.substr(0, 18);
-        input.value = val.replace(/(\d{8})(\d{6})(\d{1})(\d{3})/, '$1 $2 $3 $4');
+        let v = input.value.replace(/\D/g, '');
+        if (v.length > 18) v = v.substr(0, 18);
+        input.value = v.replace(/(\d{8})(\d{6})(\d{1})(\d{3})/, '$1 $2 $3 $4');
     }
 
-    function simpanPDFAndroid() {
-        const element = document.getElementById('capture-area');
+    async function simpanPDFAndroid() {
+        const area = document.getElementById('capture-area');
+        const labels = document.querySelectorAll('.label-eviden');
         const toolbar = document.getElementById('toolbar');
         const homeBtn = document.getElementById('home-btn');
-        const labels = document.querySelectorAll('.label-eviden');
-        const nama = document.getElementById('id_nama').value || "PPL";
-        
-        // Sembunyikan elemen navigasi sebelum export
+
+        // 1. Sembunyikan Navigasi
         toolbar.style.display = 'none';
         homeBtn.style.display = 'none';
-        labels.forEach(el => el.style.display = 'none');
+        labels.forEach(l => l.style.display = 'none');
 
-        const semuaTanggal = document.querySelectorAll('input[type="date"]');
-        semuaTanggal.forEach(input => {
-            const val = input.value;
-            if(val){
-                input.setAttribute("data-asli", val);
-                input.type = "text";
-                input.value = formatTanggalIndonesia(val);
-            }
-        });
+        // 2. PREPARE TEXT UNTUK CETAK (GHOSTING)
+        for (let i = 1; i <= jumlahBaris; i++) {
+            const txtArea = document.getElementById(`judul_${i}`);
+            const txtDisplay = document.getElementById(`judul_text_${i}`);
+            const dateInput = document.getElementById(`tgl_${i}`);
+            const dateDisplay = document.getElementById(`tgl_text_${i}`);
+
+            // Pindahkan isi textarea ke div teks murni
+            txtDisplay.innerText = txtArea.value;
+            txtDisplay.style.display = 'block';
+            txtArea.style.display = 'none';
+
+            // Pindahkan isi tanggal ke div teks murni
+            dateDisplay.innerText = formatTanggalIndo(dateInput.value);
+            dateDisplay.style.display = 'block';
+            dateInput.style.display = 'none';
+        }
 
         const opt = {
-            margin: [8, 10, 8, 10],
-            filename: `LCS_${tanggalHariIniFormatFile()}_${nama}.pdf`,
+            margin: [10, 5, 10, 5],
+            filename: `LCS_${document.getElementById('id_nama').value || 'PPL'}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        html2pdf().set(opt).from(element).save().then(() => {
-            semuaTanggal.forEach(input => {
-                const asli = input.getAttribute("data-asli");
-                if(asli){
-                    input.type = "date";
-                    input.value = asli;
-                }
-            });
-
+        try {
+            await html2pdf().set(opt).from(area).save();
+        } finally {
+            // 3. KEMBALIKAN TAMPILAN SEMULA
+            for (let i = 1; i <= jumlahBaris; i++) {
+                document.getElementById(`judul_text_${i}`).style.display = 'none';
+                document.getElementById(`judul_${i}`).style.display = 'block';
+                document.getElementById(`tgl_text_${i}`).style.display = 'none';
+                document.getElementById(`tgl_${i}`).style.display = 'block';
+            }
             toolbar.style.display = 'flex';
             homeBtn.style.display = 'flex';
-            labels.forEach(el => el.style.display = '');
-            alert("Laporan PDF berhasil disimpan!");
-        });
+            labels.forEach(l => l.style.display = '');
+        }
     }
 
     function tampilkanPopup() { document.getElementById('popup-reset').style.display = 'flex'; }
