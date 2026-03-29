@@ -8,99 +8,83 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
-        /* --- CSS DASAR --- */
-        * { box-sizing: border-box; }
-        body { font-family: 'Times New Roman', serif; margin: 0; padding: 20px; background: #000000; }
+    /* 1. CSS DASAR (BERLAKU DI SEMUA TAMPILAN) */
+    * { box-sizing: border-box; }
+    body { font-family: 'Times New Roman', serif; margin: 0; padding: 20px; background: #000000; }
+    .container { width: 95%; max-width: 1000px; margin: auto; background: white; padding: 40px; border-radius: 8px; }
+    .header { text-align: center; margin-bottom: 25px; }
+    .header h2, .header h3 { margin: 2px 0; text-transform: uppercase; font-size: 1.1rem; font-weight: bold; }
+    
+    .info-section { display: grid; grid-template-columns: 180px 20px 1fr; gap: 2px 0; margin-bottom: 25px; }
+    input[type="text"], input[type="date"], select, textarea { 
+        padding: 6px 10px; border: 1px solid #000; border-radius: 4px; width: 100%; font-size: 14px; 
+    }
+
+    /* 2. TAMPILAN TABEL STANDAR (DESKTOP) */
+    table { width: 100%; border-collapse: collapse; table-layout: fixed; counter-reset: nomorKonten; }
+    tr { counter-increment: nomorKonten; }
+    th, td { border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; }
+    th { background: #f2f2f2; font-size: 12px; }
+    .col-no { width: 40px; }
+    .col-date { width: 18%; }
+    .col-konten { width: 30%; }
+    .preview-box { width: 100%; height: 110px; border: 1px dashed #bbb; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .preview-box img { width: 100%; height: 100%; object-fit: cover; display: none; }
+
+    /* 3. TAMPILAN KHUSUS LAYAR HP (MEDIA SCREEN) - AGAR TIDAK RUSAK */
+    @media screen and (max-width: 768px) {
+        /* Kembalikan font size ke 16px agar iPhone tidak zoom otomatis saat klik input */
+        input, select, textarea { font-size: 16px !important; }
+        .container { padding: 15px; width: 98%; }
+        .info-section { grid-template-columns: 1fr; }
+        .info-section span { display: none; }
         
-        .container { 
-            width: 95%; 
-            max-width: 1000px; 
-            margin: auto; 
-            background: white; 
-            padding: 40px; 
-            border-radius: 8px; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
-        }
-
-        .header { text-align: center; margin-bottom: 25px; padding-bottom: 10px; }
-        .header h2, .header h3 { margin: 2px 0; text-transform: uppercase; font-size: 1.1rem; font-weight: bold; }
-
-        .info-section { display: grid; grid-template-columns: 180px 20px 1fr; gap: 2px 0; margin-bottom: 25px; max-width: 650px; }
-        .info-section label { font-weight: bold; font-size: 14px; display: flex; align-items: center; }
+        /* Ubah tabel jadi kartu vertikal agar enak di HP */
+        table, thead, tbody, th, td, tr { display: block; }
+        thead { display: none; }
+        tr { margin-bottom: 25px; border: 2px solid #ddd; border-radius: 12px; padding: 15px; background: #fff; }
+        tr::before { content: "Konten #" counter(nomorKonten, decimal-leading-zero); display: block; font-weight: bold; margin-bottom: 10px; }
         
-        input[type="text"], input[type="date"], select, textarea { 
-            padding: 6px 10px; border: 1px solid #000000; border-radius: 4px; width: 100%; font-family: inherit; font-size: 14px; 
-        }
-
-        textarea { resize: none; display: block; min-height: 100px; text-align: left; word-wrap: break-word; white-space: pre-wrap; padding-bottom: 40px !important; }
-        .textarea-container { position: relative; width: 100%; }
-        .textarea-actions { position: absolute; bottom: 5px; right: 5px; display: flex; gap: 5px; }
-
-        .btn-action { padding: 4px 8px; color: white; border: none; border-radius: 3px; font-size: 10px; cursor: pointer; font-weight: bold; opacity: 0.8; transition: 0.3s; }
-        .btn-paste { background: #00008B; }
-        .btn-clear { background: #8B0000; }
-
-        /* --- STYLES TABEL --- */
-        table { width: 100%; border-collapse: collapse; table-layout: fixed; margin: 0 auto; counter-reset: nomorKonten; }
-        tr { counter-increment: nomorKonten; }
-        th, td { border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; word-wrap: break-word; }
-        th { background: #f2f2f2; font-size: 12px; text-transform: uppercase; font-weight: bold; }
+        td { border: none !important; width: 100% !important; padding: 0 !important; margin-bottom: 10px; display: block; text-align: left !important; }
+        td[data-label="No."] { display: none; }
         
-        .col-no { width: 40px; }
-        .col-date { width: 18%; }
-        .col-konten { width: 30%; }
-        .col-eviden { width: 14%; }
-
-        .preview-box { 
-            width: 100%; height: 110px; border: 1px dashed #bbb; margin: 5px auto; 
-            display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden; 
+        /* Layout Like, Comment, Share sejajar di layar HP */
+        td[data-label="Like"], td[data-label="Comment"], td[data-label="Share"] { 
+            display: inline-grid !important; width: 31% !important; margin-right: 1%; text-align: center !important;
         }
-        .preview-box img { width: 100%; height: 100%; display: none; object-fit: cover; }
-        input[type="file"] { color: transparent; width: 85px; cursor: pointer; }
-
-        /* --- TAMPILAN MOBILE (HANYA UNTUK LAYAR HP) --- */
-        @media screen and (max-width: 768px) {
-            .container { padding: 15px; width: 98%; }
-            .info-section { grid-template-columns: 1fr; gap: 5px; }
-            .info-section span { display: none; }
-            
-            table, thead, tbody, th, td, tr { display: block; }
-            thead { display: none; }
-            tr { margin-bottom: 25px; border: 2px solid #ddd; border-radius: 12px; padding: 15px; background: #fff; position: relative; }
-            tr::before { content: "Konten #" counter(nomorKonten, decimal-leading-zero); display: block; font-weight: bold; font-size: 15px; margin-bottom: 11px; color: #000; }
-            
-            td[data-label="No."] { display: none; }
-            td { border: none !important; width: 100% !important; padding: 0 !important; margin-bottom: 10px; display: block; text-align: left !important; }
-            
-            /* Layout Grid untuk Like, Comment, Share di Mobile agar sejajar horizontal */
-            td[data-label="Like"], td[data-label="Comment"], td[data-label="Share"] { 
-                display: inline-grid !important; width: 31% !important; margin-right: 1%; vertical-align: top; text-align: center !important;
-            }
-            td[data-label="Share"] { margin-right: 0; }
-            td[data-label="Like"]::before, td[data-label="Comment"]::before, td[data-label="Share"]::before { 
-                content: attr(data-label); text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 4px; 
-            }
+        td[data-label="Like"]::before, td[data-label="Comment"]::before, td[data-label="Share"]::before { 
+            content: attr(data-label); font-size: 11px; font-weight: bold; margin-bottom: 4px; 
         }
+    }
 
-        /* --- FORCE PDF MODE (DI GUNAKAN SAAT DOWNLOAD) --- */
-        .pdf-mode { width: 210mm !important; padding: 10mm !important; }
-        .pdf-mode table { display: table !important; width: 100% !important; }
-        .pdf-mode thead { display: table-header-group !important; }
-        .pdf-mode tr { display: table-row !important; border: none !important; margin-bottom: 0 !important; padding: 0 !important; }
-        .pdf-mode td, .pdf-mode th { display: table-cell !important; border: 1px solid #000 !important; font-size: 10px !important; }
-        .pdf-mode tr::before, .pdf-mode td::before { content: none !important; }
-        .pdf-mode .preview-box { width: 85px !important; height: 110px !important; border: 1px solid #000 !important; }
-        .pdf-mode .temp-text { display: block !important; font-size: 10px; }
+    /* 4. TAMPILAN KHUSUS PDF (HANYA AKTIF SAAT DOWNLOAD) */
+    /* Kita gunakan selektor .pdf-mode secara spesifik */
+    .pdf-mode { width: 210mm !important; max-width: 210mm !important; padding: 10mm !important; }
+    
+    .pdf-mode table { display: table !important; width: 100% !important; table-layout: fixed !important; }
+    .pdf-mode thead { display: table-header-group !important; }
+    .pdf-mode tbody { display: table-row-group !important; }
+    .pdf-mode tr { display: table-row !important; border: none !important; padding: 0 !important; }
+    
+    .pdf-mode td, .pdf-mode th { 
+        display: table-cell !important; 
+        border: 1px solid #000 !important; 
+        font-size: 10px !important; 
+        padding: 5px !important;
+    }
 
-        .controls { margin-top: 20px; display: flex; gap: 10px; }
-        .btn { padding: 12px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; color: white; transition: 0.3s; flex: 1; }
-        .btn-add { background: #27ae60; }
-        .btn-remove { background: #e74c3c; }
-        .action-area { text-align: center; margin-top: 30px; }
-        .btn-print { background: #2c3e50; width: 100%; padding: 15px; font-size: 16px; color: white; cursor: pointer; border-radius: 6px; border: none; font-weight: bold; }
-        .footer { margin-top: 30px; padding: 20px; background: white; text-align: center; font-size: 14px; border-radius: 8px; color: #333; }
-        .temp-text { display: none; text-align: left; white-space: pre-wrap; }
-    </style>
+    /* Matikan gaya kartu HP saat di PDF */
+    .pdf-mode tr::before, .pdf-mode td::before { content: none !important; display: none !important; }
+    .pdf-mode .temp-text { display: block !important; }
+    .pdf-mode .preview-box { width: 85px !important; height: 110px !important; border: 1px solid #000 !important; }
+
+    /* Utilitas */
+    .no-print { display: block; }
+    .temp-text { display: none; white-space: pre-wrap; text-align: left; }
+    .controls, .action-area { margin-top: 20px; }
+    .btn-print { background: #2c3e50; color: white; width: 100%; padding: 15px; border-radius: 6px; font-weight: bold; cursor: pointer; border: none; }
+    .footer { text-align: center; margin-top: 20px; color: white; }
+</style>
 </head>
 
 <body>
@@ -265,7 +249,7 @@ async function cetakLaporan() {
     const scrollY = window.scrollY;
     window.scrollTo(0, 0);
 
-    // 1. Konversi Input ke Teks untuk PDF
+    // 1. Konversi Input ke Teks agar tidak muncul kotak input di PDF
     document.querySelectorAll('#tableBody tr').forEach(row => {
         const tglInp = row.querySelector('.inp-tgl');
         const tglDisp = row.querySelector('.temp-tgl-display');
@@ -285,32 +269,54 @@ async function cetakLaporan() {
         }
     });
 
-    // 2. Aktifkan Mode PDF
+    // 2. Aktifkan Mode PDF & Sembunyikan tombol
     element.classList.add('pdf-mode');
-    document.querySelectorAll('.no-print').forEach(el => el.style.setProperty('display', 'none', 'important'));
+    
+    // TRICK KHUSUS iPHONE: Tambahkan inline style untuk memaksa tabel
+    const tabelElement = element.querySelector('table');
+    tabelElement.style.display = 'table'; 
+
+    document.querySelectorAll('.no-print').forEach(el => {
+        el.style.setProperty('display', 'none', 'important');
+    });
+
+    // Beri waktu 300ms (lebih lama sedikit) agar Safari selesai merender ulang struktur tabel
+    await new Promise(resolve => setTimeout(resolve, 300));
 
     const opt = {
         margin: [10, 5, 10, 5],
         filename: `LCS_2026_${namaPenyuluh}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+        html2canvas: { 
+            scale: 2, 
+            useCORS: true, 
+            letterRendering: true,
+            scrollX: 0,
+            scrollY: 0,
+            windowWidth: 1000 // Paksa lebar kalkulasi ke ukuran desktop (A4)
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
+        // Proses download
         await html2pdf().set(opt).from(element).save();
     } catch (err) {
         console.error("PDF Error:", err);
+        alert("Gagal mengunduh PDF, coba lagi.");
     } finally {
-        // 3. Reset Tampilan
+        // 3. Reset Tampilan ke mode Mobile kembali
         element.classList.remove('pdf-mode');
+        tabelElement.style.display = ''; // Lepas paksaan inline style
+        
         document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
         document.querySelectorAll('.inp-tgl, .inp-judul').forEach(el => el.style.display = 'block');
         document.querySelectorAll('.temp-text').forEach(el => el.style.display = 'none');
+        
+        // Kembalikan posisi scroll pengguna
         window.scrollTo(0, scrollY);
     }
 }
-
 document.addEventListener('DOMContentLoaded', async () => {
     await sinkronisasiJudul();
     addRow(); addRow(); addRow();
