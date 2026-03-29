@@ -58,20 +58,32 @@
     }
 
     /* 4. TAMPILAN KHUSUS PDF (HANYA AKTIF SAAT DOWNLOAD) */
-    /* Kita gunakan selektor .pdf-mode secara spesifik */
-    .pdf-mode { width: 210mm !important; max-width: 210mm !important; padding: 10mm !important; }
-    
-    .pdf-mode table { display: table !important; width: 100% !important; table-layout: fixed !important; }
-    .pdf-mode thead { display: table-header-group !important; }
-    .pdf-mode tbody { display: table-row-group !important; }
-    .pdf-mode tr { display: table-row !important; border: none !important; padding: 0 !important; }
-    
-    .pdf-mode td, .pdf-mode th { 
-        display: table-cell !important; 
-        border: 1px solid #000 !important; 
-        font-size: 10px !important; 
-        padding: 5px !important;
-    }
+     /* Update bagian .pdf-mode di dalam <style> Anda */
+.pdf-mode { 
+    width: 210mm !important; 
+    max-width: 210mm !important; 
+    padding: 10mm !important;
+    background: white !important;
+    /* Tambahkan ini agar tidak merusak tampilan layar HP saat proses */
+    position: absolute !important; 
+    left: -9999px !important; /* Pindahkan "bayangan" PDF ke luar layar */
+    top: 0 !important;
+}
+
+/* Tambahkan class baru untuk pembungkus sementara */
+.pdf-container-wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    background: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
 
     /* Matikan gaya kartu HP saat di PDF */
     .pdf-mode tr::before, .pdf-mode td::before { content: none !important; display: none !important; }
@@ -242,15 +254,23 @@ async function pasteText(btn) {
 }
 
 async function cetakLaporan() {
-    const element = document.getElementById('contentToExport');
+    const originalElement = document.getElementById('contentToExport');
     const namaPenyuluh = document.getElementById('id_nama').value || "Penyuluh";
     
-    // Simpan posisi scroll agar tidak terpotong di HP
-    const scrollY = window.scrollY;
-    window.scrollTo(0, 0);
+    // Tampilkan indikator loading (opsional tapi disarankan)
+    const loader = document.createElement('div');
+    loader.className = 'pdf-container-wrapper';
+    loader.innerHTML = '<h3>Sedang Memproses PDF... Mohon Tunggu</h3>';
+    document.body.appendChild(loader);
 
-    // 1. Konversi Input ke Teks agar tidak muncul kotak input di PDF
-    document.querySelectorAll('#tableBody tr').forEach(row => {
+    // 1. Buat DUPLIKAT (Clone) elemen agar layar asli tidak berantakan
+    const cln = originalElement.cloneNode(true);
+    cln.id = "contentToClone";
+    cln.classList.add('pdf-mode'); // Berikan gaya tabel A4
+    document.body.appendChild(cln);
+
+    // 2. Rapikan tampilan di elemen DUPLIKAT (bukan yang asli)
+    cln.querySelectorAll('tr').forEach(row => {
         const tglInp = row.querySelector('.inp-tgl');
         const tglDisp = row.querySelector('.temp-tgl-display');
         const jdlInp = row.querySelector('.inp-judul');
@@ -260,28 +280,21 @@ async function cetakLaporan() {
             const d = new Date(tglInp.value);
             tglDisp.innerText = tglInp.value ? `${String(d.getDate()).padStart(2,'0')}-${String(d.getMonth()+1).padStart(2,'0')}-${d.getFullYear()}` : "";
             tglDisp.style.display = 'block';
-            tglInp.style.display = 'none';
+            tglInp.remove(); // Hapus input di clone
         }
         if(jdlInp && jdlDisp) {
             jdlDisp.innerText = jdlInp.value;
             jdlDisp.style.display = 'block';
-            jdlInp.style.display = 'none';
+            jdlInp.remove(); // Hapus textarea di clone
         }
+        
+        // Hapus tombol-tombol dan input file di clone
+        row.querySelectorAll('.no-print, input[type="file"]').forEach(el => el.remove());
     });
 
-    // 2. Aktifkan Mode PDF & Sembunyikan tombol
-    element.classList.add('pdf-mode');
-    
-    // TRICK KHUSUS iPHONE: Tambahkan inline style untuk memaksa tabel
-    const tabelElement = element.querySelector('table');
-    tabelElement.style.display = 'table'; 
-
-    document.querySelectorAll('.no-print').forEach(el => {
-        el.style.setProperty('display', 'none', 'important');
-    });
-
-    // Beri waktu 300ms (lebih lama sedikit) agar Safari selesai merender ulang struktur tabel
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // Pastikan tabel di clone berbentuk tabel
+    const tableCln = cln.querySelector('table');
+    tableCln.style.display = 'table';
 
     const opt = {
         margin: [10, 5, 10, 5],
@@ -291,30 +304,22 @@ async function cetakLaporan() {
             scale: 2, 
             useCORS: true, 
             letterRendering: true,
-            scrollX: 0,
-            scrollY: 0,
-            windowWidth: 1000 // Paksa lebar kalkulasi ke ukuran desktop (A4)
+            width: 793, // Lebar pixel standar A4 (210mm)
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
     try {
-        // Proses download
-        await html2pdf().set(opt).from(element).save();
+        // Ambil dari elemen CLONE
+        await html2pdf().set(opt).from(cln).save();
     } catch (err) {
         console.error("PDF Error:", err);
-        alert("Gagal mengunduh PDF, coba lagi.");
+        alert("Gagal download.");
     } finally {
-        // 3. Reset Tampilan ke mode Mobile kembali
-        element.classList.remove('pdf-mode');
-        tabelElement.style.display = ''; // Lepas paksaan inline style
-        
-        document.querySelectorAll('.no-print').forEach(el => el.style.display = '');
-        document.querySelectorAll('.inp-tgl, .inp-judul').forEach(el => el.style.display = 'block');
-        document.querySelectorAll('.temp-text').forEach(el => el.style.display = 'none');
-        
-        // Kembalikan posisi scroll pengguna
-        window.scrollTo(0, scrollY);
+        // 3. Bersihkan - Hapus elemen duplikat dan loader
+        document.body.removeChild(cln);
+        document.body.removeChild(loader);
+        alert("Download Selesai!");
     }
 }
 document.addEventListener('DOMContentLoaded', async () => {
