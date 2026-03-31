@@ -1,424 +1,312 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#333" />
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulator Tanam Padi PRO</title>
 
-    <title>LCS, Tanggal, Nama Penyuluh</title>
+<style>
+:root {
+  --primary: #81c784; 
+  --bg-dark: #121212;
+  --card-dark: #1e1e1e;
+  --input-bg: #2d2d2d;
+  --text-main: #e0e0e0;
+  --text-muted: #b0b0b0;
+  --orange: #ffb74d;
+  --blue: #64b5f6;
+}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+body {
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  margin: 0;
+}
 
-    <style>
-        /* SEMUA CSS ASLI ANDA DIPERTAHANKAN */
-        .col-eviden { text-align: center; }
-        .col-konten textarea { font-size: 11px; }
-        .col-eviden input[type="file"] { display: block; margin: 0 auto; }
+.btn-home {
+  position: fixed;
+  bottom: 25px;
+  right: 20px;
+  background: var(--primary);
+  color: #121212;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+  font-size: 26px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+  z-index: 9999;
+  border: 2px solid white;
+}
 
-        * { box-sizing: border-box; }
+.container {
+  background: var(--card-dark);
+  max-width: 500px;
+  width: 100%;
+  padding: 25px;
+  border-radius: 20px;
+}
 
-        body {
-            font-family: 'Times New Roman', serif;
-            margin: 0;
-            padding: 20px;
-            background: #000000;
-        }
+h2 { text-align: center; color: var(--primary); }
 
-        .container {
-            width: 95%;
-            max-width: 1000px;
-            margin: auto;
-            background: white;
-            padding: 40px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+label { margin-top: 15px; display:block; color: var(--text-muted); }
 
-        .header {
-            text-align: center;
-            margin-bottom: 25px;
-            padding-bottom: 10px;
-        }
+input, select, button {
+  width: 100%;
+  padding: 12px;
+  margin-top: 8px;
+  border-radius: 10px;
+  background: var(--input-bg);
+  color: white;
+  border: 1px solid #444;
+}
 
-        .header h2, .header h3 {
-            margin: 2px 0;
-            text-transform: uppercase;
-            font-size: 1.1rem;
-            font-weight: bold;
-        }
+button {
+  background: var(--primary);
+  color: #121212;
+  font-weight: bold;
+  margin-top: 20px;
+}
 
-        .info-section {
-            display: grid;
-            grid-template-columns: 180px 20px 1fr;
-            gap: 2px 0;
-            margin-bottom: 25px;
-            max-width: 650px;
-        }
+.result { margin-top: 20px; display: none; }
 
-        .info-section label {
-            font-weight: bold;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-        }
+.card {
+  background: #252525;
+  padding: 15px;
+  margin-top: 10px;
+  border-left: 4px solid var(--primary);
+  border-radius: 10px;
+}
 
-        input[type="text"], input[type="date"], select, textarea {
-            padding: 6px 10px;
-            border: 1px solid #000000;
-            border-radius: 4px;
-            width: 100%;
-            font-family: inherit;
-            font-size: 14px;
-        }
+.panen { border-left-color: var(--orange); }
+.terlewat { border-left-color: #e57373; }
+.sekarang { border-left-color: #ffd54f; }
+.akan { border-left-color: #81c784; }
 
-        .textarea-container {
-            position: relative;
-            width: 100%;
-        }
-
-        textarea {
-            resize: none;
-            display: block;
-            min-height: 100px;
-            text-align: left;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            padding-bottom: 40px !important;
-        }
-
-        .textarea-actions {
-            position: absolute;
-            bottom: 5px;
-            right: 5px;
-            display: flex;
-            gap: 5px;
-        }
-
-        .btn-action {
-            padding: 4px 8px;
-            color: white;
-            border: none;
-            border-radius: 3px;
-            font-size: 10px;
-            cursor: pointer;
-            font-weight: bold;
-            opacity: 0.8;
-            transition: 0.3s;
-        }
-
-        .btn-paste { background: #00008B; }
-        .btn-clear { background: #8B0000; }
-        .btn-action:hover { opacity: 1; }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            margin: 0 auto;
-            counter-reset: nomorKonten;
-        }
-
-        tr { counter-increment: nomorKonten; }
-
-        th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: center;
-            vertical-align: middle;
-        }
-
-        th {
-            background: #f2f2f2;
-            font-size: 12px;
-            text-transform: uppercase;
-            font-weight: bold;
-        }
-
-        .col-no { width: 40px; }
-        .col-date { width: 19%; }
-        .col-konten { width: 24%; }
-        .col-eviden { width: 15%; }
-
-        .preview-box {
-            width: 100%;
-            height: 110px;
-            border: 1px dashed #bbb;
-            margin: 5px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fafafa;
-            overflow: hidden;
-        }
-
-        .preview-box img {
-            width: 100%;
-            height: 100%;
-            display: none;
-            object-fit: cover;
-        }
-
-        input[type="file"] {
-            color: transparent;
-            width: 85px;
-            cursor: pointer;
-        }
-
-        @media screen and (max-width: 768px) {
-            .container { padding: 15px; width: 98%; }
-            .info-section { grid-template-columns: 1fr; gap: 5px; }
-            .info-section span { display: none; }
-            table, thead, tbody, th, td, tr { display: block; }
-            thead { display: none; }
-            tr { margin-bottom: 25px; border: 2px solid #ddd; border-radius: 12px; padding: 15px; background: #fff; }
-            tr::before { content: "Konten #" counter(nomorKonten, decimal-leading-zero); display: block; font-weight: bold; font-size: 15px; margin-bottom: 11px; color: #000; }
-            td[data-label="No."] { display: none; }
-            td { border: none !important; width: 100% !important; padding: 0 !important; margin-bottom: 10px; display: block; text-align: left !important; }
-            td[data-label="Like"], td[data-label="Comment"], td[data-label="Share"] { display: inline-grid !important; width: 28% !important; margin-right: 2%; vertical-align: top; }
-            td[data-label="Share"] { margin-right: 0; }
-            td[data-label="Like"]::before, td[data-label="Comment"]::before, td[data-label="Share"]::before { content: attr(data-label); text-align: center; font-size: 11px; font-weight: bold; margin-bottom: 4px; }
-        }
-
-        .controls { margin-top: 20px; display: flex; gap: 10px; }
-        .btn { padding: 12px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; color: white; transition: 0.3s; flex: 1; }
-        .btn-add { background: #27ae60; }
-        .btn-remove { background: #e74c3c; }
-
-        .action-area { text-align: center; margin-top: 30px; }
-        .btn-print { background: #2c3e50; width: 100%; padding: 15px; font-size: 16px; color: white; cursor: pointer; border-radius: 6px; border: none; font-weight: bold; }
-
-        .footer { margin-top: 30px; padding: 20px; background: white; text-align: center; font-size: 14px; border-radius: 8px; color: #333; }
-
-        /* CSS KHUSUS EKSPOR/PRINT */
-        @media print {
-            .judul-select, .no-print, .visitor-counter-wrapper, .controls, .action-area, .footer, input[type="file"] { display: none !important; }
-            * { color: #000 !important; text-decoration: none !important; -webkit-text-fill-color: #000 !important; }
-            @page { size: A4; margin: 1.5cm; }
-            thead th { background: #f2f2f2 !important; color: #000 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            body { background: white; padding: 0; margin: 0; }
-            .container { box-shadow: none; border: none; width: 100%; padding: 0; max-width: 100%; }
-            tr { page-break-inside: avoid !important; break-inside: avoid !important; display: table-row !important; }
-            table { display: table !important; width: 100% !important; border-collapse: collapse !important; }
-            td { display: table-cell !important; border: 1px solid #000 !important; }
-            textarea { border: none !important; padding-bottom: 0 !important; }
-        }
-    </style>
+.info-pupuk {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin-top: 5px;
+}
+</style>
 </head>
 
 <body>
 
-<div class="visitor-counter-wrapper no-print">
-    </div>
+<a href="https://mamank757.github.io/petani" class="btn-home">🏠</a>
 
-<div class="container" id="laporan-area">
-    <div class="header">
-        <h2>LAPORAN PENDERASAN INFORMASI DAN PEMBANGUNAN PERTANIAN</h2>
-        <h3>PENYULUH PERTANIAN</h3>
-        <h3>TAHUN 2026</h3>
-    </div>
+<div class="container">
+<h2>🌾 KALKULATOR PADI</h2>
 
-    <div class="info-section">
-        <label>PERIODE</label>
-        <span>:</span>
-        <select id="id_periode">
-            <option>BULAN JANUARI</option>
-            <option>BULAN FEBRUARI</option>
-            <option>BULAN MARET</option>
-            <option>BULAN APRIL</option>
-            <option>BULAN MEI</option>
-            <option>BULAN JUNI</option>
-            <option>BULAN JULI</option>
-            <option>BULAN AGUSTUS</option>
-            <option>BULAN SEPTEMBER</option>
-            <option>BULAN OKTOBER</option>
-            <option>BULAN NOVEMBER</option>
-            <option>BULAN DESEMBER</option>
-        </select>
+<label>📅 TANGGAL TANAM</label>
+<input type="date" id="tgl">
 
-        <label>NAMA PENYULUH</label>
-        <span>:</span>
-        <input type="text" id="id_nama" placeholder="Cth: ABDUL RAHMAN, SP">
+<label>🌾 VARIETAS PADI</label>
+<select id="varietas">
+<option value="77">Ultra Genjah (70-84 HST)</option>
+<option value="88">Sangat Genjah (85-90 HST)</option>
+<option value="100" selected>Genjah (91-105 HST)</option>
+<option value="112">Sedang (106-115 HST)</option>
+<option value="120">Dalam (116-125 HST)</option>
+</select>
 
-        <label>NIP.</label>
-        <span>:</span>
-        <input type="text" id="id_nip" placeholder="Cth: 199009202020121001">
+<label>📐 LUAS LAHAN (HEKTAR)</label>
+<input type="number" id="luas" step="0.1" value="1">
 
-        <label>WILBIN/WKPP</label>
-        <span>:</span>
-        <input type="text" id="id_wilayah" placeholder="Cth: DESA MANURUNG">
-    </div>
+<button onclick="hitung()">🔍 ANALISIS SEKARANG</button>
 
-    <table>
-        <thead>
-            <tr>
-                <th rowspan="2" class="col-no">No.</th>
-                <th rowspan="2" class="col-date">TANGGAL</th>
-                <th rowspan="2" class="col-konten">JUDUL KONTEN</th>
-                <th colspan="3">EVIDEN</th>
-            </tr>
-            <tr>
-                <th class="col-eviden">LIKE</th>
-                <th class="col-eviden">COMMENT</th>
-                <th class="col-eviden">SHARE</th>
-            </tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table>
+<div class="result" id="hasil"></div>
 
-    <div class="controls no-print">
-        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris</button>
-        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris</button>
-    </div>
+<h3 style="margin-top:30px;">📋 DATA LAHAN TERSIMPAN</h3>
+<div id="listData"></div>
 
-    <div class="action-area no-print">
-        <button class="btn-print" type="button" id="btn-download" onclick="cetakLaporan()">DOWNLOAD PDF (HP/PC)</button>
-    </div>
 </div>
 
-<footer class="footer no-print">
-    copyright: King Mamank 2026
-</footer>
-
 <script>
-let daftarJudulGlobal = [];
-
-async function sinkronisasiJudul() {
-    const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
-    try {
-        const response = await fetch(url + "?t=" + new Date().getTime());
-        daftarJudulGlobal = await response.json();
-        document.querySelectorAll('.judul-select').forEach(select => isiOpsiSelect(select));
-    } catch (e) { console.error("Gagal sinkronisasi:", e); }
+function tglFormat(t) {
+  return new Date(t).toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
 }
 
-function isiOpsiSelect(selectElement) {
-    const currentVal = selectElement.value;
-    selectElement.innerHTML = '<option value="">List Judul Konten</option>';
-    daftarJudulGlobal.forEach(judul => {
-        const opt = document.createElement('option');
-        opt.value = judul; opt.textContent = judul;
-        selectElement.appendChild(opt);
-    });
-    selectElement.value = currentVal;
+function tambahHari(tanggal, hari) {
+  let d = new Date(tanggal);
+  d.setDate(d.getDate() + hari);
+  return d;
 }
 
-let count = 0;
-const tableBody = document.getElementById('tableBody');
+function statusKegiatanObj(tanggal) {
+  const hariIni = new Date();
+  hariIni.setHours(0,0,0,0);
 
-function addRow(showAlert = false) {
-    count++;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-        <td data-label="No.">${count}.</td>
-        <td data-label="Tanggal" class="col-date">
-            <input type="date" value="${new Date().toISOString().split('T')[0]}">
-        </td>
-        <td data-label="Judul Konten" class="col-konten">
-            <div class="textarea-container">
-                <select class="no-print judul-select" onchange="const ta=this.nextElementSibling; ta.value=this.value; autoResize(ta);">
-                    <option value="">List Judul Konten</option>
-                </select>
-                <textarea oninput="autoResize(this)" placeholder="Ketik manual..."></textarea>
-                <div class="textarea-actions no-print">
-                    <button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
-                    <button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
-                </div>
-            </div>
-        </td>
-        <td data-label="Like">
-            <input type="file" accept="image/*" class="no-print" onchange="pv(this,'l${count}')">
-            <div class="preview-box"><img id="l${count}"></div>
-        </td>
-        <td data-label="Comment">
-            <input type="file" accept="image/*" class="no-print" onchange="pv(this,'c${count}')">
-            <div class="preview-box"><img id="c${count}"></div>
-        </td>
-        <td data-label="Share">
-            <input type="file" accept="image/*" class="no-print" onchange="pv(this,'s${count}')">
-            <div class="preview-box"><img id="s${count}"></div>
-        </td>
-    `;
-    tableBody.appendChild(tr);
-    isiOpsiSelect(tr.querySelector('.judul-select'));
-    if (showAlert) alert("Baris ditambahkan.");
+  const tgl = new Date(tanggal);
+  tgl.setHours(0,0,0,0);
+
+  const selisih = Math.floor((tgl - hariIni) / (1000*60*60*24));
+
+  if (selisih < -2) return {text:"❌ Terlewat", class:"terlewat"};
+  if (selisih >= -2 && selisih <= 2) return {text:"⚠️ Sekarang", class:"sekarang"};
+  return {text:"⏳ Akan Datang", class:"akan"};
 }
 
-function autoResize(textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
+function simpanData(tgl, varietas, luas) {
+  let data = JSON.parse(localStorage.getItem("lahanPadi")) || [];
+
+  const sudahAda = data.some(d => 
+    d.tgl === tgl && d.varietas == varietas && d.luas == luas
+  );
+
+  if (sudahAda) return;
+
+  data.push({
+    tgl: tgl,
+    varietas: varietas,
+    luas: luas,
+    waktu: new Date().toLocaleString()
+  });
+
+  localStorage.setItem("lahanPadi", JSON.stringify(data));
+  tampilData();
 }
 
-function pv(input, id) {
-    const file = input.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = document.getElementById(id);
-            img.src = e.target.result; img.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
-    }
+function tampilData() {
+  const list = document.getElementById("listData");
+  let data = JSON.parse(localStorage.getItem("lahanPadi")) || [];
+
+  if (data.length === 0) {
+    list.innerHTML = "<small>Tidak ada data tersimpan</small>";
+    return;
+  }
+
+  list.innerHTML = data.map((d, i) => `
+    <div class="card">
+      <b>🌾 Lahan ${i+1}</b>
+      📅 Tanam: ${tglFormat(d.tgl)}<br>
+      🌱 Varietas: ${d.varietas} HST<br>
+      📐 Luas: ${d.luas} Ha<br>
+      <small>Disimpan: ${d.waktu}</small><br><br>
+
+      <button onclick="loadData(${i})">🔍 Buka</button>
+      <button onclick="hapusData(${i})" style="background:#e57373;">🗑️ Hapus</button>
+    </div>
+  `).join("");
 }
 
-function clearText(btn) {
-    const ta = btn.closest('.textarea-container').querySelector('textarea');
-    ta.value = ""; autoResize(ta);
+function loadData(index) {
+  let data = JSON.parse(localStorage.getItem("lahanPadi")) || [];
+  const d = data[index];
+
+  document.getElementById("tgl").value = d.tgl;
+  document.getElementById("varietas").value = d.varietas;
+  document.getElementById("luas").value = d.luas;
+
+  hitung();
 }
 
-async function pasteText(btn) {
-    try {
-        const text = await navigator.clipboard.readText();
-        const ta = btn.closest('.textarea-container').querySelector('textarea');
-        ta.value = text; autoResize(ta);
-    } catch (err) { alert('Gagal paste.'); }
+function hapusData(index) {
+  let data = JSON.parse(localStorage.getItem("lahanPadi")) || [];
+
+  if (confirm("Hapus data ini?")) {
+    data.splice(index, 1);
+    localStorage.setItem("lahanPadi", JSON.stringify(data));
+    tampilData();
+  }
 }
 
-function removeRow() {
-    if (count > 2) {
-        tableBody.removeChild(tableBody.lastChild);
-        count--;
-    }
+function hitung() {
+  const tglVal = document.getElementById("tgl").value;
+  const umur = parseInt(document.getElementById("varietas").value);
+  const luas = parseFloat(document.getElementById("luas").value) || 0;
+
+  if (!tglVal) { alert("Pilih tanggal tanam!"); return; }
+  if (luas <= 0) { alert("Luas lahan harus lebih dari 0!"); return; }
+
+  const keyNotif = "notif_" + tglVal + "_" + umur;
+
+  const tanam = new Date(tglVal);
+  const hariIni = new Date();
+  const umurSekarang = Math.floor((hariIni - tanam)/(1000*60*60*24));
+
+  const p1_hst = Math.round(umur * 0.07);  // ±7%
+const p2_hst = Math.round(umur * 0.25);  // ±25%
+let p3_hst = Math.round(umur * 0.65);    // ±65%
+
+if (p3_hst <= p2_hst) p3_hst = p2_hst + 10;
+
+const p1 = tambahHari(tanam, p1_hst);
+const p2 = tambahHari(tanam, p2_hst);
+const p3 = tambahHari(tanam, p3_hst);
+
+  const s1 = statusKegiatanObj(p1);
+  const s2 = statusKegiatanObj(p2);
+  const s3 = statusKegiatanObj(p3);
+
+  let notif = [];
+  if (s1.class === "sekarang") notif.push("Pupuk Tahap I");
+  if (s2.class === "sekarang") notif.push("Pupuk Tahap II");
+  if (s3.class === "sekarang") notif.push("Pupuk Tahap III");
+
+  if (notif.length > 0 && !sessionStorage.getItem(keyNotif)) {
+    alert("⚠️ Hari ini jadwal: " + notif.join(", "));
+    sessionStorage.setItem(keyNotif, "true");
+  }
+
+  // dosis otomatis
+  const urea1 = (100 * luas).toFixed(1);
+  const npk1 = (150 * luas).toFixed(1);
+  const urea2 = (100 * luas).toFixed(1);
+  const npk2 = (100 * luas).toFixed(1);
+  const npk3 = (100 * luas).toFixed(1);
+  const kcl3 = (50 * luas).toFixed(1);
+
+  document.getElementById("hasil").innerHTML = `
+  <div class="card" style="border-left-color: var(--blue)">
+    <b>📊 STATUS TANAMAN</b>
+    Umur: ${umurSekarang} HST
+  </div>
+
+  <div class="card ${s1.class}">
+    <b>🧪 PUPUK I</b>
+    📅 ${tglFormat(p1)} <br>
+    <small>${s1.text}</small>
+    <div class="info-pupuk">
+      ✔ Urea ${urea1} kg<br>
+      ✔ NPK ${npk1} kg
+    </div>
+  </div>
+
+  <div class="card ${s2.class}">
+    <b>🧪 PUPUK II</b>
+    📅 ${tglFormat(p2)} <br>
+    <small>${s2.text}</small>
+    <div class="info-pupuk">
+      ✔ Urea ${urea2} kg<br>
+      ✔ NPK ${npk2} kg
+    </div>
+  </div>
+
+  <div class="card ${s3.class}">
+    <b>🧪 PUPUK III</b>
+    📅 ${tglFormat(p3)} <br>
+    <small>${s3.text}</small>
+    <div class="info-pupuk">
+      ✔ NPK ${npk3} kg<br>
+      ✔ KCl ${kcl3} kg
+    </div>
+  </div>
+  `;
+
+  document.getElementById("hasil").style.display = "block";
+  simpanData(tglVal, umur, luas);
 }
 
-// FUNGSI UTAMA DOWNLOAD PDF
-function cetakLaporan() {
-    const element = document.getElementById('laporan-area');
-    const btnDownload = document.getElementById('btn-download');
-    const namaPenyuluh = document.getElementById('id_nama').value || "Penyuluh";
-    const tglFile = new Date().toLocaleDateString('id-ID').replace(/\//g, '-');
-
-    btnDownload.innerText = "⏳ Memproses PDF...";
-    btnDownload.disabled = true;
-
-    // Konfigurasi html2pdf
-    const opt = {
-        margin: [10, 5, 10, 5],
-        filename: `LCS_${tglFile}_${namaPenyuluh}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { 
-            scale: 2, 
-            useCORS: true, 
-            logging: false,
-            letterRendering: true 
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-    };
-
-    // Jalankan Download
-    html2pdf().set(opt).from(element).toPdf().get('pdf').then(function (pdf) {
-        btnDownload.innerText = "DOWNLOAD PDF (HP/PC)";
-        btnDownload.disabled = false;
-    }).save();
-}
-
-document.addEventListener('DOMContentLoaded', async () => {
-    await sinkronisasiJudul();
-    addRow(); addRow(); addRow();
-});
+tampilData();
 </script>
+
 </body>
 </html>
