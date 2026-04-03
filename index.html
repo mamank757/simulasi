@@ -8,9 +8,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>LCS, Tanggal, Nama Penyuluh</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <style>
     /* 1. Desain Tombol */
-  /* CONTAINER UNTUK TOMBOL DI KANAN BAWAH */
+    /* CONTAINER UNTUK TOMBOL DI KANAN BAWAH */
         .floating-container {
             position: fixed;
             bottom: 30px; /* Posisi dari bawah */
@@ -35,12 +38,13 @@
         }
 
         .floating-home {
-            background-color: #00a651; /* Hijau */
-            font-size: 30px;
+            background-color: #11807e; /* Hijau */
+            font-size: 24px;
         }
 
         .floating-tiktok {
             background-color: #000000; /* Hitam TikTok */
+            font-size: 24px;
         }
 
         .floating-btn:hover {
@@ -49,10 +53,10 @@
 
 /* 3. Menghilangkan tombol saat Print/PDF */
 @media print {
-    .floating-btn {
-                display: none !important;
-            }
-        }
+    .floating-container {
+        display: none !important;
+    }
+}
         * { box-sizing: border-box; }
         body { font-family: 'Times New Roman', serif; margin: 0; padding: 10px; background: #000000; }
         
@@ -218,14 +222,15 @@ th.col-konten{
     </style>
 </head>
 
+<body>
+
 <div class="floating-container">
-    <a href="https://mamank757.github.io/PPL" class="floating-btn floating-home" title="Kembali ke Home">🏠</a>
+    <a href="https://mamank757.github.io/PPL" class="floating-btn floating-home" title="Kembali ke Home"><i class="fa-solid fa-house"></i></a>
     <a href="https://www.tiktok.com/@generasi90blog" target="_blank" class="floating-btn floating-tiktok" title="Kunjungi TikTok">
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
-            <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.13-1.47-.13 3.23-.06 6.47-.07 9.7-.03 2.13-.5 4.31-1.89 5.96-1.5 1.84-3.9 2.76-6.22 2.76-2.26 0-4.57-.84-6.07-2.52-1.74-1.89-2.24-4.66-1.63-7.1.52-2.19 2-4.15 3.96-5.23.11-.06.21-.11.33-.18v4.1c-.6.35-1.15.82-1.51 1.45-.63 1.05-.72 2.37-.3 3.51.41 1.2 1.41 2.15 2.65 2.48 1.18.34 2.5.11 3.5-.6.94-.65 1.49-1.73 1.55-2.86.04-3.32.02-6.64.03-9.96-.01-3.48-.01-6.95-.01-10.43z"/>
-        </svg>
+        <i class="fa-brands fa-tiktok"></i>
     </a>
 </div>
+
 <div class="visitor-counter-wrapper">
     <a href='http://www.freevisitorcounters.com'>Counter</a>
     <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=a89e5d2c48fde512d9411d388c694afb903a141d'></script>
@@ -384,7 +389,7 @@ selectNama.addEventListener("change", function(){
 
     let count = 0;
     const tableBody = document.getElementById('tableBody');
-    const inputNama = document.getElementById('id_nama');
+    const inputNamaVal = document.getElementById('id_nama');
 
     function getTglHariIni() {
         const d = new Date();
@@ -478,7 +483,7 @@ selectNama.addEventListener("change", function(){
     }
 
     function cetakLaporan() {
-        const namaVal = inputNama.value.trim() || "Nama Penyuluh";
+        const namaVal = selectNama.value.trim() || "Nama Penyuluh";
         const tgl = getTglHariIni();
         document.title = `LCS, ${tgl}, ${namaVal}`;
         window.print();
