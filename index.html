@@ -1,121 +1,381 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Monitor Iklim - PPL Digital</title>
-<style>
-:root { 
-    --primary: #81c784; 
-    --bg-dark: #121212; 
-    --card-dark: #1e1e1e; 
-    --text-main: #e0e0e0; 
-    --blue: #64b5f6; 
-    --orange: #fb8c00;
-}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#333" />
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>LCS, Tanggal, Nama Penyuluh</title>
 
-body { 
-    font-family: 'Segoe UI', sans-serif; 
-    background-color: var(--bg-dark); 
-    color: var(--text-main); 
-    margin: 0; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    padding: 20px; 
-    padding-bottom: 80px;
-}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-@keyframes glowBlink {
-    0% { border-color: #333; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
-    50% { border-color: var(--primary); box-shadow: 0 0 15px rgba(129, 199, 132, 0.4); }
-    100% { border-color: #333; box-shadow: 0 0 5px rgba(0,0,0,0.2); }
-}
+    <style>
+        /* 1. Desain Tombol Melayang */
+        .floating-container {
+            position: fixed;
+            bottom: 30px; 
+            right: 20px;  
+            display: flex;
+            flex-direction: column; 
+            gap: 15px;    
+            z-index: 9999;
+        }
 
-.container { 
-    max-width: 850px; 
-    width: 100%; 
-    background: var(--card-dark); 
-    border-radius: 20px; 
-    border: 2px solid #333; 
-    overflow: hidden; 
-    margin-top: 25px; 
-    animation: glowBlink 3s infinite alternate; 
-}
+        .floating-btn {
+            width: 55px;
+            height: 55px;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            box-shadow: 0 6px 15px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
 
-.header-bar { 
-    padding: 15px; 
-    text-align: center; 
-    color: white; 
-    font-weight: bold; 
-    text-transform: uppercase;
-}
+        .floating-home {
+            background-color: #00a651; /* Hijau */
+            font-size: 25px;
+        }
 
-.content { padding: 15px; text-align: center; }
+        .floating-tiktok {
+            background-color: #000000; /* Hitam TikTok */
+            font-size: 25px;
+        }
 
-/* Frame untuk menampilkan halaman BMKG */
-.frame-bmkg {
-    width: 100%;
-    height: 500px;
-    border: none;
-    border-radius: 10px;
-    background: white;
-}
+        .floating-btn:hover {
+            transform: scale(1.15) translateY(-5px);
+        }
 
-.caption { 
-    text-align: left; 
-    background: #252525; 
-    padding: 15px; 
-    margin-top: 15px; 
-    border-radius: 10px; 
-    font-size: 0.85rem; 
-    line-height: 1.5; 
-    border-left: 4px solid var(--primary);
-}
+        /* Sembunyikan tombol saat Print/PDF */
+        @media print {
+            .floating-container {
+                display: none !important;
+            }
+        }
 
-.btn-home { 
-    position: fixed; 
-    top: 15px; 
-    left: 15px; 
-    background: var(--primary); 
-    color: #121212; 
-    width: 50px; 
-    height: 50px; 
-    border-radius: 50%; 
-    display: flex; 
-    justify-content: center; 
-    align-items: center; 
-    text-decoration: none; 
-    font-size: 24px; 
-    box-shadow: 0 4px 15px rgba(0,0,0,0.5); 
-    border: 2px solid white; 
-    z-index: 999; 
-}
-</style>
+        /* --- CSS Layout Laporan --- */
+        * { box-sizing: border-box; }
+        body { font-family: 'Times New Roman', serif; margin: 0; padding: 10px; background: #000000; }
+        
+        .container { 
+            width: 100%; max-width: 1150px; margin: auto; background: white; 
+            padding: 30px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+
+        .header { text-align: center; border-bottom: 2px solid #000; margin-bottom: 15px; padding-bottom: 10px; }
+        .header h2, .header h3 { margin: 2px 0; text-transform: uppercase; font-size: 1.1rem; font-weight: bold; }
+
+        .info-section { 
+            display: grid; 
+            grid-template-columns: 200px 20px 1fr; 
+            gap: 8px 0; 
+            margin-bottom: 20px; 
+            max-width: 800px; 
+            align-items: center;
+        }
+        .info-section label { font-weight: bold; font-size: 14px; }
+        .info-section span { font-weight: bold; text-align: center; }
+        
+        input[type="text"], input[type="date"], select, textarea { 
+            padding: 6px 10px; border: 1px solid #000000; border-radius: 4px; width: 100%; font-family: inherit; font-size: 14px;
+        }
+
+        .textarea-container { position: relative; width: 100%; }
+        textarea { resize: none; display: block; min-height: 100px; text-align: left; word-wrap: break-word; white-space: pre-wrap; overflow: hidden; }
+
+        .textarea-actions {
+            position: absolute; bottom: 5px; right: 5px; display: flex; gap: 5px; z-index: 5;
+        }
+
+        .btn-action {
+            padding: 4px 8px; color: white; border: none; border-radius: 3px; font-size: 10px; cursor: pointer; font-weight: bold; opacity: 0.8; transition: 0.3s;
+        }
+        .btn-paste { background: #00008B; }
+        .btn-clear { background: #8B0000; }
+        .btn-action:hover { opacity: 1; }
+
+        table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        th, td { border: 1px solid #000; padding: 6px; text-align: center; vertical-align: middle; }
+        th { background: #f2f2f2; font-size: 12px; text-transform: uppercase; font-weight: bold; }
+
+        .col-no { width: 35px; }
+        .col-date { width: 15%; }
+        .col-konten { width: 22%; vertical-align: top !important; }
+        .col-eviden { width: 19%; }
+
+        .preview-box { 
+            width: 120px; height: 140px; border: 1px dashed #bbb; margin: 5px auto; 
+            display: flex; align-items: center; justify-content: center; background: #fafafa; overflow: hidden;
+        }
+        .preview-box img { width: 100%; height: 100%; display: none; object-fit: cover; }
+
+        .visitor-counter-wrapper { text-align: center; margin-bottom: 10px; font-size: 12px; color: white; }
+
+        @media screen and (max-width: 768px) {
+            .info-section { grid-template-columns: 1fr; gap: 5px; }
+            .info-section > span { display: none; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            tr { margin-bottom: 25px; border: 2px solid #2c3e50; border-radius: 10px; padding: 10px; background: #fff; }
+            td { border: none; border-bottom: 1px solid #eee; position: relative; padding-left: 45% !important; text-align: left !important; min-height: 45px; display: flex; align-items: center; width: 100% !important; }
+            td:before { position: absolute; left: 10px; width: 40%; font-weight: bold; font-size: 10px; content: attr(data-label); color: #2c3e50; text-transform: uppercase; }
+        }
+
+        .controls { margin-top: 15px; display: flex; gap: 10px; }
+        .btn { padding: 12px; cursor: pointer; border: none; border-radius: 4px; font-weight: bold; color: white; transition: 0.3s; flex: 1; }
+        .btn-add { background: #27ae60; }
+        .btn-remove { background: #e74c3c; }
+        
+        .action-area { text-align: center; margin-top: 30px; }
+        .btn-print { background: #2c3e50; width: 100%; padding: 15px; font-size: 16px; color: white; cursor: pointer; border-radius: 6px; border: none; font-weight: bold; }
+
+        .footer { margin-top: 30px; padding: 20px; background: white; text-align: center; font-size: 14px; border-radius: 8px; }
+
+        @media print {
+            @page { size: A4; margin: 1.5cm; }
+            .controls, .action-area, .textarea-actions, .visitor-counter-wrapper, .footer, .no-print { display: none !important; }
+            body { background: white; padding: 0; margin: 0; }
+            .container { box-shadow: none; border: none; width: 100%; padding: 0; }
+            table { display: table !important; width: 100% !important; }
+            tr { display: table-row !important; page-break-inside: avoid; }
+            td { display: table-cell !important; border: 1px solid #000 !important; }
+            input, select, textarea { border: none !important; background: transparent !important; }
+        }
+    </style>
 </head>
 <body>
 
+<div class="floating-container no-print">
+    <a href="https://mamank757.github.io/PPL" class="floating-btn floating-home" title="Kembali ke Home">🏠</a>
+    <a href="https://www.tiktok.com/@generasi90blog" target="_blank" class="floating-btn floating-tiktok" title="Kunjungi TikTok">
+        <i class="fa-brands fa-tiktok"></i>
+    </a>
+</div>
+
+<div class="visitor-counter-wrapper no-print">
+    <a href='http://www.freevisitorcounters.com'>Counter</a>
+    <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=a89e5d2c48fde512d9411d388c694afb903a141d'></script>
+    <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1512047/t/1"></script>
+</div>
+
 <div class="container">
-    <div class="header-bar" style="background: var(--blue);">🌍 MONITOR EL-NINO (LIVE)</div>
-    <div class="content">
-        <img src="https://wsrv.nl/?url=www.bom.gov.au/climate/ocean/outlooks/plots/sstOutlooks.rnino34.hr.png" 
-             class="grafik-img" style="width:100%; border-radius:10px;">
+    <div class="header">
+        <h2>LAPORAN PENDERASAN INFORMASI DAN PEMBANGUNAN PERTANIAN</h2>
+        <h3>PENYULUH PERTANIAN</h3>
+        <h3>TAHUN 2026</h3>
     </div>
-</div>
 
-<div class="container" style="animation-delay: 1.5s;">
-    <div class="header-bar" style="background: var(--orange);">🗓️ PREDIKSI HUJAN (BMKG)</div>
-    <div class="content" style="padding: 5px;">
-        <iframe src="https://www.bmkg.go.id/iklim/prakiraan-hujan-bulanan.bmkg" 
-                class="frame-bmkg"></iframe>
+    <div class="info-section">
+        <label>PERIODE</label> <span>:</span>
+        <select id="id_periode">
+            <option>BULAN MARET</option>
+            <option>BULAN APRIL</option>
+            <option>BULAN MEI</option>
+            <option>BULAN JUNI</option>
+            <option>BULAN JULI</option>
+            <option>BULAN AGUSTUS</option>
+            <option>BULAN SEPTEMBER</option>
+            <option>BULAN OKTOBER</option>
+            <option>BULAN NOVEMBER</option>
+            <option>BULAN DESEMBER</option>
+        </select>
+
+        <label>NAMA PENYULUH</label> <span>:</span>
+        <select id="id_nama">
+            <option value="">-- Pilih Nama --</option>
+            <option>ABDUL RAHMAN, SP</option>
+            <option>ANDI AGUS SALIM, SP</option>
+            <option>HAMKA RAHMAN</option>
+            <option>MUNIRAH</option>
+            <option>M. ASRI</option>
+            <option>RUDIANSYAH</option>
+            <option>SAMAILA</option>
+            <option>SITTI ROSIDA, SP</option>
+        </select>
         
-        <div class="caption">
-            <b>Catatan:</b> Jika peta di atas tidak muncul, pastikan koneksi internet stabil. Halaman ini ditarik langsung dari sistem informasi iklim BMKG.
-        </div>
+        <label>NIP.</label> <span>:</span>
+        <input type="text" id="id_nip" readonly placeholder="Otomatis">
+
+        <label>WILBIN/WKPP</label> <span>:</span>
+        <input type="text" id="id_wilayah" readonly placeholder="Otomatis">
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th rowspan="2" class="col-no">No.</th>
+                <th rowspan="2" class="col-date">TANGGAL</th>
+                <th rowspan="2" class="col-konten">JUDUL KONTEN</th>
+                <th colspan="3">EVIDEN</th>
+            </tr>
+            <tr>
+                <th class="col-eviden">LIKE</th>
+                <th class="col-eviden">COMMENT</th>
+                <th class="col-eviden">SHARE</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+    <div class="controls">
+        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris</button>
+        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris</button>
+    </div>
+
+    <div class="action-area">
+        <button class="btn-print" type="button" onclick="cetakLaporan()">SIMPAN/DOWNLOAD PDF</button>
     </div>
 </div>
 
-<a href="https://mamank757.github.io/PPL" class="btn-home">🏠</a>
+<footer class="footer no-print">
+    copyright: King Mamank 2026
+</footer>
 
+<script>
+const dataPenyuluh = {
+    "ABDUL RAHMAN, SP": { nip: "199009202020121001", wilayah: "DESA MANURUNG" },
+    "ANDI AGUS SALIM, SP": { nip: "198508162025211004", wilayah: "DESA LEMPONG" },
+    "HAMKA RAHMAN": { nip: "196807282014061001", wilayah: "KELURAHAN SOLO" },
+    "MUNIRAH": { nip: "198202092014062001", wilayah: "DESA BOLA" },
+    "M. ASRI": { nip: "197705012014061002", wilayah: "DESA BALIELO" },
+    "RUDIANSYAH": { nip: "198212202014061001", wilayah: "DESA PASIR PUTIH & DESA PATTANGNGAE" },
+    "SAMAILA": { nip: "197104142014061001", wilayah: "DESA SANRESENG ADE & DESA LATTIMU" },
+    "SITTI ROSIDA, SP": { nip: "19820315201406200", wilayah: "DESA UJUNG TANAH & DESA RAJA MAWELLANG" }
+};
+
+const selectNama = document.getElementById("id_nama");
+const inputNip = document.getElementById("id_nip");
+const inputWilayah = document.getElementById("id_wilayah");
+
+selectNama.addEventListener("change", function(){
+    const data = dataPenyuluh[this.value];
+    if(data){
+        inputNip.value = data.nip;
+        inputWilayah.value = data.wilayah;
+    } else {
+        inputNip.value = "";
+        inputWilayah.value = "";
+    }
+});
+
+let daftarJudulGlobal = []; 
+
+async function sinkronisasiJudul() {
+    const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
+    try {
+        const response = await fetch(url + "?t=" + new Date().getTime());
+        daftarJudulGlobal = await response.json();
+        document.querySelectorAll('.judul-select').forEach(select => isiOpsiSelect(select));
+    } catch (e) { console.error("Gagal sinkronisasi:", e); }
+}
+
+function isiOpsiSelect(selectElement) {
+    const currentVal = selectElement.value;
+    selectElement.innerHTML = '<option value="">List Judul Konten</option>';
+    daftarJudulGlobal.forEach(judul => {
+        const opt = document.createElement('option');
+        opt.value = judul;
+        opt.textContent = judul;
+        selectElement.appendChild(opt);
+    });
+    selectElement.value = currentVal;
+}
+
+let count = 0;
+const tableBody = document.getElementById('tableBody');
+
+function autoResize(textarea) {
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+async function pasteText(btn) {
+    try {
+        const text = await navigator.clipboard.readText();
+        const textarea = btn.closest('.textarea-container').querySelector('textarea');
+        textarea.value = text;
+        autoResize(textarea);
+    } catch (err) { alert('Gagal akses clipboard.'); }
+}
+
+function clearText(btn) {
+    const textarea = btn.closest('.textarea-container').querySelector('textarea');
+    textarea.value = "";
+    autoResize(textarea);
+}
+
+function addRow(showAlert = false) {
+    count++;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+        <td data-label="No.">${count}.</td>
+        <td data-label="Tanggal" class="col-date"><input type="date" value="${new Date().toISOString().split('T')[0]}"></td>
+        <td data-label="Judul Konten" class="col-konten">
+            <div class="textarea-container">
+                <select class="no-print judul-select" onchange="const ta=this.nextElementSibling; ta.value=this.value; autoResize(ta);">
+                    <option value="">List Judul Konten</option>
+                </select>
+                <textarea oninput="autoResize(this)" placeholder="Ketik atau pilih judul..."></textarea>
+                <div class="textarea-actions no-print">
+                    <button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
+                    <button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
+                </div>
+            </div>
+        </td>
+        <td data-label="Like">
+            <input type="file" accept="image/*" onchange="pv(this, 'l${count}')">
+            <div class="preview-box"><img id="l${count}"></div>
+        </td>
+        <td data-label="Comment">
+            <input type="file" accept="image/*" onchange="pv(this, 'c${count}')">
+            <div class="preview-box"><img id="c${count}"></div>
+        </td>
+        <td data-label="Share">
+            <input type="file" accept="image/*" onchange="pv(this, 's${count}')">
+            <div class="preview-box"><img id="s${count}"></div>
+        </td>
+    `;
+    tableBody.appendChild(tr);
+    isiOpsiSelect(tr.querySelector('.judul-select'));
+    if (showAlert) alert("Baris ditambahkan.");
+}
+
+function removeRow() {
+    if (count > 1 && confirm("Hapus baris terakhir?")) {
+        tableBody.removeChild(tableBody.lastChild);
+        count--;
+    }
+}
+
+function pv(input, id) {
+    const file = input.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = document.getElementById(id);
+            img.src = e.target.result;
+            img.style.display = 'block';
+        };
+        reader.readAsDataURL(file);
+    }
+}
+
+function cetakLaporan() {
+    const namaVal = selectNama.value || "Laporan";
+    const d = new Date();
+    const tgl = `${d.getDate()}-${d.getMonth()+1}-${d.getFullYear()}`;
+    document.title = `LCS_${tgl}_${namaVal}`;
+    window.print();
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+    await sinkronisasiJudul();
+    addRow(); addRow(); addRow();
+});
+</script>
 </body>
 </html>
