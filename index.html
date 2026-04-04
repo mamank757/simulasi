@@ -193,33 +193,35 @@ body {
 <a href="https://mamank757.github.io/PPL" class="btn-home">🏠</a>
 
 <script>
-function ambilDariURL() {
-    const params = new URLSearchParams(window.location.search);
+async function ambilDataServer() {
+    const url = "https://script.google.com/macros/s/AKfycbxxxx/exec"; // ganti punyamu
 
-    const nino = params.get("nino");
-    const iod = params.get("iod");
-const hujan = params.get("hujan");
+    try {
+        const res = await fetch(url + "?t=" + new Date().getTime());
+        const data = await res.json();
 
+        if (data.nino) {
+            document.getElementById("imgNino").src = data.nino;
+        }
 
-    if (nino) {
-        document.getElementById("imgNino").src = nino;
+        if (data.iod) {
+            document.getElementById("imgIOD").src = data.iod;
+        }
+
+        if (data.hujan) {
+            document.getElementById("imgHujan").src = data.hujan;
+        }
+
+    } catch (err) {
+        console.log("Gagal ambil data:", err);
     }
-    if (iod) {
-    document.getElementById("imgIOD").src = iod;
 }
 
-    if (hujan) {
-        document.getElementById("imgHujan").src = hujan;
-    }
-}
+// ambil pertama kali
+ambilDataServer();
 
-window.onload = ambilDariURL;
-
-function handleImageError() {
-    const img = document.getElementById('imgNino');
-    img.style.display = 'none';
-    alert("Koneksi ke server BOM Australia terganggu.");
-}
+// refresh tiap 5 detik
+setInterval(ambilDataServer, 5000);
 </script>
 
 </body>
