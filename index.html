@@ -114,8 +114,8 @@ body {
        <img id="imgNino"
      src="https://www.bom.gov.au/climate/ocean/outlooks/archive/20260328//plumes/sstOutlooks.rnino34.hr.png" 
          alt="R Nino 3.4" 
-       width="300" 
-         height="auto"
+         width="auto" 
+         height="200"
          title="Relative Nino 3.4"
              onerror="handleImageError()">
 
@@ -128,6 +128,32 @@ body {
             <b>Cara Membaca:</b><br>
             • Ke arah <b>Merah (+0.8)</b>: Potensi <b>El Niño</b> (Kering).<br>
             • Ke arah <b>Biru (-0.8)</b>: Potensi <b>La Niña</b> (Basah).
+        </div>
+    </div>
+</div>
+
+<div class="container" style="animation-delay: 0.5s; border-color: #ab47bc;">
+    <div class="header-bar" style="background: #ab47bc;">🌊 MONITOR IOD (INDIAN OCEAN DIPOLE)</div>
+    <div class="content">
+       <img id="imgIOD"
+     src="https://www.bom.gov.au/climate/enso/indices/iode.png"
+     alt="IOD Index"
+     width="300"
+     height="auto"
+     class="grafik-img"
+     onerror="handleImageError()">
+
+        <a href="https://www.bom.gov.au/climate/enso/" 
+           target="_blank" 
+           class="btn-direct" 
+           style="color: #ab47bc; border: 1px solid #ab47bc;">
+           🖼️ Buka Sumber IOD
+        </a>
+
+        <div class="caption">
+            <b>Cara Membaca:</b><br>
+            • <b>IOD Positif (+)</b>: Indonesia cenderung <b>lebih kering</b><br>
+            • <b>IOD Negatif (-)</b>: Indonesia cenderung <b>lebih basah</b>
         </div>
     </div>
 </div>
@@ -171,11 +197,16 @@ function ambilDariURL() {
     const params = new URLSearchParams(window.location.search);
 
     const nino = params.get("nino");
-    const hujan = params.get("hujan");
+    const iod = params.get("iod");
+const hujan = params.get("hujan");
+
 
     if (nino) {
         document.getElementById("imgNino").src = nino;
     }
+    if (iod) {
+    document.getElementById("imgIOD").src = iod;
+}
 
     if (hujan) {
         document.getElementById("imgHujan").src = hujan;
