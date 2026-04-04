@@ -167,10 +167,11 @@ body {
 <a href="https://mamank757.github.io/PPL" class="btn-home">🏠</a>
 
 <script>
-   
-function loadDariPusat() {
-    const nino = localStorage.getItem("nino");
-    const hujan = localStorage.getItem("hujan");
+function ambilDariURL() {
+    const params = new URLSearchParams(window.location.search);
+
+    const nino = params.get("nino");
+    const hujan = params.get("hujan");
 
     if (nino) {
         document.getElementById("imgNino").src = nino;
@@ -181,10 +182,10 @@ function loadDariPusat() {
     }
 }
 
-window.onload = loadDariPusat;
+window.onload = ambilDariURL;
 
 function handleImageError() {
-    const img = document.getElementById('grafikNino');
+    const img = document.getElementById('imgNino');
     img.style.display = 'none';
     alert("Koneksi ke server BOM Australia terganggu.");
 }
