@@ -111,13 +111,13 @@ body {
 <div class="container">
     <div class="header-bar" style="background: var(--blue);">🌍 LIVE MONITOR NINO 3.4</div>
     <div class="content">
-       <img id="imgNino" 
-     src="https://via.placeholder.com/400x200?text=Menunggu+ENSO">
-         alt="R Nino 3.4" 
-         width="auto" 
-         height="200"
-         title="Relative Nino 3.4"
-             onerror="handleImageError()">
+     <img id="imgNino" 
+     src="https://via.placeholder.com/400x200?text=Menunggu+ENSO"
+     alt="R Nino 3.4" 
+     width="auto" 
+     height="200"
+     title="Relative Nino 3.4"
+     onerror="handleImageError(event)">
 
         <a href="https://www.bom.gov.au/climate/ocean/outlooks/?index=nino34#tabs=Graphs" 
            target="_blank" class="btn-direct" style="color: var(--blue); border: 1px solid var(--blue);">
@@ -136,12 +136,12 @@ body {
     <div class="header-bar" style="background: #ab47bc;">🌊 MONITOR IOD (INDIAN OCEAN DIPOLE)</div>
     <div class="content">
       <img id="imgIOD" 
-     src="https://via.placeholder.com/400x200?text=Menunggu+IOD">
+     src="https://via.placeholder.com/400x200?text=Menunggu+IOD"
      alt="IOD Index"
-     width="300"
-     height="auto"
-     class="grafik-img"
-     onerror="handleImageError()">
+   width="auto" 
+     height="200"
+     title="IOD Index"
+     onerror="handleImageError(event)">
 
         <a href="https://www.bom.gov.au/climate/enso/" 
            target="_blank" 
@@ -164,7 +164,7 @@ body {
         
         <div style="background: #252525; padding: 10px; border-radius: 10px;">
            <img id="imgHujan" 
-     src="https://via.placeholder.com/400x200?text=Menunggu+Hujan">
+     src="https://via.placeholder.com/400x200?text=Menunggu+Hujan"
             width="400" 
          height="300"
                  alt="Peta Deterministik BMKG" 
