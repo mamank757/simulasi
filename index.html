@@ -13,6 +13,7 @@
     <title>LCS, Tanggal, Nama Penyuluh</title>
 
     <style>
+   
         /* CONTAINER UNTUK TOMBOL DI KANAN BAWAH */
         .floating-container {
             position: fixed;
@@ -50,7 +51,13 @@
         .floating-btn:hover {
             transform: scale(1.15) translateY(-5px);
         }
-
+ #ebook-content {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* Memastikan class hidden Tailwind bekerja mutlak */
+.hidden {
+    display: none !important;
+}
 /* 3. Menghilangkan tombol saat Print/PDF */
 @media print {
     .floating-container {
@@ -510,39 +517,44 @@ function cetakLaporan() {
     window.print();
 }
 
+/* --- PENGATURAN SAAT HALAMAN DIMUAT --- */
 document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Sinkronisasi Judul
     await sinkronisasiJudul();
+    
+    // 2. Tambah Baris Default
     addRow(); addRow(); addRow();
+    
+    // 3. Pemicu Pop-up (1 detik setelah load)
+    setTimeout(showEbookPopup, 1000); 
 });
 
+/* --- FUNGSI POP-UP --- */
 function showEbookPopup() {
     const popup = document.getElementById('ebook-popup');
     const content = document.getElementById('ebook-content');
     
-    // Langsung munculkan tanpa cek localStorage
-    popup.classList.remove('hidden');
-    setTimeout(() => {
-        content.classList.remove('scale-95', 'opacity-0');
-        content.classList.add('scale-100', 'opacity-100');
-    }, 10);
+    if (popup && content) {
+        popup.classList.remove('hidden');
+        setTimeout(() => {
+            content.classList.remove('scale-95', 'opacity-0');
+            content.classList.add('scale-100', 'opacity-100');
+        }, 10);
+    }
 }
 
 function closeEbookPopup() {
     const popup = document.getElementById('ebook-popup');
     const content = document.getElementById('ebook-content');
     
-    content.classList.remove('scale-100', 'opacity-100');
-    content.classList.add('scale-95', 'opacity-0');
-    
-    setTimeout(() => {
-        popup.classList.add('hidden');
-    }, 300);
+    if (content && popup) {
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            popup.classList.add('hidden');
+        }, 300);
+    }
 }
-
-// Jalankan popup 3 detik setelah halaman terbuka
-window.addEventListener('load', () => {
-    setTimeout(showEbookPopup, 1000); 
-});
 </script>
 </body>
 </html>
