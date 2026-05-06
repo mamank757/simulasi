@@ -192,7 +192,7 @@
         .col-no { width: 40px; }
         .col-date { width: 19%; }
         .col-konten { width: 24%; }
-        .col-eviden { width: 20%; }
+        .col-eviden { width: 17%; }
 
         .preview-box {
             width: 100%;
@@ -210,7 +210,7 @@
             width: 100%;
             height: 100%;
             display: none;
-            object-fit: cover;
+            object-fit: contain;
         }
 
         input[type="file"] {
@@ -260,12 +260,32 @@
             tr { page-break-inside: avoid !important; break-inside: avoid !important; display: table-row !important; }
             thead { display: table-row-group !important; }
             input[type="text"], input[type="date"], select { border: none !important; background: transparent !important; appearance: none; padding: 2px 0 !important; }
-            table { display: table !important; table-layout: fixed !important; width: 100% !important; border-collapse: collapse !important; }
+            table { 
+    display: table !important; 
+    table-layout: auto !important; 
+    width: 100% !important; 
+    border-collapse: collapse !important; 
+}
             tbody { display: table-row-group !important; }
             td { display: table-cell !important; border: 1px solid #000 !important; padding: 6px !important; vertical-align: middle !important; }
-            .preview-box { border: 1px solid #000 !important; width: 100px !important; height: 140px !important; }
+            .preview-box { 
+    width: 100% !important;
+    height: auto !important;
+    aspect-ratio: 3/4;
+    border: 1px solid #000 !important;
+}
+
+.preview-box img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: contain !important;
+    display: block !important;
+}
             textarea { border: none !important; padding-bottom: 0 !important; min-height: 100px; }
         }
+        td {
+    overflow: hidden !important;
+}
     </style>
 </head>
 
