@@ -194,24 +194,19 @@
         .col-konten { width: 24%; }
         .col-eviden { width: 17%; }
 
-        .preview-box {
-            width: 100%;
-            height: 110px;
-            border: 1px dashed #bbb;
-            margin: 5px auto;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #fafafa;
-            overflow: hidden;
-        }
+      .preview-box { 
+    width: 100% !important;
+    height: 120px !important; /* kasih tinggi tetap biar seragam */
+    border: 1px solid #000 !important;
+    overflow: hidden !important;
+}
 
-        .preview-box img {
-            width: 100%;
-            height: 100%;
-            display: none;
-            object-fit: contain;
-        }
+.preview-box img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important; /* ini kunci biar penuh */
+    display: block !important;
+}
 
         input[type="file"] {
             color: transparent;
