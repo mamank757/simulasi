@@ -8,6 +8,7 @@
     <meta name="apple-web-app-capable" content="yes">
     <meta name="apple-web-app-status-bar-style" content="black-translucent">
     <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+    <script src="https://cdn.tailwindcss.com"></script>
  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>LCS, Tanggal, Nama Penyuluh</title>
 
@@ -351,7 +352,7 @@
         <!-- Header Pop-up -->
         <div class="pt-6 text-center">
             <h3 class="text-xl font-bold text-white uppercase tracking-wider">Ayo Baca E-Book Gratis Ini</h3>
-            <p class="text-slate-400 text-xs mt-1">Menjnawab Pertanyaan Petani dengan Profesional dan Masuk Akal</p>
+            <p class="text-slate-400 text-xs mt-1">Menjawab Pertanyaan Petani dengan Profesional dan Masuk Akal</p>
         </div>
 
         <!-- Kontainer Dua Buku Berdampingan -->
@@ -391,7 +392,7 @@
         </div>
     </div>
 </div>
-<script src="https://cdn.tailwindcss.com"></script>
+
 <script>
 /* JAVASCRIPT ANDA TETAP SAMA SEPERTI SEBELUMNYA */
 let daftarJudulGlobal = [];
@@ -510,46 +511,49 @@ function cetakLaporan() {
     window.print();
 }
 
+/* --- JALANKAN SEMUA FUNGSI SAAT HALAMAN SIAP --- */
 document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Sinkronisasi Data Judul dari Cloud
     await sinkronisasiJudul();
-    addRow(); addRow(); addRow();
+    
+    // 2. Tambahkan 3 Baris Tabel Awal
+    addRow(); 
+    addRow(); 
+    addRow();
+    
+    // 3. Pemicu Pop-up Ebook: Muncul setelah 1 detik jika belum pernah ditutup
+    setTimeout(showEbookPopup, 1000); 
 });
-// Fungsi Muncul Sekali Saja (Menggunakan LocalStorage)
+
+/* --- FUNGSI POP-UP EBOOK --- */
 function showEbookPopup() {
     const isClosed = localStorage.getItem('ebook_popup_closed');
     if (!isClosed) {
         const popup = document.getElementById('ebook-popup');
         const content = document.getElementById('ebook-content');
-        
-        popup.classList.remove('hidden');
-        setTimeout(() => {
-            content.classList.remove('scale-95', 'opacity-0');
-            content.classList.add('scale-100', 'opacity-100');
-        }, 10);
+        if (popup && content) {
+            popup.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
     }
 }
 
 function closeEbookPopup() {
     const popup = document.getElementById('ebook-popup');
     const content = document.getElementById('ebook-content');
-    
-    content.classList.remove('scale-100', 'opacity-100');
-    content.classList.add('scale-95', 'opacity-0');
-    
-    setTimeout(() => {
-        popup.classList.add('hidden');
-        localStorage.setItem('ebook_popup_closed', 'true'); // Tandai sudah pernah muncul
-    }, 300);
+    if (content && popup) {
+        content.classList.remove('scale-100', 'opacity-100');
+        content.classList.add('scale-95', 'opacity-0');
+        setTimeout(() => {
+            popup.classList.add('hidden');
+            // Simpan status agar tidak muncul lagi di perangkat yang sama
+            localStorage.setItem('ebook_popup_closed', 'true');
+        }, 300);
+    }
 }
-
-// Tambahkan pemicu ke dalam event DOMContentLoaded yang sudah ada
-document.addEventListener('DOMContentLoaded', async () => {
-    await sinkronisasiJudul();
-    addRow(); addRow(); addRow();
-    
-    // Pemicu Pop-up: Muncul setelah 3 detik
-    setTimeout(showEbookPopup, 1000); 
-});
 </script>
 </body>
 </html>
