@@ -263,17 +263,17 @@
 }
             tbody { display: table-row-group !important; }
             td { display: table-cell !important; border: 1px solid #000 !important; padding: 6px !important; vertical-align: middle !important; }
-            .preview-box { 
+           .preview-box { 
     width: 100% !important;
-    height: auto !important;
-    aspect-ratio: 3/4;
+    height: 120px !important; /* WAJIB FIX */
     border: 1px solid #000 !important;
+    overflow: hidden !important;
 }
 
 .preview-box img {
     width: 100% !important;
     height: 100% !important;
-    object-fit: contain !important;
+    object-fit: cover !important;
     display: block !important;
 }
             textarea { border: none !important; padding-bottom: 0 !important; min-height: 100px; }
