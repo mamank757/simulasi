@@ -549,11 +549,7 @@ function closeEbookPopup() {
         content.classList.add('scale-95', 'opacity-0');
         setTimeout(() => {
             popup.classList.add('hidden');
-            // Simpan status agar tidak muncul lagi di perangkat yang sama
-            localStorage.setItem('ebook_popup_closed', 'true');
-        }, 300);
-    }
-}
+          
 </script>
 </body>
 </html>
