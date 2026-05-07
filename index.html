@@ -189,7 +189,7 @@
 
         .preview-box {
             width: 100%;
-            height: 140px;
+            height: 110px;
             border: 1px dashed #bbb;
             margin: 5px auto;
             display: flex;
@@ -197,13 +197,7 @@
             justify-content: center;
             background: #fafafa;
             overflow: hidden;
-          /* INI YANG MEMBUAT PAS DI TENGAH */
-        margin: 0 auto !important;
-
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
+        }
 
         .preview-box img {
             width: 100%;
@@ -242,7 +236,35 @@
         .btn-print { background: #2c3e50; width: 100%; padding: 15px; font-size: 16px; color: white; cursor: pointer; border-radius: 6px; border: none; font-weight: bold; }
 
         .footer { margin-top: 30px; padding: 20px; background: white; text-align: center; font-size: 14px; border-radius: 8px; color: #333; }
+@media print {
 
+    td[data-label="Like"],
+    td[data-label="Comment"],
+    td[data-label="Share"] {
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+    .preview-box {
+        border: 1px solid #000 !important;
+        width: 100px !important;
+        height: 140px !important;
+
+        /* INI YANG MEMBUAT PAS DI TENGAH */
+        margin: 0 auto !important;
+
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .preview-box img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        display: block !important;
+    }
+}
         @media print {
             .judul-select, .no-print, .visitor-counter-wrapper, .controls, .action-area, .footer { display: none !important; }
             input[type="file"] { display: none !important; }
@@ -262,8 +284,7 @@
             table { display: table !important; table-layout: fixed !important; width: 100% !important; border-collapse: collapse !important; }
             tbody { display: table-row-group !important; }
             td { display: table-cell !important; border: 1px solid #000 !important; padding: 6px !important; vertical-align: middle !important; }
-            .preview-box { border: 1px solid #000 !important; width: 100px !important; height: 140px !important; }
-            textarea { border: none !important; padding-bottom: 0 !important; min-height: 100px; }
+                        textarea { border: none !important; padding-bottom: 0 !important; min-height: 100px; }
         }
     </style>
 </head>
