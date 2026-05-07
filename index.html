@@ -239,31 +239,43 @@
 @media print {
 
     td[data-label="Like"],
-    td[data-label="Comment"],
-    td[data-label="Share"] {
-        text-align: center !important;
-        vertical-align: middle !important;
-    }
+td[data-label="Comment"],
+td[data-label="Share"] {
+    text-align: center !important;
+    vertical-align: middle !important;
 
-    .preview-box {
-        border: 1px solid #000 !important;
-        width: 100px !important;
-        height: 140px !important;
+    /* TAMBAHAN */
+    padding: 0 !important;
+}
 
-        /* INI YANG MEMBUAT PAS DI TENGAH */
-        margin: 0 auto !important;
+td[data-label="Like"] .preview-box,
+td[data-label="Comment"] .preview-box,
+td[data-label="Share"] .preview-box {
+    margin: auto !important;
+}
 
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
+   .preview-box {
+    border: 1px solid #000 !important;
+    width: 100px !important;
+    height: 140px !important;
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    margin: auto !important;
+}
 
     .preview-box img {
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: cover !important;
-        display: block !important;
-    }
+    max-width: 100% !important;
+    max-height: 100% !important;
+
+    width: auto !important;
+    height: auto !important;
+
+    object-fit: contain !important;
+    display: block !important;
+}
 }
         @media print {
             .judul-select, .no-print, .visitor-counter-wrapper, .controls, .action-area, .footer { display: none !important; }
