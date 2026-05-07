@@ -57,8 +57,7 @@
         }
     }
 
-    /* --- KODE CSS ANDA SEBELUMNYA --- */
-    .col-eviden { text-align: center; }
+        .col-eviden { text-align: center; }
     .col-konten textarea { font-size: 11px; }
     .col-eviden input[type="file"] { display: block; margin: 0 auto; }
 
@@ -308,6 +307,8 @@
             vertical-align: middle !important;
         }
 
+        /* GANTI HANYA BAGIAN INI DI @media print */
+
         /* KHUSUS PDF/PRINT */
         .preview-box {
             border: 1px solid #000 !important;
@@ -320,26 +321,28 @@
             align-items: center !important;
             justify-content: center !important;
 
-            overflow: hidden !important;
+            overflow: visible !important;
+        }
+
+        .preview-box,
+        .preview-box * {
+            box-sizing: border-box !important;
         }
 
         .preview-box img {
             display: block !important;
 
             width: 100% !important;
+            min-width: 100% !important;
+            max-width: 100% !important;
+
             height: auto !important;
+            max-height: none !important;
 
-            object-fit: contain !important;
+            object-fit: fill !important;
 
-            margin: auto !important;
+            margin: 0 auto !important;
         }
-
-        textarea {
-            border: none !important;
-            padding-bottom: 0 !important;
-            min-height: 100px;
-        }
-    }
 </style>
 </head>
 <body>
