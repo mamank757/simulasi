@@ -5,14 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#333" />
     <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-web-app-capable" content="yes">
-    <meta name="apple-web-app-status-bar-style" content="black-translucent">
-    <meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
-    <script src="https://cdn.tailwindcss.com"></script>
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no, date=no, email=no, address=no">
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <title>LCS, Tanggal, Nama Penyuluh</title>
-
-   <style>
+    <style>
     /* CONTAINER UNTUK TOMBOL DI KANAN BAWAH */
     .floating-container {
         position: fixed;
@@ -343,22 +341,18 @@
     }
 </style>
 </head>
-
 <body>
-
 <div class="floating-container">
     <a href="https://mamank757.github.io/PPL" class="floating-btn floating-home" title="Kembali ke Home"><i class="fa-solid fa-house"></i></a>
     <a href="https://www.tiktok.com/@generasi90blog" target="_blank" class="floating-btn floating-tiktok" title="Kunjungi TikTok">
         <i class="fa-brands fa-tiktok"></i>
     </a>
 </div>
-
 <div class="visitor-counter-wrapper">
     <a href='http://www.freevisitorcounters.com'>Counter</a>
     <script type='text/javascript' src='https://www.freevisitorcounters.com/auth.php?id=a89e5d2c48fde512d9411d388c694afb903a141d'></script>
     <script type="text/javascript" src="https://www.freevisitorcounters.com/en/home/counter/1512047/t/1"></script>
 </div>
-
 <div class="container">
     <div class="header">
         <h2>LAPORAN PENDERASAN INFORMASI DAN PEMBANGUNAN PERTANIAN</h2>
@@ -367,33 +361,21 @@
     </div>
 
     <div class="info-section">
-        <label>PERIODE</label>
-        <span>:</span>
+        <label>PERIODE</label> <span>:</span>
         <select id="id_periode">
-            <option>BULAN JANUARI</option>
-            <option>BULAN FEBRUARI</option>
-            <option>BULAN MARET</option>
-            <option>BULAN APRIL</option>
-            <option>BULAN MEI</option>
-            <option>BULAN JUNI</option>
-            <option>BULAN JULI</option>
-            <option>BULAN AGUSTUS</option>
-            <option>BULAN SEPTEMBER</option>
-            <option>BULAN OKTOBER</option>
-            <option>BULAN NOVEMBER</option>
-            <option>BULAN DESEMBER</option>
+            <option>BULAN JANUARI</option><option>BULAN FEBRUARI</option><option>BULAN MARET</option>
+            <option>BULAN APRIL</option><option>BULAN MEI</option><option>BULAN JUNI</option>
+            <option>BULAN JULI</option><option>BULAN AGUSTUS</option><option>BULAN SEPTEMBER</option>
+            <option>BULAN OKTOBER</option><option>BULAN NOVEMBER</option><option>BULAN DESEMBER</option>
         </select>
 
-        <label>NAMA PENYULUH</label>
-        <span>:</span>
+        <label>NAMA PENYULUH</label> <span>:</span> 
         <input type="text" id="id_nama" placeholder="Cth: ABDUL RAHMAN, SP">
-
-        <label>NIP.</label>
-        <span>:</span>
-        <input type="text" id="id_nip" placeholder="Cth: 199009202020121001">
-
-        <label>WILBIN/WKPP</label>
-        <span>:</span>
+        
+        <label>NIP.</label> <span>:</span> 
+        <input type="text" id="id_nip" placeholder="Cth: 199009202020121001" maxlength="21">
+        
+        <label>WILBIN/WKPP</label> <span>:</span> 
         <input type="text" id="id_wilayah" placeholder="Cth: DESA MANURUNG">
     </div>
 
@@ -415,8 +397,8 @@
     </table>
 
     <div class="controls">
-        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris Tabel</button>
-        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris Tabel</button>
+        <button class="btn btn-remove" type="button" onclick="removeRow()">- Hapus Baris Tabel jika kurang dari 3 Konten</button>
+        <button class="btn btn-add" type="button" onclick="addRow(true)">+ Tambah Baris Tabel jika lebih dari 3 Konten </button>
     </div>
 
     <div class="action-area">
@@ -427,204 +409,134 @@
 <footer class="footer">
     copyright: King Mamank 2026
 </footer>
-<!-- Pop-up Ebook Ganda Selalu Muncul -->
-<div id="ebook-popup" class="fixed inset-0 z-[10000] hidden flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4 no-print">
-    <div class="bg-slate-800 border-2 border-emerald-500 rounded-3xl max-w-md w-full overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0 duration-300" id="ebook-content">
-        
-        <!-- Header Pop-up -->
-        <div class="pt-6 text-center">
-            <h3 class="text-xl font-bold text-white uppercase tracking-wider">Ayo Baca E-Book Gratis Ini</h3>
-            <p class="text-slate-400 text-xs mt-1">Menjnawab Pertanyaan Petani dengan Profesional dan Masuk Akal</p>
-        </div>
 
-        <!-- Kontainer Dua Buku Berdampingan -->
-        <div class="flex justify-center gap-4 p-6 bg-slate-800">
-            <!-- Buku 1: Einstein Jadi Petani -->
-            <div class="flex flex-col items-center gap-3 w-1/2">
-                <div class="relative w-full aspect-[3/4] bg-slate-900 overflow-hidden rounded-xl shadow-lg border border-slate-700">
-                    <img src="https://raw.githubusercontent.com/mamank757/laporanbola/refs/heads/main/Kalo%20Einstein%20Jadi%20Petani.jpg" 
-                         alt="Einstein Jadi Petani" 
-                         class="w-full h-full object-cover">
-                </div>
-                <a href="https://s.id/einsteinjadipetani" target="_blank" onclick="closeEbookPopup()" 
-                   class="w-full bg-indigo-600 hover:bg-indigo-500 text-white text-[10px] font-bold py-2 rounded-lg transition-all active:scale-95 text-center shadow-lg uppercase">
-                   <i class="fa-solid fa-download mr-1"></i> Download eBook Ini
-                </a>
-            </div>
-
-            <!-- Buku 2: Seni Bertani Milenial -->
-            <div class="flex flex-col items-center gap-3 w-1/2">
-                <div class="relative w-full aspect-[3/4] bg-slate-900 overflow-hidden rounded-xl shadow-lg border border-slate-700">
-                    <img src="https://raw.githubusercontent.com/mamank757/laporanbola/refs/heads/main/Seni%20Bertani%20ala%20Petani%20Milenial.jpg" 
-                         alt="Seni Bertani Milenial" 
-                         class="w-full h-full object-cover">
-                </div>
-                <a href="https://s.id/bertanimilenial" target="_blank" onclick="closeEbookPopup()" 
-                   class="w-full bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold py-2 rounded-lg transition-all active:scale-95 text-center shadow-lg uppercase">
-                   <i class="fa-solid fa-download mr-1"></i> Download eBook Ini
-                </a>
-            </div>
-        </div>
-        
-        <!-- Footer Pop-up -->
-        <div class="pb-6 px-6 text-center">
-            <button onclick="closeEbookPopup()" class="text-slate-500 text-[10px] hover:text-white transition-colors underline uppercase tracking-widest">
-                Saya sudah mendownloadnya
-            </button>
-        </div>
-    </div>
-</div>
 <script>
-/* JAVASCRIPT ANDA TETAP SAMA SEPERTI SEBELUMNYA */
-let daftarJudulGlobal = [];
+    // --- PUSAT DATA KONFIGURASI ---
+    let daftarJudulGlobal = []; 
 
-async function sinkronisasiJudul() {
-    const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
-    try {
-        const response = await fetch(url + "?t=" + new Date().getTime());
-        daftarJudulGlobal = await response.json();
-        document.querySelectorAll('.judul-select').forEach(select => isiOpsiSelect(select));
-    } catch (e) { console.error("Gagal sinkronisasi:", e); }
-}
-
-function isiOpsiSelect(selectElement) {
-    const currentVal = selectElement.value;
-    selectElement.innerHTML = '<option value="">List Judul Konten</option>';
-    daftarJudulGlobal.forEach(judul => {
-        const opt = document.createElement('option');
-        opt.value = judul;
-        opt.textContent = judul;
-        selectElement.appendChild(opt);
-    });
-    selectElement.value = currentVal;
-}
-
-let count = 0;
-const tableBody = document.getElementById('tableBody');
-const inputNama = document.getElementById('id_nama');
-
-function autoResize(textarea) {
-    textarea.style.height = 'auto';
-    textarea.style.height = textarea.scrollHeight + 'px';
-}
-
-async function pasteText(btn) {
-    try {
-        const text = await navigator.clipboard.readText();
-        const textarea = btn.closest('.textarea-container').querySelector('textarea');
-        textarea.value = text;
-        autoResize(textarea);
-    } catch (err) { alert('Gagal menempel teks.'); }
-}
-
-function clearText(btn) {
-    const textarea = btn.closest('.textarea-container').querySelector('textarea');
-    textarea.value = "";
-    autoResize(textarea);
-}
-
-function addRow(showAlert = false) {
-    count++;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-        <td data-label="No.">${count}.</td>
-        <td data-label="Tanggal" class="col-date">
-            <input type="date" value="${new Date().toISOString().split('T')[0]}">
-        </td>
-        <td data-label="Judul Konten" class="col-konten">
-            <div class="textarea-container">
-                <select class="no-print judul-select" onchange="const ta=this.nextElementSibling; ta.value=this.value; autoResize(ta);">
-                    <option value="">List Judul Konten</option>
-                </select>
-                <textarea oninput="autoResize(this)" placeholder="Pilih di atas atau ketik/paste manual"></textarea>
-                <div class="textarea-actions no-print">
-                    <button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
-                    <button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
-                </div>
-            </div>
-        </td>
-        <td data-label="Like">
-            <input type="file" accept="image/*" onchange="pv(this,'l${count}')">
-            <div class="preview-box"><img id="l${count}"></div>
-        </td>
-        <td data-label="Comment">
-            <input type="file" accept="image/*" onchange="pv(this,'c${count}')">
-            <div class="preview-box"><img id="c${count}"></div>
-        </td>
-        <td data-label="Share">
-            <input type="file" accept="image/*" onchange="pv(this,'s${count}')">
-            <div class="preview-box"><img id="s${count}"></div>
-        </td>
-    `;
-    tableBody.appendChild(tr);
-    const newSelect = tr.querySelector('.judul-select');
-    isiOpsiSelect(newSelect);
-    if (showAlert) alert("Baris berhasil ditambahkan.");
-}
-
-function removeRow() {
-    if (count > 1) {
-        if (confirm("Hapus baris terakhir?")) {
-            tableBody.removeChild(tableBody.lastChild);
-            count--;
-        }
-    } else { alert("Minimal harus tersisa 1 baris."); }
-}
-
-function pv(input, id) {
-    const file = input.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            const img = document.getElementById(id);
-            img.src = e.target.result;
-            img.style.display = 'block';
-        };
-        reader.readAsDataURL(file);
+    async function sinkronisasiJudul() {
+        const url = "https://script.google.com/macros/s/AKfycbzBRXwcAkJBPLvnvOdFuWKqag-XBq2U81kYBx3LyOKGCM0Sqx8WileVfvMa1T6BkEQH6A/exec";
+        try {
+            const response = await fetch(url + "?t=" + new Date().getTime());
+            const listJudul = await response.json();
+            daftarJudulGlobal = listJudul; 
+            document.querySelectorAll('.judul-select').forEach(select => {
+                isiOpsiSelect(select);
+            });
+        } catch (e) { console.error("Gagal sinkronisasi:", e); }
     }
-}
 
-function cetakLaporan() {
-    const namaVal = inputNama.value.trim() || "Nama Penyuluh";
-    const d = new Date();
-    const tgl = `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
-    document.title = `LCS, ${tgl}, ${namaVal}`;
-    window.print();
-}
+    function isiOpsiSelect(selectElement) {
+        const currentVal = selectElement.value;
+        selectElement.innerHTML = '<option value="">List Judul Konten</option>';
+        daftarJudulGlobal.forEach(judul => {
+            const opt = document.createElement('option');
+            opt.value = judul;
+            opt.textContent = judul;
+            selectElement.appendChild(opt);
+        });
+        selectElement.value = currentVal;
+    }
 
-document.addEventListener('DOMContentLoaded', async () => {
-    await sinkronisasiJudul();
-    addRow(); addRow(); addRow();
-});
+    let count = 0;
+    const tableBody = document.getElementById('tableBody');
+    const inputNama = document.getElementById('id_nama');
 
-function showEbookPopup() {
-    const popup = document.getElementById('ebook-popup');
-    const content = document.getElementById('ebook-content');
-    
-    // Langsung munculkan tanpa cek localStorage
-    popup.classList.remove('hidden');
-    setTimeout(() => {
-        content.classList.remove('scale-95', 'opacity-0');
-        content.classList.add('scale-100', 'opacity-100');
-    }, 10);
-}
+    function getTglHariIni() {
+        const d = new Date();
+        return `${String(d.getDate()).padStart(2, '0')}-${String(d.getMonth() + 1).padStart(2, '0')}-${d.getFullYear()}`;
+    }
 
-function closeEbookPopup() {
-    const popup = document.getElementById('ebook-popup');
-    const content = document.getElementById('ebook-content');
-    
-    content.classList.remove('scale-100', 'opacity-100');
-    content.classList.add('scale-95', 'opacity-0');
-    
-    setTimeout(() => {
-        popup.classList.add('hidden');
-    }, 300);
-}
+    function autoResize(textarea) {
+        textarea.style.height = 'auto';
+        textarea.style.height = textarea.scrollHeight + 'px';
+    }
 
-// Jalankan popup 3 detik setelah halaman terbuka
-window.addEventListener('load', () => {
-    setTimeout(showEbookPopup, 1000); 
-});
+    async function pasteText(btn) {
+        try {
+            const text = await navigator.clipboard.readText();
+            const textarea = btn.closest('.textarea-container').querySelector('textarea');
+            textarea.value = text;
+            autoResize(textarea);
+        } catch (err) { alert('Gagal menempel teks.'); }
+    }
+
+    function clearText(btn) {
+        const textarea = btn.closest('.textarea-container').querySelector('textarea');
+        textarea.value = "";
+        autoResize(textarea);
+    }
+
+    function addRow(showAlert = false) {
+        count++;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td data-label="No.">${count}.</td>
+            <td data-label="Tanggal" class="col-date"><input type="date" value="${new Date().toISOString().split('T')[0]}"></td>
+            <td data-label="Judul Konten" class="col-konten">
+                <div class="textarea-container">
+                    <select class="no-print judul-select" onchange="const ta=this.nextElementSibling; ta.value=this.value; autoResize(ta);">
+                        <option value="">List Judul Konten</option>
+                    </select>
+                    <textarea oninput="autoResize(this)" placeholder="Pilih di atas atau ketik manual"></textarea>
+                    <div class="textarea-actions no-print">
+                        <button type="button" class="btn-action btn-clear" onclick="clearText(this)">🗑️</button>
+                        <button type="button" class="btn-action btn-paste" onclick="pasteText(this)">📋</button>
+                    </div>
+                </div>
+            </td>
+            <td data-label="Like">
+                <input type="file" accept="image/*" onchange="pv(this, 'l${count}')">
+                <div class="preview-box"><img id="l${count}"></div>
+            </td>
+            <td data-label="Comment">
+                <input type="file" accept="image/*" onchange="pv(this, 'c${count}')">
+                <div class="preview-box"><img id="c${count}"></div>
+            </td>
+            <td data-label="Share">
+                <input type="file" accept="image/*" onchange="pv(this, 's${count}')">
+                <div class="preview-box"><img id="s${count}"></div>
+            </td>
+        `;
+        tableBody.appendChild(tr);
+        const newSelect = tr.querySelector('.judul-select');
+        isiOpsiSelect(newSelect);
+        if (showAlert) alert("Baris berhasil ditambahkan.");
+    }
+
+    function removeRow() {
+        if (count > 1) { 
+            if (confirm("Hapus baris terakhir?")) {
+                tableBody.removeChild(tableBody.lastChild); 
+                count--; 
+            }
+        } else { alert("Minimal harus tersisa 2 baris."); }
+    }
+
+    function pv(input, id) {
+        const file = input.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = document.getElementById(id);
+                img.src = e.target.result;
+                img.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+    }
+
+    function cetakLaporan() {
+        const namaVal = inputNama.value.trim() || "Nama Penyuluh";
+        const tgl = getTglHariIni();
+        document.title = `LCS, ${tgl}, ${namaVal}`;
+        window.print();
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        await sinkronisasiJudul();
+        addRow(); addRow(); addRow();
+    });
 </script>
 </body>
 </html>
