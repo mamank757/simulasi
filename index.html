@@ -670,7 +670,7 @@ if (isLikelyRaining && finalRain === 0) {
     rainStatus = "Hujan Lokal Terdeteksi Atmosfer";
 }
 document.getElementById('rainNow').innerHTML = `
-    ${finalRain.toFixed(1)} mm
+    ${finalRain > 0 ? finalRain.toFixed(1) + ' mm' : 'Terdeteksi'}
     <br>
     <small style="font-size:0.65rem; color:var(--accent-soil);">
         ${rainStatus}
