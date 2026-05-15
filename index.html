@@ -3,728 +3,1017 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title id="page_title">Laporan Pendampingan PPL - DIGITAL</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <title>PPL Milenial Wajo - Smart Farming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
-        
-        * { box-sizing: border-box; }
-        
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #0f172a; 
-            color: #f1f5f9; 
-            margin: 0; 
-            padding: 0; 
+    
+    /* Efek Denyut (Pulse) untuk tombol sinkron */
+.btn-live {
+    animation: pulse-blue 2s infinite;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+@keyframes pulse-blue {
+    0% { box-shadow: 0 0 0 0 rgba(31, 111, 235, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(31, 111, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(31, 111, 235, 0); }
+}
+
+.btn-live:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+    letter-spacing: 1px;
+}
+
+.btn-live:active {
+    transform: scale(0.95);
+}
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --accent-green: #00ff88;
+            --accent-soil: #ffd700;
+            --accent-bwd: #1f6feb;
+            --text-main: #ffffff;
+            --border: #30363d;
+            --red-alert: #f85149;
         }
 
-/* Update CSS di dalam tag <style> */
-.foto-wrap { 
-    page-break-before: always; /* Paksa pindah ke halaman 2 */
-    display: block; 
-    width: 100%; 
-    text-align: center;
-    padding-top: 20mm;
-}
-
-.lampiran-title {
-    text-align: center;
-    font-weight: bold;
-    text-decoration: underline;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    font-size: 12pt;
-}
-
-#img_preview { 
-    display: block; 
-    margin: 10px auto; 
-    max-width: 100%; 
-    max-height: 16cm; 
-    border: 1px solid #000; 
-    padding: 5px;
-    object-fit: contain; 
-}
-        /* Floating Buttons */
-        .floating-container { position: fixed; bottom: 30px; right: 20px; display: flex; flex-direction: column; gap: 12px; z-index: 9999; }
-        .floating-btn { 
-            width: 50px; height: 50px; color: white; border-radius: 15px; 
-            display: flex; align-items: center; justify-content: center; 
-            text-decoration: none; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.5); 
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            backdrop-filter: blur(5px);
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0; padding: 10px;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
-        .floating-home { background-color: rgba(16, 185, 129, 0.85); }
-        .floating-tiktok { background-color: rgba(0, 0, 0, 0.85); }
-        .floating-btn:hover { transform: scale(1.1) translateY(-5px); filter: brightness(1.2); }
 
-        /* Form Card Styling */
-        .input-card {
-            background: #1e293b;
-            border: 1px solid #334155;
+        .header { text-align: center; margin: 20px 0; }
+        .header h1 { margin: 0; font-size: 1.5rem; color: var(--accent-green); text-shadow: 0 0 10px rgba(0,255,136,0.3); }
+
+        .tab-container {
+            display: flex; background: var(--card-bg); padding: 5px; border-radius: 15px;
+            margin-bottom: 20px; width: 100%; max-width: 460px; border: 1px solid var(--border); gap: 5px;
+        }
+        .tab-btn {
+            flex: 1; padding: 12px 5px; border: none; background: none; color: #8b949e;
+            cursor: pointer; font-weight: 600; border-radius: 12px; transition: 0.3s; font-size: 0.75rem;
+        }
+        .tab-btn.active { background: var(--accent-green); color: #000; }
+        .tab-btn.active.soil-mode { background: var(--accent-soil); color: #000; }
+        .tab-btn.active.bwd-mode { background: var(--accent-bwd); color: #fff; }
+
+        .card {
+            background: var(--card-bg); border: 1px solid var(--border); padding: 20px;
+            border-radius: 25px; max-width: 460px; width: 100%; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .scan-window {
+            position: relative; border: 2px dashed var(--border); border-radius: 20px; 
+            margin: 15px 0; overflow: hidden; min-height: 180px; display: flex; align-items: center; justify-content: center; background: #000;
+        }
+
+        #preview { width: 100%; border-radius: 15px; display: none; }
+        .laser-line {
+            display: none; position: absolute; width: 100%; height: 3px;
+            background: var(--accent-green); box-shadow: 0 0 15px var(--accent-green);
+            z-index: 5; animation: scanAnim 2s linear infinite;
+        }
+        @keyframes scanAnim { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
+        .is-scanning .laser-line { display: block; }
+
+        .btn-main {
+            background: var(--accent-green); color: #000; border: none; padding: 15px;
+            border-radius: 15px; font-weight: 700; width: 100%; cursor: pointer; text-transform: uppercase;
+        }
+        .btn-camera { background: var(--accent-bwd); color: white; margin-bottom: 10px; }
+
+        #result { margin-top: 20px; display: none; }
+        .info-box {
+            background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px;
+            margin-top: 10px; border-left: 4px solid var(--accent-green); font-size: 0.8rem;
+        }
+        .row-val { font-weight: 600; text-align: right; color: var(--accent-soil); }
+        table { width: 100%; font-size: 0.8rem; border-collapse: collapse; margin: 10px 0;}
+        td { padding: 8px 0; border-bottom: 1px solid #333; }
+
+        .badge {
+            background: transparent !important;
+            border-width: 2px;
+            border-style: solid;
+            text-transform: uppercase;
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 4px 15px;
             border-radius: 20px;
-            padding: 24px;
-            margin-bottom: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+            margin-bottom: 8px;
         }
 
-        .input-group label { 
-            display: block; font-size: 0.75rem; font-weight: 600; color: #94a3b8; 
-            margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em;
-        }
-        
-        .input-field, input[type="text"], input[type="date"], input[type="number"], select, textarea { 
-            width: 100%; background-color: #0f172a !important; border: 1px solid #334155 !important; color: #fff !important;
-            padding: 12px 16px; border-radius: 12px; font-size: 0.95rem; transition: all 0.2s; outline: none;
-        }
-        
-        .input-field:focus { border-color: #10b981 !important; box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2); }
+        /* Warna Garis Pinggir & Tulisan */
+        .skala-1 { border-color: #ffff00 !important; color: #ffff00 !important; }
+        .skala-2 { border-color: #adff2f !important; color: #adff2f !important; }
+        .skala-3 { border-color: #65e01d !important; color: #65e01d !important; }
+        .skala-4 { border-color: #139e5d !important; color: #139e5d !important; }
+        .skala-5 { border-color: #186b44 !important; color: #186b44 !important; }
 
-        /* Report Preview Canvas */
-        .report-container { width: 100%; padding: 20px; display: flex; justify-content: center; background: #334155; }
-        .report-page {
-            font-family: 'Times New Roman', Times, serif;
-            background: white; width: 215mm; min-height: 330mm;
-            padding: 20mm; margin: 10px auto; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            font-size: 11pt; line-height: 1.4; color: black; position: relative;
+        .leaf-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            border-left: 5px solid #00ff88;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 12px;
         }
 
-        #report table { border-collapse: collapse; width: 100%; color: black; }
-        #report td { padding-top: 2px; padding-bottom: 2px; vertical-align: top; }
-
-        /* Responsive Mobile Preview */
-        @media screen and (max-width: 215mm) {
-            .report-container { padding: 5px; overflow-x: auto; display: block; }
-            .report-page {
-                transform: scale(calc(100vw / 230mm)); transform-origin: top left;
-                margin-bottom: calc(20px - (330mm * (1 - (100vw / 230mm))));
-            }
+        /* Style Tambahan untuk Rekomendasi BWD */
+        .recommendation-box {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 18px;
+            margin-top: 15px;
         }
-
-        /* UPDATE PADA BAGIAN PRINT SETTINGS */
-@media print {
-    @page { 
-        size: 215mm 330mm; 
-        margin: 15mm; 
-    }
-    
-    body { background: white; }
-    
-    .no-print, .floating-container, #browser-warning, .max-w-5xl, header, .input-card, button { 
-        display: none !important; 
-    }
-
-    .report-container { 
-        display: block !important; 
-        padding: 0 !important; 
-        margin: 0 !important;
-    }
-
-    .report-page {
-        box-shadow: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        display: block !important; /* Pastikan ini block agar break-inside bekerja */
-    }
-
-    /* Memastikan blok tanda tangan tidak terpisah */
-    .sig-section {
-        display: flex !important; 
-        justify-content: space-between;
-        page-break-inside: avoid !important; /* Untuk Chrome & Firefox */
-        break-inside: avoid !important;      /* Standar modern */
-        margin-top: 30px;
-        position: relative;
-    }
-
-    /* Mencegah poin-poin terpotong */
-    #out_masalah li, #out_upaya li {
-        page-break-inside: avoid;
-        break-inside: avoid;
-    }
-}
-        .hidden-element { display: none !important; }
-        .btn-ai { background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); transition: all 0.3s; }
-        .btn-ai:hover { transform: translateY(-2px); box-shadow: 0 10px 15px -3px rgba(139, 92, 246, 0.4); }
-   </style>
+        .vote-summary {
+            font-size: 0.75rem;
+            color: var(--accent-soil);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
-<div id="browser-warning" class="fixed inset-0 z-[9999] flex items-center justify-center bg-slate-900/90 backdrop-blur-md no-print p-4">
-    <div class="bg-slate-800 p-6 sm:p-8 rounded-3xl border border-emerald-500/50 max-w-md w-full max-h-[95vh] overflow-y-auto text-center shadow-2xl ring-1 ring-white/10 custom-scrollbar">
+
+    <div class="header">
+        <h1>PPL MILENIAL WAJO</h1>
+        <p style="font-size: 0.7rem; color: var(--accent-soil); letter-spacing: 1px;">SMART FARMING - MULTI ANALISIS DIGITAL</p>
+    </div>
+
+    <div class="tab-container">
+        <button class="tab-btn active" id="tabDaun" onclick="switchMode('daun')">🍃 PENYAKIT PADI</button>
+        <button class="tab-btn" id="tabTanah" onclick="switchMode('tanah')">🏜️ KESUBURAN TANAH</button>
+        <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">📊 UJI BWD NITROGEN</button>
+        <button class="tab-btn" id="tabCuaca" onclick="switchMode('cuaca')">🌦️ CUACA & RISIKO</button>
+    </div>
+
+    <div class="card">
+        <h3 id="modeTitle" style="margin-top:0; color: var(--accent-green); font-size: 1rem;">Deteksi Penyakit Padi</h3>
         
-        <h3 class="text-xl font-bold text-white mb-4">Informasi Penggunaan</h3>
-        
-        <!-- Kontainer Gambar -->
-        <div class="mb-5 overflow-hidden">
-            <img src="https://raw.githubusercontent.com/mamank757/laporanbola/main/mamank.jpg" 
-                 alt="Panduan" 
-                 class="w-full h-auto max-h-64 object-contain rounded-2xl border border-white/10 shadow-lg bg-slate-900 mx-auto">
+        <input type="file" id="fileInput" accept="image/*" hidden onchange="handleFile(event)">
+        <button id="btnCamera" class="btn-main btn-camera" onclick="document.getElementById('fileInput').click()">📸 AMBIL FOTO / GALERI</button>
+
+        <div class="scan-window" id="scanWindow">
+            <div class="laser-line" id="laser"></div>
+            <p id="msg" style="font-size: 0.75rem; opacity: 0.5;">Pratinjau foto sampel</p>
+            <img id="preview" alt="Preview">
         </div>
 
-        <div class="bg-emerald-500/10 p-4 rounded-xl border border-emerald-500/30 text-sm md:text-base text-emerald-50 text-left">
-    <p class="mb-2">
-        <i class="fa-brands fa-tiktok mr-2 text-emerald-400"></i>
-        Follow TikTok: 
-        <a href="https://tiktok.com/@generasi90blog" target="_blank" 
-           class="text-emerald-400 font-bold hover:text-white transition-all duration-300 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse">
-            King Mamank
-        </a>
-        <span class="text-slate-300 ml-1 text-sm">utk menonton video penyuluhan pertanian yg menarik & edukatif</span>
-    </p>
-    
-    <p class="mb-2">
-        <i class="fa-brands fa-chrome mr-2 text-emerald-400"></i>
-        Gunakan <b>Google Chrome</b>.
-    </p>
+        <button id="btnAnalisis" class="btn-main" style="display: none;" onclick="mulaiAnalisis()">🚀 MULAI ANALISIS AI</button>
+        <div id="loader" style="display:none; text-align:center; margin-top:10px; font-size:0.7rem; color:var(--accent-green);">📡 MENGANALISIS...</div>
 
-    <p class="text-xs mt-3 pt-3 border-t border-emerald-500/20 opacity-80">
-        <i class="fa-brands fa-whatsapp mr-2 text-emerald-400"></i>
-        Ada masalah, WA: 
-        <a href="https://wa.me/6281354871000?text=Halo%20King%20Mamank,%20saya%20ingin%20lapor%20masalah" 
-           target="_blank" 
-           class="text-emerald-400 font-bold hover:text-white transition-all duration-300 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse">
-            081354871000
-        </a>
-    </p>
-</div>
-
-        <button type="button" 
-                onclick="closeWarning()" 
-                class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-2xl transition-all duration-300 active:scale-95 shadow-lg shadow-emerald-900/20 cursor-pointer uppercase tracking-wider text-sm">
-            Saya Sudah Membaca dan Mengerti
-        </button>
-    </div>
-</div>
-
-<div class="floating-container no-print">
-    <a href="https://mamank757.github.io/PPL" class="floating-btn floating-home"><i class="fa-solid fa-house"></i></a>
-    <a href="https://www.tiktok.com/@generasi90blog" target="_blank" class="floating-btn floating-tiktok"><i class="fa-brands fa-tiktok"></i></a>
-</div>
-
-<div class="no-print max-w-5xl mx-auto p-4 md:p-8">
-    <header class="mb-8">
-        <h2 class="text-2xl font-bold text-emerald-400 flex items-center gap-3">
-            <i class="fa-solid fa-laptop-code"></i> Form Laporan Pendampingan PPL
-        </h2>
-    </header>
-
-    <div class="input-card border-l-4 border-emerald-500">
-        <div class="input-group">
-            <label class="text-emerald-400 font-bold">Pilih Tipe Laporan</label>
-            <select id="in_tipe_laporan" onchange="toggleTipeLaporan()" class="font-bold text-lg">
-                <option value="bulanan">📅 Laporan Bulanan</option>
-                <option value="triwulan">🗓️ Laporan Triwulan</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="input-card">
-        <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-4 border-b border-slate-700 pb-2">I. Identitas Penyuluh</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="input-group"><label>Nama Penyuluh</label><input type="text" id="in_nama" oninput="updateLaporan()" placeholder="Ketik Nama"></div>
-            <div class="input-group"><label>NIP</label><input type="text" id="in_nip" oninput="updateLaporan(); sync()" placeholder="NIP"></div>
-            <div class="input-group">
-                <label>Jabatan</label>
-                <select id="in_jabatan" onchange="updateLaporan()">
-                     <option value="">-- Pilih Jabatan --</option>
-                     <option value="Penyuluh Pertanian Pemula">Penyuluh Pertanian Pemula</option>
-                     <option value="Penyuluh Pertanian Terampil">Penyuluh Pertanian Terampil</option>
-                     <option value="Penyuluh Pertanian Mahir">Penyuluh Pertanian Mahir</option>
-                     <option value="Penyuluh Pertanian Penyelia">Penyuluh Pertanian Penyelia</option>
-                     <option value="Penyuluh Pertanian Ahli Pertama">Penyuluh Pertanian Ahli Pertama</option>
-                     <option value="Penyuluh Pertanian Ahli Muda">Penyuluh Pertanian Ahli Muda</option>
-                     <option value="Penyuluh Pertanian Ahli Madya">Penyuluh Pertanian Ahli Madya</option>
-                     <option value="Penyuluh Pertanian Ahli Utama">Penyuluh Pertanian Ahli Utama</option>
-                </select>
-            </div>
-            <div class="input-group">
-                <label>Pangkat/Golongan</label>
-                <select id="in_pangkat" onchange="updateLaporan()">
-                   <option value="">-- Pilih Pangkat --</option>
-                   <option value="Pengatur Muda (II/a)">Pengatur Muda (II/a)</option>
-                   <option value="Pengatur Muda Tk. I (II/b)">Pengatur Muda Tk. I (II/b)</option>
-                   <option value="Pengatur (II/c)">Pengatur (II/c)</option>
-                   <option value="Pengatur Tk. I (II/d)">Pengatur Tk. I (II/d)</option>
-                   <option value="Penata Muda, III/a">Penata Muda, III/a</option>
-                     <option value="IX">IX</option>
-                   <option value="Penata Muda Tk. I, III/b">Penata Muda Tk. I, III/b</option>
-                   <option value="Penata, III/c">Penata, III/c</option>
-                   <option value="Penata Tk. I, III/d">Penata Tk. I, III/d</option>
-                   <option value="Pembina (IV/a)">Pembina (IV/a)</option>
-                   <option value="Pembina Tk. I (IV/b)">Pembina Tk. I (IV/b)</option>
-                   <option value="Pembina Utama Muda (IV/c)">Pembina Utama Muda (IV/c)</option>
-                   <option value="Pembina Utama Madya (IV/d)">Pembina Utama Madya (IV/d)</option>
-                   <option value="Pembina Utama (IV/e)">Pembina Utama (IV/e)</option>
-                </select>
-            </div>
-            <div class="input-group md:col-span-2"><label>Unit Kerja</label><input type="text" id="in_unit" oninput="updateLaporan()" value="Kementerian Pertanian RI"></div>
-        </div>
-    </div>
-
-    <div class="input-card">
-        <h3 class="text-sm font-bold text-emerald-400 uppercase tracking-widest mb-4 border-b border-slate-700 pb-2">II. Data Kegiatan</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="input-group"><label>Dasar Pelaksanaan</label><input type="text" id="in_dasar" oninput="updateLaporan()" value="Indikator Kinerja Penyuluh Pertanian"></div>
-            <div class="input-group md:col-span-2">
-                <label>Nama Kegiatan</label>
-                <select id="in_kegiatan" onchange="updateLaporan()">
-                    <option value="">-- Pilih Kegiatan --</option>
-                    <option value="Pendampingan Peningkatan Produksi Hortikultura">Pendampingan Peningkatan Produksi Hortikultura</option>
-                    <option value="Pendampingan Hilirisasi Perkebunan">Pendampingan Hilirisasi Perkebunan</option>
-                    <option value="Pendampingan Penyediaan Benih Dan Bibit Serta Peningkatan Produksi Ternak">Pendampingan Penyediaan Benih Dan Bibit Serta Peningkatan Produksi Ternak</option>
-                    <option value="Pendampingan Pemanfaatan Alat dan Mesin Pertanian">Pendampingan Pemanfaatan Alat dan Mesin Pertanian</option>
-                    <option value="Pendampingan RDKK Pupuk Subsidi">Pendampingan RDKK Pupuk Subsidi</option>
-                    <option value="Pendampingan Survey Lokasi Cetak Sawah Rakyat (CSR)">Pendampingan Survey Lokasi Cetak Sawah Rakyat (CSR)</option>
-                    <option value="Pendampingan Pemanfaatan Irigasi Perpompaan Dan Perpipaan">Pendampingan Pemanfaatan Irigasi Perpompaan Dan Perpipaan</option>
-                    <option value="Pendampingan Kinerja Brigade Pangan (BP)">Pendampingan Kinerja Brigade Pangan (BP)</option>
-                    <option value="Pengawalan dan Pendampingan CPCL Bantuan Pemerintah">Pengawalan dan Pendampingan CPCL Bantuan Pemerintah</option>
-                    <option value="Penderasan Materi & Kelompencapir Digital (Triwulan)">Penderasan Materi & Kelompencapir Digital (Triwulan)</option>
-                    <option value="Pelaksanaan Tugas Fungsi Penyuluhan (Triwulan)">Pelaksanaan Tugas Fungsi Penyuluhan (Triwulan)</option>
-                    <option value="Laporan Data Statistik Tanaman Perkebunan (Triwulan)">Laporan Data Statistik Tanaman Perkebunan (Triwulan)</option>
-                    <option value="Laporan Data Statistik Tanaman Pangan (Triwulan)">Laporan Data Statistik Tanaman Pangan (Triwulan)</option>
-                    <option value="Laporan Data Statistik Tanaman Hortikultura (Triwulan)">Laporan Data Statistik Tanaman Hortikultura (Triwulan)</option>
-                </select>
-            </div>
-            <div id="wrap_tgl_bulanan" class="input-group">
-                <label>Tanggal Kegiatan</label>
-                <input type="date" id="in_tgl_kegiatan" onchange="updateLaporan()">
-            </div>
-            <div id="wrap_tgl_triwulan" class="input-group hidden-element">
-                <label>Periode Triwulan</label>
-                <div class="flex gap-2">
-                    <select id="in_periode_triwulan" onchange="updateLaporan()">
-                        <option value="Januari - Maret">Januari - Maret</option>
-                        <option value="April - Juni">April - Juni</option>
-                        <option value="Juli - September">Juli - September</option>
-                        <option value="Oktober - Desember">Oktober - Desember</option>
-                    </select>
-                    <input type="number" id="in_tahun_triwulan" oninput="updateLaporan()" value="2026">
-                </div>
-            </div>
-            <div class="input-group"><label>Lokasi (Desa/Poktan)</label><input type="text" id="in_lokasi" oninput="updateLaporan()" placeholder="Cth: Lahan Poktan Sukamaju"></div>
-            <div class="input-group"><label>Jumlah Peserta</label><input type="text" id="in_peserta" oninput="updateLaporan()" placeholder="Cth: 15 Orang"></div>
-            <div id="wrap_foto" class="input-group md:col-span-2">
-                <label>Foto Kegiatan Bulanan (wajib)</label>
-                <input type="file" id="in_foto_file" onchange="handleFoto(this)" class="file:bg-emerald-600 file:text-white file:rounded-lg file:border-0 file:px-4 file:py-2">
-            </div>
-        </div>
-    </div>
-
-    <div class="input-card border-purple-500/30">
-        <h3 class="text-sm font-bold text-purple-400 uppercase tracking-widest mb-4 border-b border-purple-900/30 pb-2">III. Isi Laporan (AI Assisted)</h3>
-        <div class="space-y-4">
-            <div class="input-group">
-                <label class="text-purple-300">Permasalahan (Isi Manual)</label>
-                <textarea id="in_masalah" oninput="updateLaporan()" class="h-24"></textarea>
-            </div>
-            <button onclick="generateAI()" id="btn-ai" class="w-full btn-ai text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2">
-                <span id="loader" class="hidden animate-spin">🌀</span> ✨ GENERATE NARASI AI
-            </button>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="input-group"><label>Hasil Pekerjaan (AI)</label><textarea id="in_hasil" oninput="updateLaporan()" class="h-40"></textarea></div>
-                <div class="input-group"><label>Upaya Penanganan (AI)</label><textarea id="in_upaya" oninput="updateLaporan()" class="h-40"></textarea></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="input-card">
-        <h3 class="text-sm font-bold text-orange-400 uppercase tracking-widest mb-4 border-b border-orange-900/30 pb-2">IV. Pengesahan</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div class="input-group"><label>Tempat TTD</label><input type="text" id="in_tempat_ttd" oninput="updateLaporan()" value="Bola"></div>
-            <div class="input-group"><label>Tanggal TTD</label><input type="date" id="in_tgl_ttd_manual" onchange="updateLaporan()"></div>
-            <div class="input-group"><label>Nama Pejabat</label><input type="text" id="in_koor_nama" oninput="updateLaporan()" placeholder="Samaila"></div>
-            <div class="input-group"><label>NIP Pejabat</label><input type="text" id="in_koor_nip" oninput="updateLaporan()" placeholder="19xxxx"></div>
-            <div class="input-group md:col-span-2"><label>Jabatan Pejabat</label><input type="text" id="in_koor_jabatan" oninput="updateLaporan()" value="Koordinator BPP Bola"></div>
-            <div class="input-group"><label>TTD Penyuluh (PNG)</label><input type="file" onchange="handleTTD(this, 'out_img_ttd_ppl')"></div>
-            <div class="input-group"><label>TTD Pejabat (PNG)</label><input type="file" onchange="handleTTD(this, 'out_img_ttd_koor')"></div>
-        </div>
-    </div>
-
-    <button onclick="safePrint()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 rounded-2xl shadow-xl mb-10 transition-all active:scale-95">
-        <i class="fa-solid fa-print mr-2"></i> CETAK / SIMPAN PDF
-    </button>
-</div>
-
-<div class="report-container">
-    <div id="report" class="report-page">
-        <!-- JUDUL -->
-        <div class="text-center font-bold text-base mb-6 uppercase">
-            LAPORAN PELAKSANAAN <br> <span id="out_judul_kegiatan">PENYULUHAN PERTANIAN</span>
-        </div>
-
-        <!-- TABEL IDENTITAS & PELAKSANAAN -->
-        <table class="w-full mb-2">
-            <tr><td style="width: 25px;" class="font-bold">1.</td><td colspan="2" class="font-bold">Penyuluh Pertanian</td></tr>
-            <tr><td></td><td style="width: 160px;">a. Nama / NIP</td><td>: <span id="out_nama"></span> / NIP. <span id="out_nip"></span></td></tr>
-            <tr><td></td><td>b. Pangkat / Golongan</td><td>: <span id="out_pangkat"></span></td></tr>
-            <tr><td></td><td>c. Jabatan</td><td>: <span id="out_jabatan"></span></td></tr>
-            <tr><td></td><td>d. Unit Kerja</td><td>: <span id="out_unit"></span></td></tr>
-            <tr><td class="font-bold">2.</td><td class="font-bold">Dasar Pelaksanaan</td><td>: <span id="out_dasar"></span></td></tr>
-            <tr><td class="font-bold">3.</td><td class="font-bold">Nama Kegiatan</td><td>: <span id="out_kegiatan"></span></td></tr>
-            <tr><td class="font-bold">4.</td><td colspan="2" class="font-bold pt-2">Pelaksanaan</td></tr>
-            <tr><td></td><td>a. Waktu</td><td>: <span id="out_tgl_kegiatan"></span></td></tr>
-            <tr><td></td><td>b. Tempat/Lokasi</td><td>: <span id="out_lokasi"></span></td></tr>
-            <tr><td></td><td>c. Peserta</td><td>: <span id="out_peserta"></span></td></tr>
-            <tr><td class="font-bold">5.</td><td class="font-bold">Hasil Pekerjaan</td><td>: </td></tr>
-        </table>
-
-        <div id="out_hasil" class="ml-6 text-justify mb-2 whitespace-pre-line text-sm"></div>
-
-        <div class="font-bold ml-6 mb-1 text-sm">Permasalahan:</div>
-        <ul id="out_masalah" class="ml-12 list-disc text-sm mb-4"></ul>
-
-        <div class="font-bold ml-6 mb-1 text-sm">Upaya Penanganan:</div>
-        <ul id="out_upaya" class="ml-12 list-disc text-sm mb-10"></ul>
-
-               <!-- PENGESAHAN (Tetap di Halaman 1) -->
-    <div class="sig-section flex justify-between px-4 mt-10">
-        <div class="text-center w-1/2" style="break-inside: avoid;">
-            Mengetahui:<br>
-            <span id="out_koor_jabatan_display">Koordinator BPP</span>
-            <div class="h-20 flex items-center justify-center">
-                <img id="out_img_ttd_koor" class="max-h-20 hidden">
-            </div>
-            <div id="out_koor_nama_display" class="font-bold underline">Samaila</div>
-            NIP. <span id="out_koor_nip_display"></span>
-        </div>
-
-        <div class="text-center w-1/2" style="break-inside: avoid;">
-            <span id="out_tempat_ttd_display">Bola</span>, <span id="out_tgl_ttd"></span><br>
-            Penyuluh Pertanian
-            <div class="h-20 flex items-center justify-center">
-                <img id="out_img_ttd_ppl" class="max-h-20 hidden">
-            </div>
-            <div id="sig_nama" class="font-bold underline"></div>
-            NIP. <span id="sig_nip"></span>
-        </div>
-    </div>
-
-    <!-- LAMPIRAN FOTO (Otomatis Pindah ke Halaman 2) -->
-    <div id="foto_container" class="foto-wrap hidden-element">
-        <div class="lampiran-title">LAMPIRAN FOTO KEGIATAN</div>
-        <div style="display: inline-block; border: 1px solid #000; padding: 5px;">
-            <img id="img_preview" src="" alt="Foto Kegiatan">
-        </div>
-        <p id="out_ket_foto" class="font-bold mt-4 text-center text-black"></p>
-    </div>
-</div>
-<!-- Pop-up Ebook Selalu Muncul -->
-<!-- Pop-up Ebook Selalu Muncul -->
-<div id="ebook-popup" class="fixed inset-0 z-[10000] hidden flex items-center justify-center bg-slate-900/80 backdrop-blur-sm p-4">
-    <div class="bg-slate-800 border-2 border-purple-500 rounded-3xl max-w-sm w-full overflow-hidden shadow-2xl transform transition-all scale-95 opacity-0 duration-300" id="ebook-content">
-        
-        <!-- Kontainer Gambar yang Dikecilkan -->
-        <div class="flex justify-center pt-6 bg-slate-800">
-            <div class="relative w-40 aspect-[3/4] bg-slate-900 overflow-hidden rounded-xl shadow-lg border border-slate-700">
-                <img src="https://raw.githubusercontent.com/mamank757/laporanbola/refs/heads/main/Kalo%20Einstein%20Jadi%20Petani.jpg" 
-                     alt="Preview Ebook" 
-                     class="w-full h-full object-cover">
-                <!-- Icon Floating kecil -->
-                <div class="absolute -bottom-2 -right-2 bg-purple-600 w-8 h-8 rounded-full flex items-center justify-center shadow-lg animate-bounce">
-                    <i class="fa-solid fa-book-open text-white text-sm"></i>
-                </div>
-            </div>
-        </div>
-        
-        <div class="p-6 text-center">
-            <h3 class="text-xl font-bold text-white mb-2">E-Book Gratis!</h3>
-            <p class="text-slate-300 text-sm mb-6">
-                Wawasan eksklusif pertanian modern <b>"Einstein Jadi Petani"</b> kini tersedia.
-            </p>
+        <div id="result">
+            <div id="resLabel" style="font-size: 1.1rem; font-weight: 800; color: var(--accent-green); text-align: center;">-</div>
+            <div id="resConf" style="font-size: 0.75rem; text-align: center; margin-bottom: 15px; color: var(--accent-soil);">Akurasi: 0%</div>
             
-            <div class="space-y-3">
-                <a href="https://s.id/einsteinjadipetani" target="_blank" onclick="closeEbookPopup()" class="block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 rounded-xl transition-all active:scale-95 shadow-lg shadow-emerald-900/20">
-                    <i class="fa-solid fa-download mr-2"></i> DOWNLOAD SEKARANG
-                </a>
-                <button onclick="closeEbookPopup()" class="text-slate-400 text-xs hover:text-white transition-colors underline">
-                    Saya sudah download
-                </button>
+            <!-- BOX 1: PENYAKIT -->
+            <div id="boxPenyakit">
+                <div class="info-box"><strong>🔍 Gejala:</strong><br><span id="resGejala">-</span></div>
+                <div class="info-box" style="border-left-color:var(--red-alert);"><strong>🧬 Penyebab:</strong><br><span id="resPenyebab">-</span></div>
+                <div class="info-box" style="border-left-color:var(--accent-soil);"><strong>✅ Solusi PPL:</strong><br><span id="resSolusi">-</span></div>
+                <div class="info-box" style="border-left-color:var(--accent-soil);"><strong>✅ Merek Produk:</strong><br><span id="resMerek">-</span></div>
+                <div class="info-box" style="border-left-color:var(--accent-soil);"><strong>✅ Waktu Aplikasi:</strong><br><span id="resAplikasi">-</span></div>
             </div>
-        </div>
+
+            <!-- BOX 2: TANAH -->
+            <div id="boxTanah" style="display:none;">
+                <div class="info-box" style="border-left-color: var(--accent-soil);"><strong>📊 Distribusi Tekstur:</strong><div id="soilList" style="margin-top: 10px;"></div></div>
+                <table>
+                    <tr><td>Kesuburan</td><td class="row-val" id="resSubur">-</td></tr>
+                    <tr><td>Bahan Organik</td><td class="row-val" id="resOrganik">-</td></tr>
+                    <tr><td>Estimasi pH</td><td class="row-val" id="resPH">-</td></tr>
+                </table>
+                <div class="info-box" style="border-left-color: var(--accent-bwd);"><strong>📖 Deskripsi Utama:</strong><br><span id="resPenjelasan">-</span></div>
+                <div class="info-box" style="border-left-color: var(--accent-soil);"><strong>💡 Saran Tanah:</strong><br><span id="resSaranTanah">-</span></div>
+                <canvas id="textureTriangle" width="300" height="250" style="width: 100%; margin-top: 15px;"></canvas>
+            </div>
+
+            <!-- BOX 3: BWD -->
+            <div id="boxBWD" style="display:none;">
+                <div id="leafList"></div>
+                <div class="info-box" style="border-left-color: var(--accent-bwd);">
+                    <div id="voteInfo" style="font-weight:800; color:var(--accent-soil); margin-bottom:5px;"></div>
+                    <strong>📋 Rekomendasi Pemupukan:</strong><br><span id="resBWDSaran">-</span>
+                </div>
+            </div>
+
+            <!-- BOX 4: CUACA -->
+            <div id="boxCuaca" style="display:none; text-align: center;">
+    <div id="gpsPrompt" style="padding: 20px 10px;">
+        <div style="font-size: 2rem; margin-bottom: 10px;">🛰️</div>
+        <h4 style="margin: 0; color: var(--accent-green);">Akses Lokasi/Lahan Anda</h4>
+        <p style="font-size: 0.75rem; color: #8b949e; margin: 10px 0 20px;">
+            Kami memerlukan koordinat GPS untuk mengambil data cuaca dan risiko penyakit Blast langsung dari satelit di titik sawah Anda.
+        </p>
+       <button class="btn-main btn-live" onclick="aktifkanGPS()" style="background: var(--accent-bwd); color: white;">
+    SINKRONKAN GPS & SATELIT
+</button>
+    </div>
+
+   <div id="weatherData" style="display: none; text-align: left;">
+    <div class="info-box" style="border-left: 4px solid var(--accent-bwd); background: rgba(31, 111, 235, 0.05);">
+        <strong>📍 Lokasi</strong><br>
+        <span id="lokasiSawah" style="font-size: 0.75rem; opacity: 0.7;">-</span><br>
+        <span id="alamatDesa" style="color: var(--accent-green); font-weight: 600;">Mencari alamat...</span>
+    </div>
+
+    <div class="info-box" style="border-left-color: var(--accent-green); padding: 15px;">
+        <strong>📊 Parameter Cuaca Saat Ini</strong>
+        <table style="width: 100%; margin-top: 10px; border: none;">
+             <tr>
+                <td style="border: none; padding: 5px 0;">🌧️ Curah Hujan</td>
+                <td class="row-val" id="rainNow" style="color: var(--text-main);">-</td>
+            </tr>
+            <tr>
+                <td style="border: none; padding: 5px 0;">🌡️ Suhu</td>
+                <td class="row-val" id="suhuNow" style="color: var(--text-main);">-</td>
+            </tr>
+            <tr>
+                <td style="border: none; padding: 5px 0;">💧 Kelembapan</td>
+                <td class="row-val" id="humidityNow" style="color: var(--text-main);">-</td>
+            </tr>
+            <tr>
+                <td style="border: none; padding: 5px 0;">💨 Kec. Angin</td>
+                <td class="row-val" id="windNow" style="color: var(--text-main);">-</td>
+            </tr>
+            <tr>
+    <td style="border: none; padding: 5px 0;">⏲️ Tekanan Udara</td>
+    <td class="row-val" id="pressNow" style="color: var(--text-main);">-</td>
+</tr>
+            <tr>
+    <td style="border: none; padding: 5px 0;">☁️ Suhu Atas (850hPa)</td>
+    <td class="row-val" id="tempUpper" style="color: var(--accent-bwd);">-</td>
+</tr>
+<tr>
+    <td style="border: none; padding: 5px 0;">💧 Dew Point Spread</td>
+    <td class="row-val" id="dpSpread" style="color: var(--text-main);">-</td>
+</tr>
+<tr>
+    <td style="border: none; padding: 5px 0;">⚡ Energi Badai (CAPE)</td>
+    <td class="row-val" id="capeVal" style="color: var(--accent-soil);">-</td>
+</tr>
+            <tr>
+                <td style="border: none; padding: 5px 0;">🧭 Arah Angin</td>
+                <td class="row-val" id="windDir" style="color: var(--accent-soil); font-size: 0.75rem;">-</td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="prediksiHujan" class="info-box" style="border-left-color: var(--accent-soil); background: rgba(255, 215, 0, 0.05); display: none;">
+        <strong>🔮 Prediksi 1 Jam Ke Depan</strong><br>
+        <span id="hujanNext">-</span>
+    </div>
+
+    <div class="info-box" style="border-left-color:var(--red-alert);">
+        <strong>⚠️ Risiko Penyakit Tanaman</strong><br><span id="riskResult">-</span>
     </div>
 </div>
+</div>
+
 <script>
-// --- JAVASCRIPT START ---
+    let currentMode = 'daun', base64Image = "";
 
-const blacklistNIP = ["199409042020122001", "19940904 202012 2 001"];
+    const URL_DAUN = "https://script.google.com/macros/s/AKfycbyCYh65h_3lT4iWr97_RHJNZmaPTSHDp_uFPy_pAP_rvC5BxYHI1n3dn5iwrnNcER1X/exec";
+    const URL_TANAH = "https://script.google.com/macros/s/AKfycbyjW_J423BTWIZiP88OiQy0nVUp791OCUlH5DcW5owVj3NoDPHK6d9_Jwc11kdtX4gWkw/exec";
+    const URL_BWD = "https://script.google.com/macros/s/AKfycbxLB9WiTgdofmuS1r6OK2u5xnUc0aZu8KyVxg7X5M4ODh6oFnZCK9q-jnsawREFTm5ylg/exec";
 
-document.addEventListener('DOMContentLoaded', () => {
-    // Set default data
-    document.getElementById('in_nama').placeholder = "Nama Lengkap";
-    document.getElementById('in_tgl_ttd_manual').valueAsDate = new Date();
-    document.getElementById('in_tgl_kegiatan').valueAsDate = new Date();
-    updateLaporan();
-});
-
-function closeWarning() {
-    const warning = document.getElementById('browser-warning');
-    if(warning) warning.style.display = 'none';
-}
-
-function safePrint() {
-    const userNIP = document.getElementById('in_nip').value.trim();
-    const fotoInput = document.getElementById('in_foto_file');
-    const tipeLaporan = document.getElementById('in_tipe_laporan').value;
-
-    if (blacklistNIP.includes(userNIP)) {
-        alert("Akses Anda Ditolak!");
-        return;
-    }
-
-    if (tipeLaporan === "bulanan" && (!fotoInput.files || fotoInput.files.length === 0)) {
-        alert("⚠️ Untuk Laporan Bulanan, Anda wajib mengupload foto kegiatan.");
-        return;
-    }
-
-    window.print();
-}
-
-function handleFoto(input) {
-    const container = document.getElementById('foto_container');
-    const img = document.getElementById('img_preview');
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (e) => { 
-            img.src = e.target.result; 
-            container.classList.remove('hidden-element'); 
-        };
-        reader.readAsDataURL(input.files[0]);
-    } else { 
-        container.classList.add('hidden-element'); 
-    }
-}
-
-function handleTTD(input, targetId) {
-    const img = document.getElementById(targetId);
-    if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = (e) => { 
-            img.src = e.target.result; 
-            img.classList.remove('hidden'); 
-        };
-        reader.readAsDataURL(input.files[0]);
-    } else { 
-        img.classList.add('hidden'); 
-    }
-}
-
-function formatTanggal(tglString) {
-    if(!tglString) return "-";
-    const d = new Date(tglString);
-    return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
-}
-
-function toggleTipeLaporan() {
-    const tipe = document.getElementById("in_tipe_laporan").value;
-    const wrapBulanan = document.getElementById("wrap_tgl_bulanan");
-    const wrapTriwulan = document.getElementById("wrap_tgl_triwulan");
-    const wrapFoto = document.getElementById("wrap_foto");
-    const fotoContainer = document.getElementById('foto_container');
-
-    if (tipe === "bulanan") {
-        wrapBulanan.classList.remove("hidden-element");
-        wrapTriwulan.classList.add("hidden-element");
-        wrapFoto.classList.remove("hidden-element");
-    } else {
-        wrapBulanan.classList.add("hidden-element");
-        wrapTriwulan.classList.remove("hidden-element");
-        wrapFoto.classList.add("hidden-element");
-        fotoContainer.classList.add('hidden-element');
-    }
-    updateLaporan();
-}
-
-function updateLaporan() {
-    const mapping = {
-        'in_nama': ['out_nama', 'sig_nama'],
-        'in_nip': ['out_nip', 'sig_nip'],
-        'in_pangkat': ['out_pangkat'],
-        'in_jabatan': ['out_jabatan'],
-        'in_unit': ['out_unit'],
-        'in_dasar': ['out_dasar'],
-        'in_kegiatan': ['out_kegiatan', 'out_judul_kegiatan'],
-        'in_lokasi': ['out_lokasi'],
-        'in_peserta': ['out_peserta'],
-        'in_hasil': ['out_hasil'],
-        'in_tempat_ttd': ['out_tempat_ttd_display'],
-        'in_koor_nama': ['out_koor_nama_display'],
-        'in_koor_nip': ['out_koor_nip_display'],
-        'in_koor_jabatan': ['out_koor_jabatan_display']
+    const kamusTani = {
+        "healthy": { 
+            nama: "Tanaman Sehat", 
+            gejala: "Warna hijau segar, pertumbuhan normal tanpa bercak.", 
+            penyebab: "Kondisi lingkungan dan nutrisi optimal.",
+            solusi: "Lanjutkan pemupukan berimbang dan pantau secara rutin." 
+        },
+        "bacterial_leaf_blight": { 
+            nama: "HDB - Hawar Daun Bakteri (Kresek)", 
+            gejala: "Garis kuning/oranye di sepanjang pinggir daun yang mengering. Penyakit ini dinamai kresek karena daun yang terserang akan berubah warna menjadi cokelat kekuningan, menggulung, dan mengering seperti kertas kresek.", 
+            penyebab: "Bakteri Xanthomonas oryzae yang sangat cepat berkembang biak pada lingkungan dengan tingkat kelembapan tinggi pada musim hujan, dan tanaman padi kelebihan pemupukan Nitrogen.",
+            solusi: "Gunakan bakterisida, pastikan sirkulasi air sawah lancar, kurangi Urea.", 
+            merek: "Kuproxat 345 SC, Nordox 56 WP, Blast 200 SC, Biopatek (Hayati)",
+            aplikasi: "Waktu Aplikasi: Sebaiknya diaplikasikan segera setelah muncul gejala awal atau sebagai langkah pencegahan dengan interval 7–10 hari."
+        },
+        "brown_spot": { 
+            nama: "Bercak Cokelat (Brown Spot)", 
+            gejala: "Bintik cokelat bulat atau oval merata di permukaan daun.", 
+            penyebab: "Jamur Bipolaris oryzae. Sering terjadi karena ketidakseimbangan nutrisi tanah dan kelembapan udara yang tinggi serta suhu hangat sangat mendukung penyebaran jamur.",
+            solusi: "Cukupi kebutuhan Kalium dan pastikan drainase lancar.",
+            merek: "Amistar Top 325 SC, Tandem 325 SC, atau alternatif lain seperti WUZ, Vitro, dan Torbinol.",
+            aplikasi: "Jika serangan sudah terjadi, gunakan fungisida yang tepat, seperti yang mengandung bahan aktif kombinasi Azoksistrobin dan Difenokonazol."
+        },
+        "leaf_blast": { 
+            nama: "Penyakit Blast", 
+            gejala: "Bercak cokelat berbentuk belah ketupat dengan pusat abu-abu.", 
+            penyebab: "Jamur patogen Pyricularia oryzae yang berkembang pesat pada kelembapan tinggi, suhu malam yang sejuk, dan pemupukan nitrogen berlebih.",
+            solusi: "Semprot fungisida sistemik (Trisiklazol), kurangi dosis Nitrogen.",
+            merek: "Blast 200 SC (bahan aktif trisiklazol), Envoy 80 WP, dan Amistar Top 325 SC.",
+            aplikasi: "1. Fase Vegetatif (Blast Daun): Semprot sejak dini saat gejala awal bercak cokelat berbentuk belah ketupat muncul, atau lakukan tindakan pencegahan jika lingkungan lembap. 2. Fase Bunting hingga Awal Keluar Malai (Blast Leher): Sangat krusial untuk mencegah leher malai membusuk (potong leher)."
+        },
+        "leaf_scald": { 
+            nama: "Luka Daun (Leaf Scald)", 
+            gejala: "Bercak besar berbentuk perahu yang mengering di ujung daun.", 
+            penyebab: "Jamur Microdochium oryzae berkembang sangat cepat dalam kondisi Kelembapan Tinggi, Pemupukan Nitrogen Berlebihdan Jarak Tanam Terlalu Rapat.",
+            solusi: "Gunakan varietas tahan dan atur jarak tanam jangan terlalu rapat.",
+            merek: "Dithane M-45 80 WP (Bahan Aktif Mankozeb), Score 250 EC (Difenokonazol-Sistemik), Amistar Top 325 SC (Kombinasi Azoksistrobin + Difenokonazol).",
+            aplikasi: "Pada kondisi serangan yang parah, gunakan fungisida yang direkomendasikan untuk penyakit jamur daun (misalnya berbahan aktif mankozeb atau difenokonazol)."
+        },
+        "narrow_brown_spot": { 
+            nama: "Bercak Cokelat Sempit", 
+            gejala: "Garis-garis cokelat sempit searah dengan tulang daun.", 
+            penyebab: "Jamur Cercospora oryzae (Cercospora janseana) yang mudah berkembang saat suhu lingkungan rendah dengan kelembapan tinggi dan tanaman kekurangan Kalium.",
+            solusi: "Tambah dosis pupuk Kalium dan perbaiki sistem pengairan.",
+            merek: "Score 250 EC dan Manic 62,5 WG (Difenokonazol), Qiutane 80 WP. (Mankozeb + Trisiklazol), DKAztrozol Plus 375 SC (Azoksistrobin + Difenokonazol).",
+            aplikasi: "Penyakit bercak coklat sempit pada padi (disebabkan oleh jamur Cercospora oryzae) dapat dikendalikan secara efektif menggunakan fungisida berbahan aktif seperti difenokonazol, propikonazol, atau mankozeb."
+        },
+        "unlabeled": { 
+            nama: "Objek Tidak Dikenali", 
+            gejala: "-", penyebab: "-", 
+            solusi: "Pastikan foto DAUN fokus, dekat, dan cahaya terang." 
+        }
     };
 
-    // Update elemen berdasarkan mapping
-    for (let inputId in mapping) {
-        const inputEl = document.getElementById(inputId);
-        if (!inputEl) continue;
-        
-        const val = inputEl.value || "...";
-        mapping[inputId].forEach(outputId => {
-            const el = document.getElementById(outputId);
-            if (el) {
-                el.innerText = (outputId === 'out_judul_kegiatan') ? val.toUpperCase() : val;
+    const kamusTanah = {
+        "alluvial": { 
+            "nama": "Tanah Alluvial", 
+            "penjelasan": "Tanah yang terbentuk dari endapan material sedimen (lumpur, pasir, kerikil) yang terbawa aliran sungai. Ditemukan di dataran rendah atau delta. Sangat subur dan kaya unsur hara.",
+            "pH": "6.0 - 7.0", "organik": "Sedang", "npk": "Tinggi", "subur": "Sangat Subur", 
+            "tanaman": "Padi, Jagung, Sayuran", 
+            "saran": "Ideal untuk Padi. Jaga sirkulasi air agar mineral tetap terjaga." 
+        },
+        "black": { 
+            "nama": "Tanah Hitam", 
+            "penjelasan": "Tanah yang memiliki kandungan organik tinggi dan mineral yang kaya, biasanya berwarna gelap hingga hitam pekat. Memiliki kemampuan menahan air yang baik dan sangat produktif.",
+            "pH": "6.5 - 7.5", "organik": "Tinggi", "npk": "Tinggi", "subur": "Subur", 
+            "tanaman": "Kedelai, Kapas, Palawija", 
+            "saran": "Sangat bagus untuk Kedelai. Lakukan pengolahan tanah saat kondisi lembap agar struktur tetap remah." 
+        },
+        "cinder": { 
+            "nama": "Tanah Vulkanik", 
+            "penjelasan": "Tanah yang berasal dari pelapukan material letusan gunung berapi. Teksturnya seringkali berpori, sangat kaya akan unsur hara alami, dan memiliki kemampuan menyimpan air yang luar biasa.",
+            "pH": "5.0 - 7.0", "organik": "Tinggi", "npk": "Sangat Tinggi", "subur": "Sangat Subur", 
+            "tanaman": "Sayuran, Hortikultura, Kopi", 
+            "saran": "Terbaik untuk Sayuran/Horti. Gunakan pupuk organik tambahan untuk menjaga kelembapan jangka panjang." 
+        },
+        "clay": { 
+            "nama": "Tanah Liat (Clay)", 
+            "penjelasan": "Tanah dengan partikel mineral sangat halus. Memiliki kemampuan menahan air yang sangat kuat namun sulit ditembus air (drainase lambat). Bersifat lengket saat basah dan keras saat kering.",
+            "pH": "4.5 - 6.0", "organik": "Sedang", "npk": "Sedang", "subur": "Sedang", 
+            "tanaman": "Padi, Rumput Gajah", 
+            "saran": "Drainase wajib lancar agar akar tak busuk. Tambahkan bahan organik untuk memperbaiki struktur tanah." 
+        },
+        "laterite": { 
+            "nama": "Tanah Laterit", 
+            "penjelasan": "Tanah tua yang telah mengalami pencucian hara secara intensif oleh curah hujan tinggi. Kaya akan oksida besi dan aluminium, sehingga teksturnya seringkali keras dan kurang subur.",
+            "pH": "4.0 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", 
+            "tanaman": "Karet, Kelapa Sawit", 
+            "saran": "Wajib tambah pupuk organik dosis tinggi & pengapuran (Dolomit) untuk menaikkan pH." 
+        },
+        "loamy": { 
+            "nama": "Tanah Lempung", 
+            "penjelasan": "Kombinasi ideal antara pasir, debu, dan sedikit liat. Tanah ini memiliki drainase yang baik sekaligus mampu menyimpan nutrisi dengan efektif. Teksturnya sangat remah dan mudah diolah.",
+            "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", 
+            "tanaman": "Palawija, Buah-buahan", 
+            "saran": "Tanah prima untuk semua tanaman. Pertahankan kualitas dengan penggunaan pupuk organik konsisten." 
+        },
+        "loam": { 
+            "nama": "Tanah Lempung", 
+            "penjelasan": "Tekstur tanah yang paling seimbang untuk pertanian. Mampu menjaga kelembapan tanpa tergenang, serta menyediakan ruang udara yang cukup bagi pernapasan akar tanaman.",
+            "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", 
+            "tanaman": "Sayuran, Buah-buahan", 
+            "saran": "Gunakan mulsa organik untuk menjaga kegemburan tanah 'emas' ini." 
+        },
+        "peat": { 
+            "nama": "Tanah Gambut (Peat)", 
+            "penjelasan": "Tanah yang terbentuk dari akumulasi sisa-sisa tumbuhan yang membusuk tidak sempurna di area rawa. Memiliki kandungan bahan organik sangat tinggi namun tingkat keasamannya ekstrem.",
+            "pH": "3.0 - 5.0", "organik": "Sangat Tinggi", "npk": "Rendah", "subur": "Rendah", 
+            "tanaman": "Kopi, Nanas, Sawit", 
+            "saran": "Berikan Dolomit dosis tinggi & buat parit drainase agar tanah tidak selalu tergenang." 
+        },
+        "red": { 
+            "nama": "Tanah Merah", 
+            "penjelasan": "Tanah yang mengalami pelapukan lanjut and pencucian hara. Warna merah berasal dari kandungan besi oksida yang tinggi. Teksturnya remah namun miskin akan hara organik.",
+            "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", 
+            "tanaman": "Singkong, Karet", 
+            "saran": "Beri pupuk Fosfat (SP-36) dosis ekstra & pupuk kandang untuk memperbaiki kesuburan." 
+        },
+        "sandy": { 
+            "nama": "Tanah Berpasir", 
+            "penjelasan": "Tanah dengan partikel kasar yang tidak dapat menahan air dan unsur hara dengan baik. Teksturnya remah dan sangat mudah diolah, namun sangat cepat kering di musim kemarau.",
+            "pH": "5.5 - 7.0", "organik": "Rendah", "npk": "Rendah", "subur": "Rendah", 
+            "tanaman": "Kelapa, Semangka", 
+            "saran": "Wajib tambah kompos/pupuk kandang tiap musim untuk meningkatkan daya ikat air tanah." 
+        },
+        "sandy_loam": { 
+            "nama": "Lempung Berpasir", 
+            "penjelasan": "Tanah dengan campuran pasir (50-70%) dan liat/debu (30-50%). Tekstur lebih padat dari pasir murni, mampu menahan air dan hara lebih baik, namun tetap cepat kering dan mudah diolah.", 
+            "pH": "5.0 - 7.5", 
+            "organik": "Sedang-Rendah", 
+            "npk": "Sedang", 
+            "subur": "Sedang", 
+            "tanaman": "Jagung, Kacang Tanah, Ubi Kayu, Cabe", 
+            "saran": "Tambahkan pupuk organik 10-20 ton/ha per musim, irigasi teratur, serta mulsa untuk mengurangi evaporasi." 
+        },
+        "yellow": { 
+            "nama": "Tanah Kuning", 
+            "penjelasan": "Tanah yang mirip dengan tanah merah namun memiliki hidrasi mineral besi yang berbeda. Biasanya terbentuk di lingkungan yang lebih lembap namun tetap memiliki tingkat kesuburan yang rendah.",
+            "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", 
+            "tanaman": "Ubi Kayu, Karet", 
+            "saran": "Pakai mulsa agar tanah tidak cepat mengeras dan tererosi saat hujan lebat." 
+        },
+        "unlabeled": { 
+            "nama": "Objek Tidak Dikenali", 
+            "penjelasan": "AI tidak dapat memastikan jenis tanah karena foto kurang jelas atau terhalang benda lain.",
+            "saran": "Ambil foto kembali dengan cahaya terang. Pastikan tanah bersih dari sampah plastik atau daun kering." 
+        }
+    };
+
+    const RECOMMENDATIONS = {
+        "yellow": {
+            label: "BWD Skala 1",
+            rec: "🚨 SEGERA berikan pupuk Urea 100-150 kg/ha. Tanaman kritis nitrogen (Defisiensi Berat).",
+            color: "badge-yellow"
+        },
+        "yellowish green": {
+            label: "BWD Skala 2",
+            rec: "⚠️ Nitrogen rendah. Tambahkan pupuk Urea 75-100 kg/ha sesuai umur tanaman.",
+            color: "badge-yellow"
+        },
+        "light green": {
+            label: "BWD Skala 3",
+            rec: "✅ Kondisi Cukup. Berikan Urea 50 kg/ha untuk menjaga fase pertumbuhan.",
+            color: "badge-green"
+        },
+        "green": {
+            label: "BWD Skala 4",
+            rec: "🌟 Kondisi Optimal/Ideal. Tidak perlu tambahan Urea. Pertahankan kondisi ini.",
+            color: "badge-green"
+        },
+        "dark green": {
+            label: "BWD Skala 5",
+            rec: "⚡ Nitrogen Berlebih. HENTIKAN pupuk N. Waspada serangan hama wereng dan penyakit Blast.",
+            color: "badge-dark"
+        }
+    };
+
+    const kamusWarna = { "yellow": "Kuning", "yellowish green": "Hijau Kekuningan", "light green": "Hijau Muda", "green": "Hijau", "dark green": "Hijau Tua" };
+
+    function switchMode(mode) {
+        currentMode = mode;
+        let color = 'var(--accent-green)';
+        let title = 'Deteksi Penyakit Padi';
+
+        if (mode === 'tanah') { color = 'var(--accent-soil)'; title = 'Analisis Jenis Tanah'; }
+        if (mode === 'bwd') { color = 'var(--accent-bwd)'; title = 'Analisis Warna Daun (BWD)'; }
+        if (mode === 'cuaca') { color = '#4fc3f7'; title = 'Cuaca & Risiko Penyakit Tanaman'; }
+
+        document.getElementById('tabDaun').className = mode === 'daun' ? 'tab-btn active' : 'tab-btn';
+        document.getElementById('tabTanah').className = mode === 'tanah' ? 'tab-btn active soil-mode' : 'tab-btn';
+        document.getElementById('tabBWD').className = mode === 'bwd' ? 'tab-btn active bwd-mode' : 'tab-btn';
+        document.getElementById('tabCuaca').className = mode === 'cuaca' ? 'tab-btn active' : 'tab-btn';
+
+        document.getElementById('modeTitle').innerText = title;
+        document.getElementById('modeTitle').style.color = color;
+        document.getElementById('laser').style.background = color;
+
+        document.getElementById('boxPenyakit').style.display = mode === 'daun' ? 'block' : 'none';
+        document.getElementById('boxTanah').style.display = mode === 'tanah' ? 'block' : 'none';
+        document.getElementById('boxBWD').style.display = mode === 'bwd' ? 'block' : 'none';
+        document.getElementById('boxCuaca').style.display = mode === 'cuaca' ? 'block' : 'none';
+
+        if (mode === 'cuaca') {
+            document.getElementById('btnCamera').style.display = 'none';
+            document.getElementById('scanWindow').style.display = 'none';
+            document.getElementById('btnAnalisis').style.display = 'none';
+            document.getElementById('gpsPrompt').style.display = 'block';
+            document.getElementById('weatherData').style.display = 'none';
+            document.getElementById('result').style.display = 'block';
+        } else {
+            document.getElementById('btnCamera').style.display = 'block';
+            document.getElementById('scanWindow').style.display = 'flex';
+            document.getElementById('gpsPrompt').style.display = 'none';
+            document.getElementById('result').style.display = 'none';
+            document.getElementById('btnAnalisis').style.display = base64Image !== "" ? 'block' : 'none';
+        }
+    }
+
+    function handleFile(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = 800; canvas.height = (img.height * 800) / img.width;
+                ctx.filter = 'brightness(0.9) contrast(1.1)';
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                base64Image = canvas.toDataURL('image/jpeg', 0.7).split(',')[1];
+                document.getElementById('preview').src = canvas.toDataURL('image/jpeg');
+                document.getElementById('preview').style.display = 'block';
+                document.getElementById('msg').style.display = 'none';
+                document.getElementById('btnAnalisis').style.display = 'block';
             }
+        };
+        reader.readAsDataURL(file);
+    }
+
+// ... (Bagian Kamus Tani, Tanah, BWD, dan switchMode tetap sama) ...
+
+// SATU FUNGSI AKTIFKAN GPS (Versi Hidup & Stabil)
+async function aktifkanGPS() {
+    const btn = document.querySelector('.btn-live'); 
+    const originalText = "SINKRONKAN GPS & SATELIT";
+    
+    try {
+        btn.innerText = "⏳ MENCARI SINYAL...";
+        btn.style.opacity = "0.7";
+        btn.disabled = true;
+
+        document.getElementById('resLabel').innerText = "Menghubungkan Satelit...";
+        
+        await loadWeather(); // Memanggil fungsi pengambil data
+        
+        document.getElementById('gpsPrompt').style.display = 'none';
+        document.getElementById('weatherData').style.display = 'block';
+    } catch (err) {
+        document.getElementById('resLabel').innerText = "GPS Gagal";
+        btn.innerText = originalText;
+        btn.style.opacity = "1";
+        btn.disabled = false;
+        alert("Gagal Sinkronisasi. Pastikan GPS HP Aktif.");
+        console.error(err);
+    }
+}
+
+async function getWeather(lat, lon) {
+    // Menambahkan dew_point_2m di current dan cape di hourly
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,dew_point_2m,rain,showers,wind_speed_10m,wind_direction_10m,surface_pressure&hourly=precipitation_probability,precipitation,temperature_850hPa,cape&timezone=auto`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Gagal data satelit");
+    return await res.json();
+}
+
+async function loadWeather() {
+    try {
+        const pos = await new Promise((res, rej) => {
+            navigator.geolocation.getCurrentPosition(res, rej, { 
+                enableHighAccuracy: true,
+                timeout: 10000 
+            });
         });
-    }
-
-    // Update Keterangan Foto di Halaman 2
-    const kegiatanVal = document.getElementById('in_kegiatan').value;
-    const outKetFoto = document.getElementById('out_ket_foto');
-    if (outKetFoto) {
-        outKetFoto.innerText = "Gambar: Dokumentasi Kegiatan " + (kegiatanVal || "...");
-    }
-
-    // Update Waktu & Tanggal
-    const tipe = document.getElementById('in_tipe_laporan').value;
-    let tglTeks = "-";
-    if (tipe === "bulanan") {
-        tglTeks = formatTanggal(document.getElementById('in_tgl_kegiatan').value);
-    } else {
-        tglTeks = document.getElementById('in_periode_triwulan').value + " " + document.getElementById('in_tahun_triwulan').value;
-    }
-    
-    document.getElementById('out_tgl_kegiatan').innerText = tglTeks;
-    document.getElementById('out_tgl_ttd').innerText = formatTanggal(document.getElementById('in_tgl_ttd_manual').value);
-
-    // Update Poin-poin
-    renderListToPrint('in_masalah', 'out_masalah');
-    renderListToPrint('in_upaya', 'out_upaya');
-}
-
-function renderListToPrint(inId, outId) {
-    const input = document.getElementById(inId).value;
-    const output = document.getElementById(outId);
-    if (!output) return;
-    
-    output.innerHTML = "";
-    input.split('\n').filter(line => line.trim() !== "").forEach(line => {
-        const li = document.createElement('li');
-        li.innerText = line;
-        output.appendChild(li);
-    });
-}
-
-function sync() {
-    const nipInput = document.getElementById('in_nip');
-    const isBlacklisted = blacklistNIP.includes(nipInput.value.trim());
-    nipInput.style.borderColor = isBlacklisted ? "#ff4d4d" : "";
-    nipInput.style.backgroundColor = isBlacklisted ? "rgba(255, 0, 0, 0.1)" : "";
-}
-
-async function generateAI() {
-    const tipeLaporan = document.getElementById('in_tipe_laporan').value;
-    const fotoInput = document.getElementById('in_foto_file');
-
-     const userNIP = document.getElementById('in_nip').value.trim();
-        if (blacklistNIP.includes(userNIP)) {
-            alert("Akses Ditolak!");
-            return;
+        
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        document.getElementById('lokasiSawah').innerText = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+        
+        // 1. Ambil Nama Desa (Reverse Geocoding)
+        try {
+            const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+            const geoData = await geoRes.json();
+            const addr = geoData.address;
+            const desa = addr.village || addr.suburb || addr.hamlet || addr.town || "Desa tidak terdeteksi";
+            const kecamatan = addr.city_district || addr.district || "Bola";
+            document.getElementById('alamatDesa').innerHTML = `<b>Desa ${desa}</b>, Kec. ${kecamatan}`;
+        } catch (e) {
+            document.getElementById('alamatDesa').innerText = "Gagal memuat alamat";
         }
 
-    if (tipeLaporan === "bulanan" && (!fotoInput.files || fotoInput.files.length === 0)) {
-        alert("Silakan upload foto kegiatan terlebih dahulu.");
-        return;
-    }
+        // 2. Ambil Data Cuaca Satelit
+        const weatherData = await getWeather(lat, lon);
+        const cur = weatherData.current;
+        const hourly = weatherData.hourly;
 
-    const btn = document.getElementById('btn-ai');
-    const loader = document.getElementById('loader');
-    const kegiatan = document.getElementById('in_kegiatan').value;
-    const lokasi = document.getElementById('in_lokasi').value;
-    const masalah = document.getElementById('in_masalah').value;
+        // --- SOLUSI MASALAH 1: SINKRONISASI WAKTU (nowIndex) ---
+        // Mencari index yang sesuai dengan jam sekarang dalam format ISO (YYYY-MM-DDTHH)
+        const nowISO = new Date().toISOString().slice(0, 13); 
+        const nowIndex = hourly.time.findIndex(t => t.startsWith(nowISO));
+        const activeIndex = nowIndex >= 0 ? nowIndex : 0;
 
-    if (!kegiatan || !lokasi || !masalah.trim()) {
-        alert("Lengkapi Jenis Kegiatan, Lokasi, dan Permasalahan!");
-        return;
-    }
+        // --- DATA BERDASARKAN JAM SAAT INI ---
+        const currentCape = (hourly && hourly.cape) ? hourly.cape[activeIndex] : 0;
+        const dpSpread = (cur.temperature_2m - cur.dew_point_2m).toFixed(1);
+        const cloudTemp = (hourly && hourly.temperature_850hPa) ? hourly.temperature_850hPa[activeIndex] : "-";
 
-    btn.disabled = true;
-    loader.classList.remove('hidden');
+        // Update UI Parameter Tambahan
+        if(document.getElementById('dpSpread')) {
+            document.getElementById('dpSpread').innerText = `${dpSpread} °C`;
+        }
 
-    const promptUser = `Buat laporan formal PPL. 
-    Kegiatan: ${kegiatan}. 
-    Lokasi: ${lokasi}. 
-    Permasalahan: ${masalah}. 
-    Format JSON: {"deskripsi":"", "upaya":[]}`;
+        if(document.getElementById('capeVal')) {
+            let capeStatus = currentCape > 2500 ? "‼️ EKSTREM" : (currentCape > 1000 ? "⚠️ WASPADA" : "✅ STABIL");
+            document.getElementById('capeVal').innerHTML = `${currentCape} J/kg <br><small style="font-size:0.65rem;">Status: ${capeStatus}</small>`;
+        }
 
-    // 🔥 GANTI DENGAN URL WEB APP KAMU
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzGyd-iiQ9MLkmIVKpBd0_3ZAdIpzVp_NNAWbfYDFv1bPrdZrmcDhsyCI5Rl-Osd4RipQ/exec";
+        // --- SOLUSI MASALAH 2: HYBRID RAIN SCORING ---
+        let rainScore = 0;
+        const nextHourProb = (hourly && hourly.precipitation_probability) ? hourly.precipitation_probability[activeIndex + 1] || 0 : 0;
 
-    try {
-        const res = await fetch(WEB_APP_URL, {
-            method: "POST",
-            body: JSON.stringify({ prompt: promptUser })
-        });
+        if (nextHourProb >= 30) rainScore += 40;
+        if (currentCape >= 1000) rainScore += 30;
+        if (parseFloat(dpSpread) <= 2) rainScore += 20;
+        if (cur.relative_humidity_2m >= 90) rainScore += 10;
 
-        const data = await res.json();
+        const elHujan = document.getElementById('prediksiHujan');
+        const txtHujan = document.getElementById('hujanNext');
 
-        console.log("FULL DATA:", data);
-    console.log("TYPE result:", typeof data.result);
-    console.log("ISI result:", data.result);
+        if (elHujan) {
+            elHujan.style.display = 'block';
+            if (rainScore >= 70) {
+                txtHujan.innerHTML = `⛈️ <b>Hujan Sangat Mungkin</b><br><small>(Skor Atmosfer: ${rainScore}/100)</small>`;
+                elHujan.style.borderLeftColor = 'var(--red-alert)';
+            } else if (rainScore >= 40) {
+                txtHujan.innerHTML = `🌦️ <b>Potensi Hujan Lokal</b><br><small>(Skor Atmosfer: ${rainScore}/100)</small>`;
+                elHujan.style.borderLeftColor = 'var(--accent-soil)';
+            } else {
+                txtHujan.innerHTML = `🌤️ <b>Cerah / Berawan</b><br><small>(Skor Atmosfer: ${rainScore}/100)</small>`;
+                elHujan.style.borderLeftColor = 'var(--accent-green)';
+            }
+        }
 
-        let result = data.result ?? data;
+        // 4. Update UI Tabel Utama
+        document.getElementById('suhuNow').innerText = `${cur.temperature_2m} °C`;
+        document.getElementById('humidityNow').innerText = `${cur.relative_humidity_2m}%`;
+        // Ambil data hujan realtime yang lebih stabil
+const rainCurrent = cur.rain || 0;
+const rainHourly = (hourly && hourly.precipitation) ? hourly.precipitation[0] : 0;
+const rainProb = (hourly && hourly.precipitation_probability) ? hourly.precipitation_probability[0] : 0;
 
-// handle kalau string
-if (typeof result === "string") {
-    if (typeof result === "string") {
-    try {
-        result = JSON.parse(result);
+// Logika estimasi hujan aktual
+let finalRain = rainCurrent;
+let rainStatus = "Tidak Hujan";
+
+if (rainCurrent > 0) {
+    rainStatus = "Hujan Terdeteksi";
+} 
+else if (rainHourly > 0.2 || rainProb > 80 || cur.relative_humidity_2m >= 98) {
+    // kondisi hujan lokal / gerimis sering lolos dari current.rain
+    finalRain = rainHourly;
+    rainStatus = "Gerimis/Hujan Lokal";
+}
+// Deteksi hujan lokal berbasis atmosfer
+const isLikelyRaining =
+    cur.relative_humidity_2m >= 98 &&
+    parseFloat(dpSpread) <= 0.5 &&
+    currentCape > 1000;
+
+if (isLikelyRaining && finalRain === 0) {
+    rainStatus = "Hujan Lokal Terdeteksi Atmosfer";
+}
+document.getElementById('rainNow').innerHTML = `
+    ${finalRain.toFixed(1)} mm
+    <br>
+    <small style="font-size:0.65rem; color:var(--accent-soil);">
+        ${rainStatus}
+    </small>
+`;
+        document.getElementById('windNow').innerText = `${cur.wind_speed_10m} km/jam`;
+        document.getElementById('pressNow').innerText = `${cur.surface_pressure} hPa`;
+        document.getElementById('tempUpper').innerText = `${cloudTemp} °C`;
+
+        // Logika Arah Angin
+        const getDirection = (degree) => {
+            const sectors = ["Utara", "Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut"];
+            return sectors[Math.round(degree / 45) % 8];
+        };
+
+        document.getElementById('windDir').innerHTML = `
+            <div style="display:flex; align-items:center; justify-content: flex-end; gap:5px;">
+                <span style="display:inline-block; transform:rotate(${cur.wind_direction_10m + 180}deg); transition: 1s ease;">⬆️</span>
+                <span>Dari ${getDirection(cur.wind_direction_10m)}</span>
+            </div>
+        `;
+
+        // 5. Update Status & Analisis Risiko
+        document.getElementById('resLabel').innerText = "Laporan Cuaca Lokasi Anda";
+        document.getElementById('resConf').innerText = "Terhubung dengan Satelit";
+        
+        analyzeDiseaseRisk(cur, dpSpread);
+
     } catch (err) {
-        console.error("JSON parse gagal:", result);
-        alert("Format data dari server tidak valid");
-        return;
+        console.error("Gagal sinkronisasi satelit:", err);
+        document.getElementById('resLabel').innerText = "GPS Gagal";
+        throw err;
     }
 }
-}
-
-// amanin field
-const deskripsi = result.deskripsi || "";
-const upaya = Array.isArray(result.upaya) ? result.upaya : [];
-
-// inject ke input
-document.getElementById('in_hasil').value = deskripsi;
-document.getElementById('in_upaya').value = upaya.join('\n');
-
-        updateLaporan();
-        alert("✅ Laporan Berhasil Disusun oleh AI!");
-    } catch (e) {
-        console.error(e);
-        alert("❌ AI Gagal. Laporkan ke 081354871000.");
-    } finally {
-        btn.disabled = false;
-        loader.classList.add('hidden');
+    async function mulaiAnalisis() {
+        document.getElementById('scanWindow').classList.add('is-scanning');
+        document.getElementById('loader').style.display = 'block';
+        try {
+            const urls = { daun: URL_DAUN, tanah: URL_TANAH, bwd: URL_BWD };
+            const res = await fetch(urls[currentMode], { method: 'POST', body: JSON.stringify({ image: base64Image }) });
+            const data = await res.json();
+            tampilkanHasil(data);
+        } catch (e) { alert("Gagal koneksi server!"); }
+        document.getElementById('scanWindow').classList.remove('is-scanning');
+        document.getElementById('loader').style.display = 'none';
+    }
+    
+   
+// PERBAIKAN FUNGSI ANALISIS RISIKO
+// PERBAIKAN FUNGSI ANALISIS RISIKO
+function analyzeDiseaseRisk(cur, dpSpread) {
+    // Mengonversi dpSpread menjadi angka (float) agar skoring akurat
+    const spreadNum = parseFloat(dpSpread);
+    const result = blastRisk(cur.temperature_2m, cur.relative_humidity_2m, cur.rain, spreadNum);
+    
+    const el = document.getElementById('riskResult');
+    if (el) {
+        el.innerHTML = `<span style="color:${result.color}; font-weight:800;">${result.level}</span><br>${result.msg}`;
     }
 }
 
-// Fungsi untuk memunculkan Pop-up Ebook (Selalu Muncul)
-function showEbookPopup() {
-    const popup = document.getElementById('ebook-popup');
-    const content = document.getElementById('ebook-content');
+// PERBAIKAN LOGIKA BLAST RISK
+function blastRisk(temp, humidity, rain, spreadNum) {
+    let score = 0;
     
-    // Langsung munculkan tanpa cek localStorage
-    popup.classList.remove('hidden');
-    setTimeout(() => {
-        content.classList.remove('scale-95', 'opacity-0');
-        content.classList.add('scale-100', 'opacity-100');
-    }, 10);
+    if (humidity >= 85) score += 30;
+    // Deteksi embun daun: jika selisih suhu & titik embun <= 2 derajat
+    if (spreadNum <= 2) score += 30; 
+    if (rain >= 1) score += 20;
+    if (temp <= 27) score += 20;
+
+    if (score >= 70) {
+        return { 
+            level: "TINGGI", 
+            color: "#f85149", 
+            msg: "Risiko Blast Tinggi: Udara sangat jenuh (embun tebal). Hindari Urea berlebih!" 
+        };
+    } else if (score >= 40) {
+        return { 
+            level: "SEDANG", 
+            color: "#ffd700", 
+            msg: "Kondisi mendukung perkembangan jamur. Pantau gejala bercak belah ketupat." 
+        };
+    }
+    return { 
+        level: "RENDAH", 
+        color: "#00ff88", 
+        msg: "Kondisi sawah relatif aman dari serangan Blast saat ini." 
+    };
 }
 
-function closeEbookPopup() {
-    const popup = document.getElementById('ebook-popup');
-    const content = document.getElementById('ebook-content');
-    
-    content.classList.remove('scale-100', 'opacity-100');
-    content.classList.add('scale-95', 'opacity-0');
-    
-    setTimeout(() => {
-        popup.classList.add('hidden');
-    }, 300);
-}
+    function tampilkanHasil(data) {
+        let out = Array.isArray(data) ? data[0] : data;
+        if (out.outputs && out.outputs[0]) out = out.outputs[0];
 
-// Jalankan popup 3 detik setelah halaman terbuka
-window.addEventListener('load', () => {
-    setTimeout(showEbookPopup, 2000); 
-});
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('boxPenyakit').style.display = currentMode === 'daun' ? 'block' : 'none';
+        document.getElementById('boxTanah').style.display = currentMode === 'tanah' ? 'block' : 'none';
+        document.getElementById('boxBWD').style.display = currentMode === 'bwd' ? 'block' : 'none';
+        
+        let label = "unlabeled", conf = 0;
+
+        // --- LOGIKA 1: PENYAKIT PADI ---
+        if (currentMode === 'daun') {
+            if (out.classification_result) {
+                const res = out.classification_result;
+                label = (res.top || "unlabeled").toLowerCase().replace(/ /g, "_");
+                conf = ((res.confidence || 0) * 100).toFixed(1);
+            }
+            const info = kamusTani[label] || kamusTani.unlabeled;
+            document.getElementById('resLabel').innerText = info.nama;
+            document.getElementById('resGejala').innerText = info.gejala;
+            document.getElementById('resPenyebab').innerText = info.penyebab || "-";
+            document.getElementById('resSolusi').innerText = info.solusi;
+            document.getElementById('resMerek').innerText = info.merek || "-";
+            document.getElementById('resAplikasi').innerText = info.aplikasi || "-";
+        } 
+
+    
+        // --- LOGIKA 2: ANALISIS TANAH ---
+        else if (currentMode === 'tanah') {
+            let foundBlock = null;
+            // Mencari data klasifikasi di dalam respon Roboflow
+            if (out.predictions && out.predictions.predicted_classes) {
+                foundBlock = out.predictions;
+            } else {
+                for (let key in out) { if (out[key] && out[key].predicted_classes) { foundBlock = out[key]; break; } }
+            }
+
+            if (foundBlock && foundBlock.predictions) {
+                const preds = foundBlock.predictions;
+                const container = document.getElementById('soilList');
+                container.innerHTML = ""; 
+
+                // 1. Urutkan Prediksi
+                let sortedSoil = Object.keys(preds).sort((a, b) => {
+                    let valA = typeof preds[a] === 'number' ? preds[a] : (preds[a].confidence || 0);
+                    let valB = typeof preds[b] === 'number' ? preds[b] : (preds[b].confidence || 0);
+                    return valB - valA;
+                });
+
+                // 2. Tampilkan Bar Progress
+                sortedSoil.forEach(soilKey => {
+                    const p = preds[soilKey];
+                    const val = typeof p === 'number' ? p : (p.confidence || 0);
+                    const cVal = (val * 100).toFixed(2);
+                    let cleanKey = soilKey.toLowerCase().trim().replace(/_soil/g, "").replace(/ soil/g, "");
+                    const nIndo = kamusTanah[cleanKey] ? kamusTanah[cleanKey].nama : soilKey.toUpperCase();
+                    
+                    if (parseFloat(cVal) > 0.1) {
+                        container.innerHTML += `
+                            <div style="margin-bottom:8px;">
+                                <div style="display:flex;justify-content:space-between;font-size:0.8rem;">
+                                    <span>${nIndo}</span><span>${cVal}%</span>
+                                </div>
+                                <div style="background:#333;height:6px;border-radius:3px;margin-top:4px;overflow:hidden;">
+                                    <div style="background:var(--accent-soil);width:${cVal}%;height:100%;"></div>
+                                </div>
+                            </div>`;
+                    }
+                });
+
+                // --- TEMPELKAN KODE PERBAIKAN DI SINI ---
+                const topKeyRaw = sortedSoil[0]; 
+                const topValue = (typeof preds[topKeyRaw] === 'number' ? preds[topKeyRaw] : (preds[topKeyRaw].confidence || 0)) * 100;
+
+                let finalKey = "unlabeled";
+                if (topValue > 20) {
+                    finalKey = topKeyRaw.toLowerCase().replace(/ /g, "_").replace(/_soil/g, "");
+                }
+
+                const info = kamusTanah[finalKey] || kamusTanah.unlabeled;
+
+                // Update Judul & Confidence
+                document.getElementById('resLabel').innerText = (finalKey === "unlabeled") ? "Objek Kurang Jelas" : info.nama;
+                document.getElementById('resConf').innerText = `Tingkat Keyakinan: ${topValue.toFixed(1)}%`;
+                
+                // Update Tabel Parameter (Agar tidak lagi muncul tanda strip -)
+                const tableResult = document.querySelector("#boxTanah table");
+                tableResult.innerHTML = `
+                    <tr><td>Kesuburan</td><td class="row-val">${info.subur || "Sedang"}</td></tr>
+                    <tr><td>Bahan Organik</td><td class="row-val">${info.organik || "Sedang"}</td></tr>
+                    <tr><td>Kandungan NPK</td><td class="row-val" style="color:var(--accent-green)">${info.npk || "Cukup"}</td></tr>
+                    <tr><td>Estimasi pH</td><td class="row-val">${info.pH || "6.0 - 7.0"}</td></tr>
+                    <tr><td style="padding-top:10px;">Cocok untuk Tanaman</td><td class="row-val" style="color:#00ff88; padding-top:10px;">${info.tanaman || "-"}</td></tr>
+                `;
+
+                document.getElementById('resPenjelasan').innerText = info.penjelasan;
+                document.getElementById('resSaranTanah').innerText = info.saran;
+                
+                conf = topValue.toFixed(1);
+                setTimeout(() => { drawTriangle(finalKey); }, 80);
+                // --- AKHIR PENEMPELAN ---
+            }
+        }
+
+        // --- LOGIKA 3: BWD SISTEM VOTING ---
+        else if (currentMode === 'bwd') {
+            const list = document.getElementById('leafList');
+            list.innerHTML = '';
+            document.getElementById('boxBWD').style.display = 'block';
+
+            const colors = out.leafColors || out.leaf_colors || [];
+            const dets = Array.isArray(out.detections) ? out.detections : (out.detections?.predictions || []);
+
+            if (colors.length === 0) {
+                document.getElementById('voteInfo').innerText = "⚠️ Daun tidak terdeteksi";
+                return;
+            }
+
+            const voteCount = {};
+            const colorToClass = {
+                "yellow": "skala-1",
+                "yellowish green": "skala-2",
+                "light green": "skala-3",
+                "green": "skala-4",
+                "dark green": "skala-5"
+            };
+
+            colors.forEach((c, i) => {
+                const key = c.toLowerCase().trim();
+                voteCount[key] = (voteCount[key] || 0) + 1;
+                
+                const info = RECOMMENDATIONS[key] || { label: c };
+                const warnaIndo = kamusWarna[key] || c;
+                const confidence = dets[i] ? (dets[i].confidence * 100).toFixed(1) : "0.0";
+                const styleClass = colorToClass[key] || "skala-3";
+
+                list.innerHTML += `
+                    <div class="leaf-card">
+                        <div class="badge ${styleClass}">${info.label}</div>
+                        <div class="info-row">
+                            <span>Warna Daun Terdeteksi: <strong>${warnaIndo}</strong></span>
+                            <span style="opacity:0.6; font-size:0.75rem;"> (Akurasi: ${confidence}%)</span>
+                        </div>
+                    </div>`;
+            });
+
+            let winnerKey = "";
+            let maxVotes = 0;
+            for (const key in voteCount) {
+                if (voteCount[key] > maxVotes) {
+                    maxVotes = voteCount[key];
+                    winnerKey = key;
+                }
+            }
+
+            const winData = RECOMMENDATIONS[winnerKey];
+            const bwdContainer = document.getElementById('boxBWD');
+            bwdContainer.innerHTML = `
+                <div id="leafList">${list.innerHTML}</div>
+                <div class="recommendation-box">
+                    <h4 style="color:var(--accent-green); margin:0 0 5px 0; font-size:0.9rem;">📋 Rekomendasi Utama:</h4>
+                    <div class="vote-summary">📊 Mayoritas: ${kamusWarna[winnerKey]} (${maxVotes} dari ${colors.length} daun)</div>
+                    <div style="font-size: 0.85rem; display: flex; gap: 8px; align-items: flex-start;">
+                        <span>✅</span>
+                        <span>${winData?.rec || "-"}</span>
+                    </div>
+                </div>`;
+
+            document.getElementById('resLabel').innerText = "Hasil Analisis";
+            conf = 100;
+        }
+        document.getElementById('resConf').innerText = `Tingkat Keyakinan: ${conf}%`;
+    }
+
+    function drawTriangle(label) {
+        const canvas = document.getElementById('textureTriangle');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const top = { x: 150, y: 45 };      
+        const left = { x: 45, y: 215 };     
+        const right = { x: 255, y: 215 };   
+
+        const bgGrad = ctx.createRadialGradient(150, 130, 10, 150, 130, 120);
+        bgGrad.addColorStop(0, 'rgba(46, 204, 113, 0.05)');
+        bgGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = bgGrad;
+        ctx.fillRect(0, 0, 300, 250);
+
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+        ctx.lineWidth = 1;
+        for (let i = 1; i < 10; i++) {
+            let ratio = i / 10;
+            let y = 215 - (ratio * 170);
+            let xS = 45 + (ratio * 105 * 0.5);
+            let xE = 255 - (ratio * 105 * 0.5);
+            ctx.beginPath(); ctx.moveTo(xS, y); ctx.lineTo(xE, y); ctx.stroke();
+        }
+
+        ctx.save();
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = 'rgba(0, 255, 136, 0.5)';
+        ctx.strokeStyle = '#00ff88';
+        ctx.lineWidth = 3;
+        ctx.lineJoin = 'round';
+        ctx.beginPath(); 
+        ctx.moveTo(top.x, top.y); 
+        ctx.lineTo(left.x, left.y); 
+        ctx.lineTo(right.x, right.y); 
+        ctx.closePath(); 
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.fillStyle = '#00ff88';
+        ctx.font = '800 12px Poppins';
+        ctx.textAlign = 'center';
+        ctx.fillText("LIAT (CLAY)", top.x, top.y - 15);
+        
+        ctx.textAlign = 'right';
+        ctx.fillText("PASIR", left.x - 10, left.y + 5);
+        
+        ctx.textAlign = 'left';
+        ctx.fillText("DEBU", right.x + 10, right.y + 5);
+
+        let dot = { x: 150, y: 130 };
+        const labelLower = label.toLowerCase();
+        
+        if (labelLower.includes("clay")) {
+            dot = { x: 150, y: 80 };
+        } else if (labelLower.includes("sandy")) {
+            dot = { x: 85, y: 190 };
+        } else if (labelLower.includes("loam")) {
+            dot = { x: 150, y: 170 };
+        } else if (labelLower.includes("alluvial") || labelLower.includes("silt")) {
+            dot = { x: 215, y: 190 };
+        } else if (labelLower.includes("peat") || labelLower.includes("black")) {
+            dot = { x: 150, y: 140 };
+        }
+
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, 10, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(231, 76, 60, 0.3)';
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.arc(dot.x, dot.y, 5, 0, Math.PI * 2);
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = "#ff4d4d";
+        ctx.fillStyle = '#ff4d4d';
+        ctx.fill();
+    }
 </script>
 </body>
 </html>
