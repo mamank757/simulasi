@@ -90,7 +90,7 @@
             border-width: 2px;
             border-style: solid;
             text-transform: uppercase;
-            font-size: 0.7 Cantumkan rem;
+            font-size: 0.7rem;
             font-weight: 800;
             padding: 4px 15px;
             border-radius: 20px;
@@ -141,7 +141,7 @@
 
     <div class="card">
         <h3 id="modeTitle" style="margin-top:0; color: var(--accent-green); font-size: 1rem;">Deteksi Penyakit Padi</h3>
-        
+         
         <input type="file" id="fileInput" accept="image/*" hidden onchange="handleFile(event)">
         <button id="btnCamera" class="btn-main btn-camera" onclick="document.getElementById('fileInput').click()">📸 AMBIL FOTO / GALERI</button>
 
@@ -252,14 +252,18 @@
                         </table>
                     </div>
 
-                    <div class="info-box" style="border-left-color: var(--accent-bwd); padding: 10px; margin-top: 15px;">
-                        <strong>🛰️ Radar Pergerakan Awan Live</strong>
-                        <div style="position: relative; width: 100%; height: 300px; margin-top: 10px; border-radius: 12px; overflow: hidden; border: 1px solid var(--border);">
-                            <iframe id="radarMap" width="100%" height="100%" frameborder="0" style="border:0; background: #000;" allowfullscreen></iframe>
+                    <div class="info-box" style="border-left-color: var(--accent-bwd); padding: 5px; margin-top: 15px; overflow: hidden;">
+                        <strong>🛰️ Analisis Satelit Mikro Spasial Lahan</strong>
+                        <div style="position: relative; width: 100%; height: 320px; margin-top: 10px; border-radius: 15px; overflow: hidden; border: 1px solid var(--border);">
+                            <iframe id="radarMap" width="100%" height="100%" frameborder="0" style="border:0; background: #0d1117;" allowfullscreen></iframe>
                         </div>
-                        <small style="font-size:0.6rem; opacity:0.5; display:block; margin-top:6px; line-height: 1.2;">
-                            *Peta radar otomatis berpusat pada lokasi GPS HP Anda sekarang. Gunakan dua jari untuk zoom.
-                        </small>
+                    </div>
+                    
+                    <div class="info-box" id="boxHamaPBP" style="border-left-color: var(--accent-green); margin-top: 15px;">
+                        <strong>🐛 Peringatan Dini Penggerek Batang (PBP)</strong><br>
+                        <div id="hamaLevel" style="font-size: 1.1rem; font-weight: 800; margin-top: 5px;">-</div>
+                        <p id="hamaDetail" style="margin: 5px 0; font-size: 0.75rem; opacity: 0.8;">-</p>
+                        <div id="hamaSaran" style="background: rgba(255,255,255,0.02); padding: 8px; border-radius: 6px; border-left: 3px solid var(--accent-soil); font-size: 0.75rem; margin-top: 8px;">-</div>
                     </div>
 
                     <div class="info-box" style="border-left-color:var(--red-alert);">
@@ -279,9 +283,9 @@
 
         const kamusTani = {
             "healthy": { nama: "Tanaman Sehat", gejala: "Warna hijau segar, pertumbuhan normal tanpa bercak.", penyebab: "Kondisi lingkungan dan nutrisi optimal.", solusi: "Lanjutkan pemupukan berimbang dan pantau secara rutin." },
-            "bacterial_leaf_blight": { nama: "HDB - Hawar Daun Bakteri (Kresek)", gejala: "Garis kuning/oranye di sepanjang pinggir daun yang mengering. Penyakit ini dinamai kresek karena daun yang terserang akan berubah warna menjadi cokelat kekuningan, menggulung, dan mengering seperti kertas kresek.", penyebab: "Bakteri Xanthomonas oryzae yang sangat cepat berkembang biak pada lingkungan dengan tingkat kelembapan tinggi pada musim hujan, dan tanaman padi kelebihan pemupukan Nitrogen.", solusi: "Gunakan bakterisida, pastikan sirkulasi air sawah lancar, kurangi Urea.", merek: "Kuproxat 345 SC, Nordox 56 WP, Blast 200 SC, Biopatek (Hayati)", aplikasi: "Waktu Aplikasi: Sebaiknya diaplikasikan segera setelah muncul gejala awal atau sebagai langkah pencegahan dengan interval 7–10 hari." },
+            "bacterial_leaf_blight": { nama: "HDB - Hawar Daun Bakteri (Kresek)", gejala: "Garis kuning/oranye di sepanjang pinggir daun yang mengering. Penyakit ini dinamai kresek karena daun yang terserang akan berubah warna menjadi cokelat kekuningan, menggulung, dan mengering seperti kertas kresek.", penyebab: "Bakteri Xanthomonas oryzae yang sangat cepat berkembang biak pada lingkungan dengan tingkat kelembapan tinggi pada musim hujan, dan tanaman padi kelebihan pemupukan Nitrogen.", solusi: "Gunakan bakterisida, pastikan sirikulasi air sawah lancar, kurangi Urea.", merek: "Kuproxat 345 SC, Nordox 56 WP, Blast 200 SC, Biopatek (Hayati)", aplikasi: "Waktu Aplikasi: Sebaiknya diaplikasikan segera setelah muncul gejala awal atau sebagai langkah pencegahan dengan interval 7–10 days." },
             "brown_spot": { nama: "Bercak Cokelat (Brown Spot)", gejala: "Bintik cokelat bulat atau oval merata di permukaan daun.", penyebab: "Jamur Bipolaris oryzae. Sering terjadi karena ketidakseimbangan nutrisi tanah dan kelembapan udara yang tinggi serta suhu hangat sangat mendukung penyebaran jamur.", solusi: "Cukupi kebutuhan Kalium dan pastikan drainase lancar.", merek: "Amistar Top 325 SC, Tandem 325 SC, atau alternatif lain seperti WUZ, Vitro, dan Torbinol.", aplikasi: "Jika serangan sudah terjadi, gunakan fungisida yang tepat, seperti yang mengandung bahan aktif kombinasi Azoksistrobin dan Difenokonazol." },
-            "leaf_blast": { nama: "Penyakit Blast", gejala: "Bercak cokelat berbentuk belah ketupat dengan pusat abu-abu.", penyebab: "Jamur patogen Pyricularia oryzae yang berkembang pesat pada kelembapan tinggi, suhu malam yang sejuk, dan pemupukan nitrogen berlebih.", solusi: "Semprot fungisida sistemik (Trisiklazol), kurangi dosis Nitrogen.", merek: "Blast 200 SC (bahan aktif trisiklazol), Envoy 80 WP, dan Amistar Top 325 SC.", aplikasi: "1. Fase Vegetatif (Blast Daun): Semprot sejak dini saat gejala awal bercak cokelat berbentuk belah ketupat muncul, atau lakukan tindakan pencegahan jika lingkungan lembap. 2. Fase Bunting hingga Awal Keluar Malai (Blast Leher): Sangat krusial untuk mencegah leher malai membusuk (potong leher)." },
+            "leaf_blast": { nama: "Penyakit Blast", gejala: "Bercak cokelat berbentuk belah ketupat dengan pusat abu-abu.", penyebab: "Jamur patogen Pyricularia oryzae yang berkembang pesat pada kelembapan tinggi, suhu malam yang sejuk, dan pemupukan nitrogen berlebih.", solusi: "Semprot fungisida sistemik (Trisiklazol), kurangi dosis Nitrogen.", merek: "Blast 200 SC (bahan aktif trisiklazol), Envoy 80 WP, and Amistar Top 325 SC.", aplikasi: "1. Fase Vegetatif (Blast Daun): Semprot sejak dini saat gejala awal bercak cokelat berbentuk belah ketupat muncul, atau lakukan tindakan pencegahan jika lingkungan lembap. 2. Fase Bunting hingga Awal Keluar Malai (Blast Leher): Sangat krusial untuk mencegah leher malai membusuk (potong leher)." },
             "leaf_scald": { nama: "Luka Daun (Leaf Scald)", gejala: "Bercak besar berbentuk perahu yang mengering di ujung daun.", penyebab: "Jamur Microdochium oryzae berkembang sangat cepat dalam kondisi Kelembapan Tinggi, Pemupukan Nitrogen Berlebihdan Jarak Tanam Terlalu Rapat.", solusi: "Gunakan varietas tahan dan atur jarak tanam jangan terlalu rapat.", merek: "Dithane M-45 80 WP (Bahan Aktif Mankozeb), Score 250 EC (Difenokonazol-Sistemik), Amistar Top 325 SC (Kombinasi Azoksistrobin + Difenokonazol).", aplikasi: "Pada kondisi serangan yang parah, gunakan fungisida yang direkomendasikan untuk penyakit jamur daun (misalnya berbahan aktif mankozeb atau difenokonazol)." },
             "narrow_brown_spot": { nama: "Bercak Cokelat Sempit", gejala: "Garis-garis cokelat sempit searah dengan tulang daun.", penyebab: "Jamur Cercospora oryzae (Cercospora janseana) yang mudah berkembang saat suhu lingkungan rendah dengan kelembapan tinggi dan tanaman kekurangan Kalium.", solusi: "Tambah dosis pupuk Kalium dan perbaiki sistem pengairan.", merek: "Score 250 EC dan Manic 62,5 WG (Difenokonazol), Qiutane 80 WP. (Mankozeb + Trisiklazol), DKAztrozol Plus 375 SC (Azoksistrobin + Difenokonazol).", aplikasi: "Penyakit bercak coklat sempit pada padi (disebabkan oleh jamur Cercospora oryzae) dapat dikendalikan secara efektif menggunakan fungisida berbahan aktif seperti difenokonazol, propikonazol, atau mankozeb." },
             "unlabeled": { nama: "Objek Tidak Dikenali", gejala: "-", penyebab: "-", solusi: "Pastikan foto DAUN fokus, dekat, dan cahaya terang." }
@@ -292,7 +296,7 @@
             "black": { "nama": "Tanah Hitam", "penjelasan": "Tanah yang memiliki kandungan organik tinggi and mineral yang kaya, biasanya berwarna gelap hingga hitam pekat. Memiliki kemampuan menahan air yang baik dan sangat produktif.", "pH": "6.5 - 7.5", "organik": "Tinggi", "npk": "Tinggi", "subur": "Subur", "tanaman": "Kedelai, Kapas, Palawija", "saran": "Sangat bagus untuk Kedelai. Lakukan pengolahan tanah saat kondisi lembap agar struktur tetap remah." },
             "cinder": { "nama": "Tanah Vulkanik", "penjelasan": "Tanah yang berasal dari pelapukan material letusan gunung berapi. Teksturnya seringkali berpori, sangat kaya akan unsur hara alami, dan memiliki kemampuan menyimpan air yang luar biasa.", "pH": "5.0 - 7.0", "organik": "Tinggi", "npk": "Sangat Tinggi", "subur": "Sangat Subur", "tanaman": "Sayuran, Hortikultura, Kopi", "saran": "Terbaik untuk Sayuran/Horti. Gunakan pupuk organik tambahan untuk menjaga kelembapan jangka panjang." },
             "clay": { "nama": "Tanah Liat (Clay)", "penjelasan": "Tanah dengan partikel mineral sangat halus. Memiliki kemampuan menahan air yang sangat kuat namun sulit ditembus air (drainase lambat). Bersifat lengket saat basah dan keras saat kering.", "pH": "4.5 - 6.0", "organik": "Sedang", "npk": "Sedang", "subur": "Sedang", "tanaman": "Padi, Rumput Gajah", "saran": "Drainase wajib lancar agar akar tak busuk. Tambahkan bahan organik untuk memperbaiki struktur tanah." },
-            "laterite": { "nama": "Tanah Laterit", "penjelasan": "Tanah tua yang telah mengalami pencucian hara secara intensif oleh curah hujan tinggi. Kaya akan oksida besi dan aluminium, sehingga teksturnya seringkali keras and kurang subur.", "pH": "4.0 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Karet, Kelapa Sawit", "saran": "Wajib tambah pupuk organik dosis tinggi & pengapuran (Dolomit) untuk menaikkan pH." },
+            "laterite": { "nama": "Tanah Laterit", "penjelasan": "Tanah tua yang telah mengalami pencucian hara secara intensif oleh curah hujan tinggi. Kaya akan oksida besi dan aluminium, sehingga teksturnya seringkali keras dan kurang subur.", "pH": "4.0 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Karet, Kelapa Sawit", "saran": "Wajib tambah pupuk organik dosis tinggi & pengapuran (Dolomit) untuk menaikkan pH." },
             "loamy": { "nama": "Tanah Lempung", "penjelasan": "Kombinasi ideal antara pasir, debu, dan sedikit liat. Tanah ini memiliki drainase yang baik sekaligus mampu menyimpan nutrisi dengan efektif. Teksturnya sangat remah dan mudah diolah.", "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Palawija, Buah-buahan", "saran": "Tanah prima untuk semua tanaman. Pertahankan kualitas dengan penggunaan pupuk organik konsisten." },
             "loam": { "nama": "Tanah Lempung", "penjelasan": "Tekstur tanah yang paling seimbang untuk pertanian. Mampu menjaga kelembapan tanpa tergenang, serta menyediakan ruang udara yang cukup bagi pernapasan akar tanaman.", "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Sayuran, Buah-buahan", "saran": "Gunakan mulsa organik untuk menjaga kegemburan tanah 'emas' ini." },
             "peat": { "nama": "Tanah Gambut (Peat)", "penjelasan": "Tanah yang terbentuk dari akumulasi sisa-sisa tumbuhan yang membusuk tidak sempurna di area rawa. Memiliki kandungan bahan organik sangat tinggi namun tingkat keasamannya ekstrem.", "pH": "3.0 - 5.0", "organik": "Sangat Tinggi", "npk": "Rendah", "subur": "Rendah", "tanaman": "Kopi, Nanas, Sawit", "saran": "Berikan Dolomit dosis tinggi & buat parit drainase agar tanah tidak selalu tergenang." },
@@ -312,6 +316,61 @@
         };
 
         const kamusWarna = { "yellow": "Kuning", "yellowish green": "Hijau Kekuningan", "light green": "Hijau Muda", "green": "Hijau", "dark green": "Hijau Tua" };
+        
+        // Fungsi menghitung hari setelah Bulan Mati (New Moon) secara matematis
+        function dapatkanHariSiklusBulan() {
+            const kranBulanMati = new Date("2026-01-18T17:00:00Z"); 
+            const sekarang = new Date();
+            
+            const selisihWaktu = sekarang.getTime() - kranBulanMati.getTime();
+            const selisihHari = selisihWaktu / (1000 * 60 * 60 * 24);
+            
+            const hariSiklus = selisihHari % 29.53059;
+            return hariSiklus < 0 ? hariSiklus + 29.53059 : hariSiklus;
+        }
+
+        // Fungsi penentu bobot parameter ledakan hama PBP
+        function hitungRisikoHamaPBP(suhu, kelembapan) {
+            const hariBulan = dapatkanHariSiklusBulan();
+            let skorHama = 0;
+            let analisisTeks = "";
+            let tindakanPPL = "";
+            let warnaStatus = "var(--accent-green)";
+
+            if (hariBulan >= 26 || hariBulan <= 3) {
+                skorHama += 45;
+                analisisTeks = "<b>🌑 Fase Bulan Mati (Gelap):</b> Puncak penerbangan kaper/ngengat dewasa untuk kawin dan peletakan telur massal di pesemaian/lahan.";
+                tindakanPPL = "Pasang lampu perangkap (light trap) di pematang sawah malam ini untuk menangkap kaper sebelum bertelur. Semprot agens hayati Beauveria bassiana.";
+            } else if (hariBulan >= 12 && hariBulan <= 17) {
+                skorHama += 40;
+                analisisTeks = "<b>🌕 Fase Bulan Purnama (Terang):</b> Puncak penetasan telur menjadi larva (ulat kecil). Ulat mulai merayap mencari batang padi.";
+                tindakanPPL = "Kondisi kritis! Lakukan pengamatan intensif pada rumpun padi. Jika ditemukan kelompok telur atau gejala Sundep > 5%, segera aplikasikan insektisida sistemik berbahan aktif Karbofuran atau Dimehipo.";
+            } else {
+                skorHama += 15;
+                analisisTeks = "<b>🌓 Fase Bulan Separuh:</b> Aktivitas kaper sedang. Larva yang berada di dalam batang sedang berganti kulit (instar).";
+                tindakanPPL = "Lakukan pemupukan berimbang (jangan over Urea) dan jaga air sawah agar tidak terlalu menggenang tinggi.";
+            }
+
+            if (kelembapan >= 80) skorHama += 25;
+            if (suhu >= 25 && suhu <= 30) skorHama += 30;
+
+            let tingkatRisiko = "RENDAH";
+            if (skorHama >= 75) {
+                tingkatRisiko = "BAHAYA / TINGGI";
+                warnaStatus = "var(--red-alert)";
+            } else if (skorHama >= 45) {
+                tingkatRisiko = "WASPADA / SEDANG";
+                warnaStatus = "var(--accent-soil)";
+            }
+
+            return {
+                skor: skorHama,
+                level: tingkatRisiko,
+                warna: warnaStatus,
+                detail: analisisTeks,
+                saran: tindakanPPL
+            };
+        }
 
         function switchMode(mode) {
             currentMode = mode;
@@ -424,7 +483,6 @@
                 const lon = pos.coords.longitude;
                 document.getElementById('lokasiSawah').innerText = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
                 
-                // 1. Ambil Nama Desa & Kecamatan (Sensor Wilayah Super Sensitif)
                 try {
                     const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
                     const geoData = await geoRes.json();
@@ -532,10 +590,19 @@
                 document.getElementById('resConf').innerText = "Terhubung dengan Satelit";
                 analyzeDiseaseRisk(cur, dpSpread);
 
-                // UPDATE DINAMIS KORRDINAT PETA RADAR: Mengisi src iframe secara dinamis sesuai posisi HP berdiri
+                // Eksekusi Pemicu Peringatan Dini Serangan Penggerek Batang (PBP)
+                const analisisHama = hitungRisikoHamaPBP(cur.temperature_2m, cur.relative_humidity_2m);
+                document.getElementById('hamaLevel').innerText = analisisHama.level;
+                document.getElementById('hamaLevel').style.color = analisisHama.warna;
+                document.getElementById('hamaDetail').innerHTML = analisisHama.detail;
+                document.getElementById('hamaSaran').innerHTML = `<b>💡 Rekomendasi PPL Wajo:</b> ${analisisHama.saran}`;
+                document.getElementById('boxHamaPBP').style.borderLeftColor = analisisHama.warna;
+
+                // Penyaluran data koordinat GPS ke Iframe Peta Mandiri GitHub Pages
                 const radarIframe = document.getElementById('radarMap');
                 if (radarIframe) {
-                    radarIframe.src = `https://www.rainviewer.com/map.html?loc=${lat},${lon},10&oFa=1&oC=1&oU=0&oR=1&oO=1&oD=0&f=1&Z=0&v=v2&p=radar&num=1&hu=1`;
+                    const urlPetaMandiri = "https://mamank757.github.io/peta";
+                    radarIframe.src = `${urlPetaMandiri}?lat=${lat}&lon=${lon}`;
                 }
 
                 loadGlobalClimateIndices();
@@ -556,51 +623,44 @@
             ensoContainer.innerHTML = `<div class="info-box" style="border-left-color: var(--accent-bwd);">🔄 Mengambil Data Indeks Iklim Global...</div>`;
 
             try {
-                // SINKRONISASI URL UTAMA APPSCRIPT (Ganti ID di bawah jika melakukan New Deploy ulang)
                 const URL_IKLIM_MAKRO = "https://script.google.com/macros/s/AKfycbwWvVR1T3TpguRi8d5eg5qlCJoR5GkGBD2Upie7tYJfaqOMJJujTmD3y9H2q8nHJitI/exec";
-                
-                const res = await fetch(URL_IKLIM_MAKRO, { 
-                    method: 'GET',
-                    headers: { 'Accept': 'application/json' }
-                });
+                const res = await fetch(URL_IKLIM_MAKRO, { method: 'GET', headers: { 'Accept': 'application/json' } });
                 
                 if (!res.ok) throw new Error("Redirect terblokir browser");
                 const data = await res.json();
                 renderClimateUI(ensoContainer, data);
 
-            } catch (error) {
-                console.warn("Jembatan Apps Script terhambat CORS browser. Mengaktifkan Mode Satelit Cadangan...");
-                
-                try {
-                    const resPasifik = await fetch('https://api.open-meteo.com/v1/forecast?latitude=0.0&longitude=-145.0&current=temperature_2m&timezone=auto');
-                    const jsonPasifik = await resPasifik.json();
-                    const nino34Anomali = parseFloat((jsonPasifik.current.temperature_2m - 27.2).toFixed(2));
+            } catch (err) {
+                    console.warn("Jembatan Apps Script diblokir CORS browser. Mengaktifkan Mode Satelit Langsung frontend...");
+                    try {
+                        const resPasifik = await fetch('https://api.open-meteo.com/v1/forecast?latitude=0.0&longitude=-145.0&current=temperature_2m&timezone=auto');
+                        const jsonPasifik = await resPasifik.json();
+                        const nino34Anomali = parseFloat((jsonPasifik.current.temperature_2m - 27.2).toFixed(2));
 
-                    const resHindia = await fetch('https://api.open-meteo.com/v1/forecast?latitude=0.0&longitude=60.0&current=temperature_2m&timezone=auto');
-                    const jsonHindia = await resHindia.json();
-                    const iodAnomali = parseFloat((jsonHindia.current.temperature_2m - 28.1).toFixed(2));
+                        const resHindia = await fetch('https://api.open-meteo.com/v1/forecast?latitude=0.0&longitude=60.0&current=temperature_2m&timezone=auto');
+                        const jsonHindia = await resHindia.json();
+                        const iodAnomali = parseFloat((jsonHindia.current.temperature_2m - 28.1).toFixed(2));
 
-                    // FORMAT PREMIUM PILIHAN ANDA: Teks kondisi digeser ke belakang kurung
-                    let ensoStatus = "NEUTRAL [0.00 °C] (Normal)", ensoColor = "#00ff88";
-                    if (nino34Anomali >= 0.5) { 
-                        ensoStatus = `EL NIÑO [${nino34Anomali >= 0 ? '+' : ''}${nino34Anomali.toFixed(2)} °C] (Kering)`; 
-                        ensoColor = "#f85149"; 
-                    } else if (nino34Anomali <= -0.5) { 
-                        ensoStatus = `LA NIÑA [${nino34Anomali.toFixed(2)} °C] (Basah)`; 
-                        ensoColor = "#1f6feb"; 
-                    }
+                        let ensoStatus = "NEUTRAL [0.00 °C] (Normal)", ensoColor = "#00ff88";
+                        if (nino34Anomali >= 0.5) { 
+                            ensoStatus = `EL NIÑO [${nino34Anomali >= 0 ? '+' : ''}${nino34Anomali.toFixed(2)} °C] (Kering)`; 
+                            ensoColor = "#f85149"; 
+                        } else if (nino34Anomali <= -0.5) { 
+                            ensoStatus = `LA NIÑA [${nino34Anomali.toFixed(2)} °C] (Basah)`; 
+                            ensoColor = "#1f6feb"; 
+                        }
 
-                    let iodStatus = "NEUTRAL [0.00 °C] (Normal)", iodColor = "#00ff88";
-                    if (iodAnomali >= 0.4) { 
-                        iodStatus = `IOD POSITIF [${iodAnomali >= 0 ? '+' : ''}${iodAnomali.toFixed(2)} °C] (Kering)`; 
-                        iodColor = "#ffd700"; 
-                    } else if (iodAnomali <= -0.4) { 
-                        iodStatus = `IOD NEGATIF [${iodAnomali.toFixed(2)} °C] (Basah)`; 
-                        iodColor = "#1f6feb"; 
-                    }
+                        let iodStatus = "NEUTRAL [0.00 °C] (Normal)", iodColor = "#00ff88";
+                        if (iodAnomali >= 0.4) { 
+                            iodStatus = `IOD POSITIF [${iodAnomali >= 0 ? '+' : ''}${iodAnomali.toFixed(2)} °C] (Kering)`; 
+                            iodColor = "#ffd700"; 
+                        } else if (iodAnomali <= -0.4) { 
+                            iodStatus = `IOD NEGATIF [${iodAnomali.toFixed(2)} °C] (Basah)`; 
+                            iodColor = "#1f6feb"; 
+                        }
 
-                    const dataCadangan = { enso: ensoStatus, ensoColor: ensoColor, iod: iodStatus, iodColor: iodColor };
-                    renderClimateUI(ensoContainer, dataCadangan);
+                        const dataCadangan = { enso: ensoStatus, ensoColor: ensoColor, iod: iodStatus, iodColor: iodColor };
+                        renderClimateUI(ensoContainer, dataCadangan);
                         
                 } catch (errFatal) {
                     ensoContainer.innerHTML = `
