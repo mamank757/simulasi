@@ -6,30 +6,30 @@
     <title>PPL Milenial Wajo - Smart Farming</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
-        /* Efek Denyut (Pulse) untuk tombol sinkron */
-        .btn-live {
-            animation: pulse-blue 2s infinite;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
+    
+    /* Efek Denyut (Pulse) untuk tombol sinkron */
+.btn-live {
+    animation: pulse-blue 2s infinite;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
 
-        @keyframes pulse-blue {
-            0% { box-shadow: 0 0 0 0 rgba(31, 111, 235, 0.7); }
-            70% { box-shadow: 0 0 0 15px rgba(31, 111, 235, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(31, 111, 235, 0); }
-        }
+@keyframes pulse-blue {
+    0% { box-shadow: 0 0 0 0 rgba(31, 111, 235, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(31, 111, 235, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(31, 111, 235, 0); }
+}
 
-        .btn-live:hover {
-            transform: scale(1.05);
-            filter: brightness(1.2);
-            letter-spacing: 1px;
-        }
+.btn-live:hover {
+    transform: scale(1.05);
+    filter: brightness(1.2);
+    letter-spacing: 1px;
+}
 
-        .btn-live:active {
-            transform: scale(0.95);
-        }
-        
+.btn-live:active {
+    transform: scale(0.95);
+}
         :root {
             --bg-color: #0d1117;
             --card-bg: #161b22;
@@ -111,6 +111,7 @@
             margin-bottom: 8px;
         }
 
+        /* Warna Garis Pinggir & Tulisan */
         .skala-1 { border-color: #ffff00 !important; color: #ffff00 !important; }
         .skala-2 { border-color: #adff2f !important; color: #adff2f !important; }
         .skala-3 { border-color: #65e01d !important; color: #65e01d !important; }
@@ -126,6 +127,7 @@
             margin-bottom: 12px;
         }
 
+        /* Style Tambahan untuk Rekomendasi BWD */
         .recommendation-box {
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border);
@@ -174,6 +176,7 @@
             <div id="resLabel" style="font-size: 1.1rem; font-weight: 800; color: var(--accent-green); text-align: center;">-</div>
             <div id="resConf" style="font-size: 0.75rem; text-align: center; margin-bottom: 15px; color: var(--accent-soil);">Akurasi: 0%</div>
             
+            <!-- BOX 1: PENYAKIT -->
             <div id="boxPenyakit">
                 <div class="info-box"><strong>🔍 Gejala:</strong><br><span id="resGejala">-</span></div>
                 <div class="info-box" style="border-left-color:var(--red-alert);"><strong>🧬 Penyebab:</strong><br><span id="resPenyebab">-</span></div>
@@ -182,6 +185,7 @@
                 <div class="info-box" style="border-left-color:var(--accent-soil);"><strong>✅ Waktu Aplikasi:</strong><br><span id="resAplikasi">-</span></div>
             </div>
 
+            <!-- BOX 2: TANAH -->
             <div id="boxTanah" style="display:none;">
                 <div class="info-box" style="border-left-color: var(--accent-soil);"><strong>📊 Distribusi Tekstur:</strong><div id="soilList" style="margin-top: 10px;"></div></div>
                 <table>
@@ -194,126 +198,270 @@
                 <canvas id="textureTriangle" width="300" height="250" style="width: 100%; margin-top: 15px;"></canvas>
             </div>
 
+            <!-- BOX 3: BWD -->
             <div id="boxBWD" style="display:none;">
                 <div id="leafList"></div>
-                <div id="bwdRecommendationContainer"></div>
+                <div class="info-box" style="border-left-color: var(--accent-bwd);">
+                    <div id="voteInfo" style="font-weight:800; color:var(--accent-soil); margin-bottom:5px;"></div>
+                    <strong>📋 Rekomendasi Pemupukan:</strong><br><span id="resBWDSaran">-</span>
+                </div>
             </div>
 
+            <!-- BOX 4: CUACA -->
             <div id="boxCuaca" style="display:none; text-align: center;">
-                <div id="gpsPrompt" style="padding: 20px 10px;">
-                    <div style="font-size: 2rem; margin-bottom: 10px;">🛰️</div>
-                    <h4 style="margin: 0; color: var(--accent-green);">Akses Lokasi/Lahan Anda</h4>
-                    <p style="font-size: 0.75rem; color: #8b949e; margin: 10px 0 20px;">
-                        Kami memerlukan koordinat GPS untuk mengambil data cuaca dan risiko penyakit Blast langsung dari satelit di titik sawah Anda.
-                    </p>
-                    <button class="btn-main btn-live" onclick="aktifkanGPS()" style="background: var(--accent-bwd); color: white;">
-                        SINKRONKAN GPS & SATELIT
-                    </button>
-                </div>
-
-                <div id="weatherData" style="display: none; text-align: left;">
-                    <div class="info-box" style="border-left: 4px solid var(--accent-bwd); background: rgba(31, 111, 235, 0.05);">
-                        <strong>📍 Lokasi</strong><br>
-                        <span id="lokasiSawah" style="font-size: 0.75rem; opacity: 0.7;">-</span><br>
-                        <span id="alamatDesa" style="color: var(--accent-green); font-weight: 600;">Mencari alamat...</span>
-                    </div>
-                    
-                    <div id="prediksiHujan" class="info-box" style="border-left-color: var(--accent-soil); background: rgba(255, 215, 0, 0.05); display: none;">
-                        <strong>🔮 Prediksi 1 Jam Ke Depan</strong><br>
-                        <span id="hujanNext">-</span>
-                    </div>
-
-                    <div id="ensoIodBox" style="display: none; margin-top: 10px;"></div>
-
-                    <div class="info-box" style="border-left-color: var(--accent-green); padding: 15px;">
-                        <strong>📊 Parameter Cuaca Saat Ini</strong>
-                        <table style="width: 100%; margin-top: 10px; border: none;">
-                            <tr>
-                                <td style="border: none; padding: 5px 0;">🌧️ Curah Hujan</td>
-                                <td class="row-val" id="rainNow" style="color: var(--text-main);">-</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 5px 0;">🌡️ Suhu</td>
-                                <td class="row-val" id="suhuNow" style="color: var(--text-main);">-</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 5px 0;">💧 Kelembapan</td>
-                                <td class="row-val" id="humidityNow" style="color: var(--text-main);">-</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 5px 0;">💨 Kec. Angin</td>
-                                <td class="row-val" id="windNow" style="color: var(--text-main);">-</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 5px 0;">⏲️ Tekanan Udara</td>
-                                <td class="row-val" id="pressNow" style="color: var(--text-main);">-</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 5px 0;">☁️ Suhu Atas (850hPa)</td>
-                                <td class="row-val" id="tempUpper" style="color: var(--accent-bwd);">-</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 5px 0;">💧 Dew Point Spread</td>
-                                <td class="row-val" id="dpSpread" style="color: var(--text-main);">-</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 5px 0;">⚡ Energi Badai (CAPE)</td>
-                                <td class="row-val" id="capeVal" style="color: var(--accent-soil);">-</td>
-                            </tr>
-                            <tr>
-                                <td style="border: none; padding: 5px 0;">🧭 Arah Angin</td>
-                                <td class="row-val" id="windDir" style="color: var(--accent-soil); font-size: 0.75rem;">-</td>
-                            </tr>
-                        </table>
-                    </div>
-
-                    <div class="info-box" style="border-left-color:var(--red-alert); margin-top: 10px;">
-                        <strong>⚠️ Risiko Penyakit Tanaman</strong><br><span id="riskResult">-</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div id="gpsPrompt" style="padding: 20px 10px;">
+        <div style="font-size: 2rem; margin-bottom: 10px;">🛰️</div>
+        <h4 style="margin: 0; color: var(--accent-green);">Akses Lokasi/Lahan Anda</h4>
+        <p style="font-size: 0.75rem; color: #8b949e; margin: 10px 0 20px;">
+            Kami memerlukan koordinat GPS untuk mengambil data cuaca dan risiko penyakit Blast langsung dari satelit di titik sawah Anda.
+        </p>
+       <button class="btn-main btn-live" onclick="aktifkanGPS()" style="background: var(--accent-bwd); color: white;">
+    SINKRONKAN GPS & SATELIT
+</button>
     </div>
+
+   <div id="weatherData" style="display: none; text-align: left;">
+    <div class="info-box" style="border-left: 4px solid var(--accent-bwd); background: rgba(31, 111, 235, 0.05);">
+        <strong>📍 Lokasi</strong><br>
+        <span id="lokasiSawah" style="font-size: 0.75rem; opacity: 0.7;">-</span><br>
+        <span id="alamatDesa" style="color: var(--accent-green); font-weight: 600;">Mencari alamat...</span>
+    </div>
+    <div id="ensoIodBox" style="display: none; margin-top: 10px;"></div>
+    <div id="prediksiHujan" class="info-box" style="border-left-color: var(--accent-soil); background: rgba(255, 215, 0, 0.05); display: none;">
+        <strong>🔮 Prediksi 1 Jam Ke Depan</strong><br>
+        <span id="hujanNext">-</span>
+    </div>
+    <div id="ensoIodBox" style="display: none; margin-top: 10px;"></div>
+    <div class="info-box" style="border-left-color: var(--accent-green); padding: 15px;">
+        <strong>📊 Parameter Cuaca Saat Ini</strong>
+        <table style="width: 100%; margin-top: 10px; border: none;">
+             <tr>
+                <td style="border: none; padding: 5px 0;">🌧️ Curah Hujan</td>
+                <td class="row-val" id="rainNow" style="color: var(--text-main);">-</td>
+            </tr>
+            <tr>
+                <td style="border: none; padding: 5px 0;">🌡️ Suhu</td>
+                <td class="row-val" id="suhuNow" style="color: var(--text-main);">-</td>
+            </tr>
+            <tr>
+                <td style="border: none; padding: 5px 0;">💧 Kelembapan</td>
+                <td class="row-val" id="humidityNow" style="color: var(--text-main);">-</td>
+            </tr>
+            <tr>
+                <td style="border: none; padding: 5px 0;">💨 Kec. Angin</td>
+                <td class="row-val" id="windNow" style="color: var(--text-main);">-</td>
+            </tr>
+            <tr>
+    <td style="border: none; padding: 5px 0;">⏲️ Tekanan Udara</td>
+    <td class="row-val" id="pressNow" style="color: var(--text-main);">-</td>
+</tr>
+            <tr>
+    <td style="border: none; padding: 5px 0;">☁️ Suhu Atas (850hPa)</td>
+    <td class="row-val" id="tempUpper" style="color: var(--accent-bwd);">-</td>
+</tr>
+<tr>
+    <td style="border: none; padding: 5px 0;">💧 Dew Point Spread</td>
+    <td class="row-val" id="dpSpread" style="color: var(--text-main);">-</td>
+</tr>
+<tr>
+    <td style="border: none; padding: 5px 0;">⚡ Energi Badai (CAPE)</td>
+    <td class="row-val" id="capeVal" style="color: var(--accent-soil);">-</td>
+</tr>
+            <tr>
+                <td style="border: none; padding: 5px 0;">🧭 Arah Angin</td>
+                <td class="row-val" id="windDir" style="color: var(--accent-soil); font-size: 0.75rem;">-</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="info-box" style="border-left-color:var(--red-alert);">
+        <strong>⚠️ Risiko Penyakit Tanaman</strong><br><span id="riskResult">-</span>
+    </div>
+</div>
+</div>
 
 <script>
     let currentMode = 'daun', base64Image = "";
 
     const URL_DAUN = "https://script.google.com/macros/s/AKfycbyCYh65h_3lT4iWr97_RHJNZmaPTSHDp_uFPy_pAP_rvC5BxYHI1n3dn5iwrnNcER1X/exec";
-    const URL_TANAH = "https://script.google.com/macros/s/AKfycbyjW_J423BTWIZiP88OiQy0nVUp791OCUlH5DcW5owVj3NoDPHK6d9_Jwc11kdtX4gWkw/exec";
-    const URL_BWD = "https://script.google.com/macros/s/AKfycbxLB9WiTgdofmuS1r6OK2u5xnUc0aZu8KyVxg7X5M4ODh6oFnZCK9q-jnsawREFTm5ylg/exec";
+    const URL_TANAH = "https://script.google.com/macros/s/AKfycbz11zWKGj2xxgS5_W8GmBU8qqWV3r4WDP9mOK8drEiMs5xLeX871y5liqDsdD0qGz_N/exec";
+    const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_I2uy6FQjd-5eE2p1UuhQTde2lEbokpAquACyutg8kBDi/exec";
 
     const kamusTani = {
-        "healthy": { nama: "Tanaman Sehat", gejala: "Warna hijau segar, pertumbuhan normal tanpa bercak.", penyebab: "Kondisi lingkungan dan nutrisi optimal.", solusi: "Lanjutkan pemupukan berimbang dan pantau secara rutin." },
-        "bacterial_leaf_blight": { nama: "HDB - Hawar Daun Bakteri (Kresek)", gejala: "Garis kuning/oranye di sepanjang pinggir daun yang mengering. Penyakit ini dinamai kresek karena daun yang terserang akan berubah warna menjadi cokelat kekuningan, menggulung, dan mengering seperti kertas kresek.", penyebab: "Bakteri Xanthomonas oryzae yang sangat cepat berkembang biak pada lingkungan dengan tingkat kelembapan tinggi pada musim hujan, dan tanaman padi kelebihan pemupukan Nitrogen.", solusi: "Gunakan bakterisida, pastikan sirkulasi air sawah lancar, kurangi Urea.", merek: "Kuproxat 345 SC, Nordox 56 WP, Blast 200 SC, Biopatek (Hayati)", waktu: "Sebaiknya diaplikasikan segera setelah muncul gejala awal atau sebagai langkah pencegahan dengan interval 7–10 hari." },
-        "brown_spot": { nama: "Bercak Cokelat (Brown Spot)", gejala: "Bintik cokelat bulat atau oval merata di permukaan daun.", penyebab: "Jamur Bipolaris oryzae. Sering terjadi karena ketidakseimbangan nutrisi tanah dan kelembapan udara yang tinggi serta suhu hangat sangat mendukung penyebaran jamur.", solusi: "Cukupi kebutuhan Kalium dan pastikan drainase lancar.", merek: "Amistar Top 325 SC, Tandem 325 SC, atau alternatif lain seperti WUZ, Vitro, dan Torbinol.", waktu: "Jika serangan sudah terjadi, gunakan fungisida yang tepat, seperti yang mengandung bahan aktif kombinasi Azoksistrobin dan Difenokonazol." },
-        "leaf_blast": { nama: "Penyakit Blast", gejala: "Bercak cokelat berbentuk belah ketupat dengan pusat abu-abu.", penyebab: "Jamur patogen Pyricularia oryzae yang berkembang pesat pada kelembapan tinggi, suhu malam yang sejuk, dan pemupukan nitrogen berlebih.", solusi: "Semprot fungisida sistemik (Trisiklazol), kurangi dosis Nitrogen.", merek: "Blast 200 SC (bahan aktif trisiklazol), Envoy 80 WP, and Amistar Top 325 SC.", waktu: "1. Fase Vegetatif (Blast Daun): Semprot sejak dini saat gejala awal bercak cokelat berbentuk belah ketupat muncul. 2. Fase Bunting hingga Awal Keluar Malai (Blast Leher): Mencegah leher malai membusuk (potong leher)." },
-        "leaf_scald": { nama: "Luka Daun (Leaf Scald)", gejala: "Bercak besar berbentuk perahu yang mengering di ujung daun.", penyebab: "Jamur Microdochium oryzae berkembang sangat cepat dalam kondisi Kelembapan Tinggi, Pemupukan Nitrogen Berlebihdan Jarak Tanam Terlalu Rapat.", solusi: "Gunakan varietas tahan dan atur jarak tanam jangan terlalu rapat.", merek: "Dithane M-45 80 WP (Bahan Aktif Mankozeb), Score 250 EC (Difenokonazol-Sistemik), Amistar Top 325 SC.", waktu: "Pada kondisi serangan yang parah, gunakan fungisida yang direkomendasikan untuk penyakit jamur daun (misalnya berbahan aktif mankozeb atau difenokonazol)." },
-        "narrow_brown_spot": { nama: "Bercak Cokelat Sempit", gejala: "Garis-garis cokelat sempit searah dengan tulang daun.", penyebab: "Jamur Cercospora oryzae (Cercospora janseana) yang mudah berkembang saat suhu lingkungan rendah dengan kelembapan tinggi dan tanaman kekurangan Kalium.", solusi: "Tambah dosis pupuk Kalium dan perbaiki sistem pengairan.", merek: "Score 250 EC dan Manic 62,5 WG (Difenokonazol), Qiutane 80 WP. (Mankozeb + Trisiklazol), DKAztrozol Plus 375 SC.", waktu: "Penyakit bercak coklat sempit pada padi dapat dikendalikan secara efektif menggunakan fungisida berbahan aktif seperti difenokonazol, propikonazol, atau mankozeb." },
-        "unlabeled": { nama: "Objek Tidak Dikenali", gejala: "-", penyebab: "-", solusi: "Pastikan foto DAUN fokus, dekat, dan cahaya terang." }
+        "healthy": { 
+            nama: "Tanaman Sehat", 
+            gejala: "Warna hijau segar, pertumbuhan normal tanpa bercak.", 
+            penyebab: "Kondisi lingkungan dan nutrisi optimal.",
+            solusi: "Lanjutkan pemupukan berimbang dan pantau secara rutin." 
+        },
+        "bacterial_leaf_blight": { 
+            nama: "HDB - Hawar Daun Bakteri (Kresek)", 
+            gejala: "Garis kuning/oranye di sepanjang pinggir daun yang mengering. Penyakit ini dinamai kresek karena daun yang terserang akan berubah warna menjadi cokelat kekuningan, menggulung, dan mengering seperti kertas kresek.", 
+            penyebab: "Bakteri Xanthomonas oryzae yang sangat cepat berkembang biak pada lingkungan dengan tingkat kelembapan tinggi pada musim hujan, dan tanaman padi kelebihan pemupukan Nitrogen.",
+            solusi: "Gunakan bakterisida, pastikan sirkulasi air sawah lancar, kurangi Urea.", 
+            merek: "Kuproxat 345 SC, Nordox 56 WP, Blast 200 SC, Biopatek (Hayati)",
+            aplikasi: "Waktu Aplikasi: Sebaiknya diaplikasikan segera setelah muncul gejala awal atau sebagai langkah pencegahan dengan interval 7–10 hari."
+        },
+        "brown_spot": { 
+            nama: "Bercak Cokelat (Brown Spot)", 
+            gejala: "Bintik cokelat bulat atau oval merata di permukaan daun.", 
+            penyebab: "Jamur Bipolaris oryzae. Sering terjadi karena ketidakseimbangan nutrisi tanah dan kelembapan udara yang tinggi serta suhu hangat sangat mendukung penyebaran jamur.",
+            solusi: "Cukupi kebutuhan Kalium dan pastikan drainase lancar.",
+            merek: "Amistar Top 325 SC, Tandem 325 SC, atau alternatif lain seperti WUZ, Vitro, dan Torbinol.",
+            aplikasi: "Jika serangan sudah terjadi, gunakan fungisida yang tepat, seperti yang mengandung bahan aktif kombinasi Azoksistrobin dan Difenokonazol."
+        },
+        "leaf_blast": { 
+            nama: "Penyakit Blast", 
+            gejala: "Bercak cokelat berbentuk belah ketupat dengan pusat abu-abu.", 
+            penyebab: "Jamur patogen Pyricularia oryzae yang berkembang pesat pada kelembapan tinggi, suhu malam yang sejuk, dan pemupukan nitrogen berlebih.",
+            solusi: "Semprot fungisida sistemik (Trisiklazol), kurangi dosis Nitrogen.",
+            merek: "Blast 200 SC (bahan aktif trisiklazol), Envoy 80 WP, dan Amistar Top 325 SC.",
+            aplikasi: "1. Fase Vegetatif (Blast Daun): Semprot sejak dini saat gejala awal bercak cokelat berbentuk belah ketupat muncul, atau lakukan tindakan pencegahan jika lingkungan lembap. 2. Fase Bunting hingga Awal Keluar Malai (Blast Leher): Sangat krusial untuk mencegah leher malai membusuk (potong leher)."
+        },
+        "leaf_scald": { 
+            nama: "Luka Daun (Leaf Scald)", 
+            gejala: "Bercak besar berbentuk perahu yang mengering di ujung daun.", 
+            penyebab: "Jamur Microdochium oryzae berkembang sangat cepat dalam kondisi Kelembapan Tinggi, Pemupukan Nitrogen Berlebihdan Jarak Tanam Terlalu Rapat.",
+            solusi: "Gunakan varietas tahan dan atur jarak tanam jangan terlalu rapat.",
+            merek: "Dithane M-45 80 WP (Bahan Aktif Mankozeb), Score 250 EC (Difenokonazol-Sistemik), Amistar Top 325 SC (Kombinasi Azoksistrobin + Difenokonazol).",
+            aplikasi: "Pada kondisi serangan yang parah, gunakan fungisida yang direkomendasikan untuk penyakit jamur daun (misalnya berbahan aktif mankozeb atau difenokonazol)."
+        },
+        "narrow_brown_spot": { 
+            nama: "Bercak Cokelat Sempit", 
+            gejala: "Garis-garis cokelat sempit searah dengan tulang daun.", 
+            penyebab: "Jamur Cercospora oryzae (Cercospora janseana) yang mudah berkembang saat suhu lingkungan rendah dengan kelembapan tinggi dan tanaman kekurangan Kalium.",
+            solusi: "Tambah dosis pupuk Kalium dan perbaiki sistem pengairan.",
+            merek: "Score 250 EC dan Manic 62,5 WG (Difenokonazol), Qiutane 80 WP. (Mankozeb + Trisiklazol), DKAztrozol Plus 375 SC (Azoksistrobin + Difenokonazol).",
+            aplikasi: "Penyakit bercak coklat sempit pada padi (disebabkan oleh jamur Cercospora oryzae) dapat dikendalikan secara efektif menggunakan fungisida berbahan aktif seperti difenokonazol, propikonazol, atau mankozeb."
+        },
+        "unlabeled": { 
+            nama: "Objek Tidak Dikenali", 
+            gejala: "-", penyebab: "-", 
+            solusi: "Pastikan foto DAUN fokus, dekat, dan cahaya terang." 
+        }
     };
 
     const kamusTanah = {
-        "alluvial": { "nama": "Tanah Alluvial", "penjelasan": "Tanah dari endapan material sedimen sungai. Sangat subur dan kaya unsur hara.", "pH": "6.0 - 7.0", "organik": "Sedang", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Padi, Jagung, Sayuran", "saran": "Ideal untuk Padi. Jaga sirkulasi air agar mineral tetap terjaga." },
-        "black": { "nama": "Tanah Hitam", "penjelasan": "Tanah dengan kandungan organik tinggi, berwarna gelap. Daya tahan air baik.", "pH": "6.5 - 7.5", "organik": "Tinggi", "npk": "Tinggi", "subur": "Subur", "tanaman": "Kedelai, Kapas, Palawija", "saran": "Sangat bagus untuk Kedelai. Lakukan pengolahan tanah saat kondisi lembap agar struktur tetap remah." },
-        "cinder": { "nama": "Tanah Vulkanik", "penjelasan": "Tanah dari material letusan gunung berapi. Berpori dan sangat kaya unsur hara alami.", "pH": "5.0 - 7.0", "organik": "Tinggi", "npk": "Sangat Tinggi", "subur": "Sangat Subur", "tanaman": "Sayuran, Hortikultura, Kopi", "saran": "Terbaik untuk Sayuran. Gunakan pupuk organik tambahan untuk menjaga kelembapan." },
-        "clay": { "nama": "Tanah Liat (Clay)", "penjelasan": "Tanah halus yang kuat menahan air namun drainasenya lambat. Lengket saat basah, keras saat kering.", "pH": "4.5 - 6.0", "organik": "Sedang", "npk": "Sedang", "subur": "Sedang", "tanaman": "Padi, Rumput Gajah", "saran": "Drainase wajib lancar agar akar tak busuk. Tambahkan bahan organik." },
-        "laterite": { "nama": "Tanah Laterit", "penjelasan": "Tanah tua yang mengalami pencucian hara intensif. Kaya oksida besi dan aluminium, kurang subur.", "pH": "4.0 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Karet, Kelapa Sawit", "saran": "Wajib tambah pupuk organik dosis tinggi & pengapuran (Dolomit) untuk menaikkan pH." },
-        "loamy": { "nama": "Tanah Lempung", "penjelasan": "Kombinasi pasir, debu, dan liat. Drainase baik dan gembur.", "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Palawija, Buah-buahan", "saran": "Tanah prima. Pertahankan kualitas dengan penggunaan pupuk organik konsisten." },
-        "loam": { "nama": "Tanah Lempung", "penjelasan": "Tekstur seimbang untuk pertanian. Menyediakan ruang udara cukup bagi pernapasan akar.", "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Sayuran, Buah-buahan", "saran": "Gunakan mulsa organik untuk menjaga kegemburan tanah emas ini." },
-        "peat": { "nama": "Tanah Gambut (Peat)", "penjelasan": "Tanah dari sisa tumbuhan di area rawa. Organik sangat tinggi namun keasaman ekstrem.", "pH": "3.0 - 5.0", "organik": "Sangat Tinggi", "npk": "Rendah", "subur": "Rendah", "tanaman": "Kopi, Nanas, Sawit", "saran": "Berikan Dolomit dosis tinggi & buat parit drainase." },
-        "red": { "nama": "Tanah Merah", "penjelasan": "Tanah dengan pelapukan lanjut. Warna merah berasal dari zat besi oksida yang tinggi.", "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Singkong, Karet", "saran": "Beri pupuk Fosfat (SP-36) dosis ekstra & pupuk kandang." },
-        "sandy": { "nama": "Tanah Berpasir", "penjelasan": "Partikel kasar yang tidak dapat menahan air dan hara. Cepat kering di musim kemarau.", "pH": "5.5 - 7.0", "organik": "Rendah", "npk": "Rendah", "subur": "Rendah", "tanaman": "Kelapa, Semangka", "saran": "Wajib tambah kompos/pupuk kandang tiap musim untuk daya ikat air." },
-        "sandy_loam": { "nama": "Lempung Berpasir", "penjelasan": "Campuran pasir dominan dengan liat/debu. Mudah diolah dan cepat kering.", "pH": "5.0 - 7.5", "organik": "Sedang-Rendah", "npk": "Sedang", "subur": "Sedang", "tanaman": "Jagung, Kacang Tanah, Cabe", "saran": "Tambahkan pupuk organik 10-20 ton/ha per musim dan irigasi teratur." },
-        "yellow": { "nama": "Tanah Kuning", "penjelasan": "Tanah pelapukan besi terhidrasi. Tingkat kesuburan rendah.", "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Ubi Kayu, Karet", "saran": "Pakai mulsa agar tanah tidak cepat mengeras dan tererosi saat hujan lebat." },
-        "unlabeled": { "nama": "Objek Tidak Dikenali", "penjelasan": "AI tidak dapat memastikan jenis tanah karena foto kurang jelas.", "saran": "Ambil foto kembali dengan cahaya terang dan bersih dari sampah." }
+        "alluvial": { 
+            "nama": "Tanah Alluvial", 
+            "penjelasan": "Tanah yang terbentuk dari endapan material sedimen (lumpur, pasir, kerikil) yang terbawa aliran sungai. Ditemukan di dataran rendah atau delta. Sangat subur dan kaya unsur hara.",
+            "pH": "6.0 - 7.0", "organik": "Sedang", "npk": "Tinggi", "subur": "Sangat Subur", 
+            "tanaman": "Padi, Jagung, Sayuran", 
+            "saran": "Ideal untuk Padi. Jaga sirkulasi air agar mineral tetap terjaga." 
+        },
+        "black": { 
+            "nama": "Tanah Hitam", 
+            "penjelasan": "Tanah yang memiliki kandungan organik tinggi dan mineral yang kaya, biasanya berwarna gelap hingga hitam pekat. Memiliki kemampuan menahan air yang baik dan sangat produktif.",
+            "pH": "6.5 - 7.5", "organik": "Tinggi", "npk": "Tinggi", "subur": "Subur", 
+            "tanaman": "Kedelai, Kapas, Palawija", 
+            "saran": "Sangat bagus untuk Kedelai. Lakukan pengolahan tanah saat kondisi lembap agar struktur tetap remah." 
+        },
+        "cinder": { 
+            "nama": "Tanah Vulkanik", 
+            "penjelasan": "Tanah yang berasal dari pelapukan material letusan gunung berapi. Teksturnya seringkali berpori, sangat kaya akan unsur hara alami, dan memiliki kemampuan menyimpan air yang luar biasa.",
+            "pH": "5.0 - 7.0", "organik": "Tinggi", "npk": "Sangat Tinggi", "subur": "Sangat Subur", 
+            "tanaman": "Sayuran, Hortikultura, Kopi", 
+            "saran": "Terbaik untuk Sayuran/Horti. Gunakan pupuk organik tambahan untuk menjaga kelembapan jangka panjang." 
+        },
+        "clay": { 
+            "nama": "Tanah Liat (Clay)", 
+            "penjelasan": "Tanah dengan partikel mineral sangat halus. Memiliki kemampuan menahan air yang sangat kuat namun sulit ditembus air (drainase lambat). Bersifat lengket saat basah dan keras saat kering.",
+            "pH": "4.5 - 6.0", "organik": "Sedang", "npk": "Sedang", "subur": "Sedang", 
+            "tanaman": "Padi, Rumput Gajah", 
+            "saran": "Drainase wajib lancar agar akar tak busuk. Tambahkan bahan organik untuk memperbaiki struktur tanah." 
+        },
+        "laterite": { 
+            "nama": "Tanah Laterit", 
+            "penjelasan": "Tanah tua yang telah mengalami pencucian hara secara intensif oleh curah hujan tinggi. Kaya akan oksida besi dan aluminium, sehingga teksturnya seringkali keras dan kurang subur.",
+            "pH": "4.0 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", 
+            "tanaman": "Karet, Kelapa Sawit", 
+            "saran": "Wajib tambah pupuk organik dosis tinggi & pengapuran (Dolomit) untuk menaikkan pH." 
+        },
+        "loamy": { 
+            "nama": "Tanah Lempung", 
+            "penjelasan": "Kombinasi ideal antara pasir, debu, dan sedikit liat. Tanah ini memiliki drainase yang baik sekaligus mampu menyimpan nutrisi dengan efektif. Teksturnya sangat remah dan mudah diolah.",
+            "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", 
+            "tanaman": "Palawija, Buah-buahan", 
+            "saran": "Tanah prima untuk semua tanaman. Pertahankan kualitas dengan penggunaan pupuk organik konsisten." 
+        },
+        "loam": { 
+            "nama": "Tanah Lempung", 
+            "penjelasan": "Tekstur tanah yang paling seimbang untuk pertanian. Mampu menjaga kelembapan tanpa tergenang, serta menyediakan ruang udara yang cukup bagi pernapasan akar tanaman.",
+            "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", 
+            "tanaman": "Sayuran, Buah-buahan", 
+            "saran": "Gunakan mulsa organik untuk menjaga kegemburan tanah 'emas' ini." 
+        },
+        "peat": { 
+            "nama": "Tanah Gambut (Peat)", 
+            "penjelasan": "Tanah yang terbentuk dari akumulasi sisa-sisa tumbuhan yang membusuk tidak sempurna di area rawa. Memiliki kandungan bahan organik sangat tinggi namun tingkat keasamannya ekstrem.",
+            "pH": "3.0 - 5.0", "organik": "Sangat Tinggi", "npk": "Rendah", "subur": "Rendah", 
+            "tanaman": "Kopi, Nanas, Sawit", 
+            "saran": "Berikan Dolomit dosis tinggi & buat parit drainase agar tanah tidak selalu tergenang." 
+        },
+        "red": { 
+            "nama": "Tanah Merah", 
+            "penjelasan": "Tanah yang mengalami pelapukan lanjut and pencucian hara. Warna merah berasal dari kandungan besi oksida yang tinggi. Teksturnya remah namun miskin akan hara organik.",
+            "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", 
+            "tanaman": "Singkong, Karet", 
+            "saran": "Beri pupuk Fosfat (SP-36) dosis ekstra & pupuk kandang untuk memperbaiki kesuburan." 
+        },
+        "sandy": { 
+            "nama": "Tanah Berpasir", 
+            "penjelasan": "Tanah dengan partikel kasar yang tidak dapat menahan air dan unsur hara dengan baik. Teksturnya remah dan sangat mudah diolah, namun sangat cepat kering di musim kemarau.",
+            "pH": "5.5 - 7.0", "organik": "Rendah", "npk": "Rendah", "subur": "Rendah", 
+            "tanaman": "Kelapa, Semangka", 
+            "saran": "Wajib tambah kompos/pupuk kandang tiap musim untuk meningkatkan daya ikat air tanah." 
+        },
+        "sandy_loam": { 
+            "nama": "Lempung Berpasir", 
+            "penjelasan": "Tanah dengan campuran pasir (50-70%) dan liat/debu (30-50%). Tekstur lebih padat dari pasir murni, mampu menahan air dan hara lebih baik, namun tetap cepat kering dan mudah diolah.", 
+            "pH": "5.0 - 7.5", 
+            "organik": "Sedang-Rendah", 
+            "npk": "Sedang", 
+            "subur": "Sedang", 
+            "tanaman": "Jagung, Kacang Tanah, Ubi Kayu, Cabe", 
+            "saran": "Tambahkan pupuk organik 10-20 ton/ha per musim, irigasi teratur, serta mulsa untuk mengurangi evaporasi." 
+        },
+        "yellow": { 
+            "nama": "Tanah Kuning", 
+            "penjelasan": "Tanah yang mirip dengan tanah merah namun memiliki hidrasi mineral besi yang berbeda. Biasanya terbentuk di lingkungan yang lebih lembap namun tetap memiliki tingkat kesuburan yang rendah.",
+            "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", 
+            "tanaman": "Ubi Kayu, Karet", 
+            "saran": "Pakai mulsa agar tanah tidak cepat mengeras dan tererosi saat hujan lebat." 
+        },
+        "unlabeled": { 
+            "nama": "Objek Tidak Dikenali", 
+            "penjelasan": "AI tidak dapat memastikan jenis tanah karena foto kurang jelas atau terhalang benda lain.",
+            "saran": "Ambil foto kembali dengan cahaya terang. Pastikan tanah bersih dari sampah plastik atau daun kering." 
+        }
     };
 
     const RECOMMENDATIONS = {
-        "yellow": { label: "BWD Skala 1", rec: "🚨 SEGERA berikan pupuk Urea 100-150 kg/ha. Tanaman kritis nitrogen (Defisiensi Berat).", color: "badge-yellow" },
-        "yellowish green": { label: "BWD Skala 2", rec: "⚠️ Nitrogen rendah. Tambahkan pupuk Urea 75-100 kg/ha sesuai umur tanaman.", color: "badge-yellow" },
-        "light green": { label: "BWD Skala 3", rec: "✅ Kondisi Cukup. Berikan Urea 50 kg/ha untuk menjaga fase pertumbuhan.", color: "badge-green" },
-        "green": { label: "BWD Skala 4", rec: "🌟 Kondisi Optimal/Ideal. Tidak perlu tambahan Urea. Pertahankan kondisi ini.", color: "badge-green" },
-        "dark green": { label: "BWD Skala 5", rec: "⚡ Nitrogen Berlebih. HENTIKAN pupuk N. Waspada serangan hama wereng dan penyakit Blast.", color: "badge-dark" }
+        "yellow": {
+            label: "BWD Skala 1",
+            rec: "🚨 SEGERA berikan pupuk Urea 100-150 kg/ha. Tanaman kritis nitrogen (Defisiensi Berat).",
+            color: "badge-yellow"
+        },
+        "yellowish green": {
+            label: "BWD Skala 2",
+            rec: "⚠️ Nitrogen rendah. Tambahkan pupuk Urea 75-100 kg/ha sesuai umur tanaman.",
+            color: "badge-yellow"
+        },
+        "light green": {
+            label: "BWD Skala 3",
+            rec: "✅ Kondisi Cukup. Berikan Urea 50 kg/ha untuk menjaga fase pertumbuhan.",
+            color: "badge-green"
+        },
+        "green": {
+            label: "BWD Skala 4",
+            rec: "🌟 Kondisi Optimal/Ideal. Tidak perlu tambahan Urea. Pertahankan kondisi ini.",
+            color: "badge-green"
+        },
+        "dark green": {
+            label: "BWD Skala 5",
+            rec: "⚡ Nitrogen Berlebih. HENTIKAN pupuk N. Waspada serangan hama wereng dan penyakit Blast.",
+            color: "badge-dark"
+        }
     };
 
     const kamusWarna = { "yellow": "Kuning", "yellowish green": "Hijau Kekuningan", "light green": "Hijau Muda", "green": "Hijau", "dark green": "Hijau Tua" };
@@ -347,7 +495,7 @@
             document.getElementById('btnAnalisis').style.display = 'none';
             document.getElementById('gpsPrompt').style.display = 'block';
             document.getElementById('weatherData').style.display = 'none';
-            document.getElementById('result').style.display = 'none'; 
+            document.getElementById('result').style.display = 'block';
         } else {
             document.getElementById('btnCamera').style.display = 'block';
             document.getElementById('scanWindow').style.display = 'flex';
@@ -379,206 +527,240 @@
         reader.readAsDataURL(file);
     }
 
-    async function aktifkanGPS() {
-        const btn = document.querySelector('.btn-live'); 
-        const originalText = "SINKRONKAN GPS & SATELIT";
-        
-        try {
-            btn.innerText = "⏳ MENCARI SINYAL...";
-            btn.style.opacity = "0.7";
-            btn.disabled = true;
-            document.getElementById('resLabel').innerText = "Menghubungkan Satelit...";
-            
-            // Jalankan pengambilan data cuaca & lokasi
-            await loadWeather(); 
-            
-            // JIKA SUKSES: Buka panel data, sembunyikan prompt GPS awal
-            document.getElementById('gpsPrompt').style.display = 'none';
-            document.getElementById('weatherData').style.display = 'block';
-            document.getElementById('result').style.display = 'block';
+// ... (Bagian Kamus Tani, Tanah, BWD, dan switchMode tetap sama) ...
 
-        } catch (err) {
-            // JIKA GAGAL: Kembalikan kondisi tombol agar bisa diklik ulang oleh petani
-            console.error("Sistem menangkap error GPS:", err);
-            btn.innerText = originalText;
-            btn.style.opacity = "1";
-            btn.disabled = false;
-            
-            // Pastikan UI tidak blank, tetap tampilkan prompt pencarian lokasi
-            document.getElementById('gpsPrompt').style.display = 'block';
-            document.getElementById('weatherData').style.display = 'none';
-            document.getElementById('result').style.display = 'none';
-            
-            document.getElementById('resLabel').innerText = "GPS Gagal";
-            alert("Gagal Sinkronisasi. Pastikan GPS HP Anda sudah aktif dan izin lokasi browser diizinkan.");
-        }
-    }
-
-    async function loadWeather() {
-        try {
-            const pos = await new Promise((res, rej) => {
-                navigator.geolocation.getCurrentPosition(res, rej, { 
-                    enableHighAccuracy: true,
-                    timeout: 10000 
-                });
-            });
-            
-            const lat = pos.coords.latitude;
-            const lon = pos.coords.longitude;
-            document.getElementById('lokasiSawah').innerText = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
-            
-            try {
-                const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
-                const geoData = await geoRes.json();
-                const addr = geoData.address;
-                const desa = addr.village || addr.suburb || addr.hamlet || addr.town || addr.municipality || "Desa tidak terdeteksi";
-                const kecamatan = addr.subdistrict || addr.city_district || addr.district || "...";
-                document.getElementById('alamatDesa').innerHTML = `<b>Desa ${desa}</b>, Kec. ${kecamatan}`;
-            } catch (e) {
-                document.getElementById('alamatDesa').innerText = "Gagal memuat alamat";
-            }
-
-            const weatherData = await getWeather(lat, lon);
-            const cur = weatherData.current;
-            const hourly = weatherData.hourly;
-
-            const nowISO = new Date().toISOString().slice(0, 13); 
-            const nowIndex = hourly.time.findIndex(t => t.startsWith(nowISO));
-            const activeIndex = nowIndex >= 0 ? nowIndex : 0;
-
-            const currentCape = (hourly && hourly.cape) ? hourly.cape[activeIndex] : 0;
-            const dpSpread = (cur.temperature_2m - cur.dew_point_2m).toFixed(1);
-            const cloudTemp = (hourly && hourly.temperature_850hPa) ? hourly.temperature_850hPa[activeIndex] : "-";
-
-            if(document.getElementById('dpSpread')) {
-                document.getElementById('dpSpread').innerText = `${dpSpread} °C`;
-            }
-
-            if(document.getElementById('capeVal')) {
-                let capeStatus = currentCape > 2500 ? "‼️ EKSTREM" : (currentCape > 1000 ? "⚠️ WASPADA" : "✅ STABIL");
-                document.getElementById('capeVal').innerHTML = `${currentCape} J/kg <br><small style="font-size:0.65rem;">Status: ${capeStatus}</small>`;
-            }
-
-            let rainScore = 0;
-            const nextHourProb = (hourly && hourly.precipitation_probability) ? hourly.precipitation_probability[activeIndex + 1] || 0 : 0;
-
-            if (nextHourProb >= 30) rainScore += 40;
-            if (currentCape >= 1000) rainScore += 30;
-            if (parseFloat(dpSpread) <= 2) rainScore += 20;
-            if (cur.relative_humidity_2m >= 90) rainScore += 10;
-
-            const elHujan = document.getElementById('prediksiHujan');
-            const txtHujan = document.getElementById('hujanNext');
-
-            if (elHujan) {
-                elHujan.style.display = 'block';
-                if (rainScore >= 70) {
-                    txtHujan.innerHTML = `⛈️ <b>Hujan Sangat Mungkin</b><br><small>(Skor Atmosfer: ${rainScore}/100)</small>`;
-                    elHujan.style.borderLeftColor = 'var(--red-alert)';
-                } else if (rainScore >= 40) {
-                    txtHujan.innerHTML = `🌦️ <b>Potensi Hujan Lokal</b><br><small>(Skor Atmosfer: ${rainScore}/100)</small>`;
-                    elHujan.style.borderLeftColor = 'var(--accent-soil)';
-                } else {
-                    txtHujan.innerHTML = `🌤️ <b>Cerah / Berawan</b><br><small>(Skor Atmosfer: ${rainScore}/100)</small>`;
-                    elHujan.style.borderLeftColor = 'var(--accent-green)';
-                }
-            }
-
-            document.getElementById('suhuNow').innerText = `${cur.temperature_2m} °C`;
-            document.getElementById('humidityNow').innerText = `${cur.relative_humidity_2m}%`;
-            
-            const rainCurrent = cur.rain || 0;
-            const rainHourly = (hourly && hourly.precipitation) ? hourly.precipitation[0] : 0;
-            const rainProb = (hourly && hourly.precipitation_probability) ? hourly.precipitation_probability[0] : 0;
-
-            let finalRain = rainCurrent;
-            let currentRainStatus = "Tidak Hujan";
-
-            if (rainCurrent > 0) {
-                currentRainStatus = "Hujan Terdeteksi";
-            } else if (rainHourly > 0.2 || rainProb > 80 || cur.relative_humidity_2m >= 98) {
-                finalRain = rainHourly;
-                currentRainStatus = "Gerimis/Hujan Lokal";
-            }
-
-            const isLikelyRaining = cur.relative_humidity_2m >= 98 && parseFloat(dpSpread) <= 0.5 && currentCape > 1000;
-            if (isLikelyRaining && finalRain === 0) {
-                currentRainStatus = "Hujan Lokal Terdeteksi Atmosfer";
-            }
-
-            document.getElementById('rainNow').innerHTML = `
-                ${finalRain > 0 ? finalRain.toFixed(1) + ' mm' : '0.0 mm'}
-                <br>
-                <small style="font-size:0.65rem; color:var(--accent-soil);">${currentRainStatus}</small>
-            `;
-            
-            document.getElementById('windNow').innerText = `${cur.wind_speed_10m} km/jam`;
-            document.getElementById('pressNow').innerText = `${cur.surface_pressure} hPa`;
-            document.getElementById('tempUpper').innerText = `${cloudTemp} °C`;
-
-            const getDirection = (degree) => {
-                const sectors = ["Utara", "Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut"];
-                return sectors[Math.round(degree / 45) % 8];
-            };
-
-            document.getElementById('windDir').innerHTML = `
-                <div style="display:flex; align-items:center; justify-content: flex-end; gap:5px;">
-                    <span style="display:inline-block; transform:rotate(${cur.wind_direction_10m + 180}deg); transition: 1s ease;">⬆️</span>
-                    <span>Dari ${getDirection(cur.wind_direction_10m)}</span>
-                </div>
-            `;
-
-            document.getElementById('resLabel').innerText = "Laporan Cuaca Lokasi Anda";
-            document.getElementById('resConf').innerText = "Terhubung dengan Satelit";
-            
-            analyzeDiseaseRisk(cur, dpSpread);
-            
-            // Pemuatan data makro iklim global NOAA
-            await loadGlobalClimateIndices();
-
-        } catch (err) {
-            // CRITICAL FIX: Jangan gunakan throw err di sini agar catch milik aktifkanGPS() bisa menangani UI pemulihan tombol dengan mulus.
-            console.error("Gagal sinkronisasi satelit di loadWeather:", err);
-            document.getElementById('resLabel').innerText = "GPS Gagal";
-            throw err; // Tetap dilempar agar ditangkap oleh penyeimbang UI aktifkanGPS
-        }
+// SATU FUNGSI AKTIFKAN GPS (Versi Hidup & Stabil)
+// ==========================================
+// SATU FUNGSI AKTIFKAN GPS (AMANKAN STATE UI)
+// ==========================================
+async function aktifkanGPS() {
+    const btn = document.querySelector('.btn-live'); 
+    const originalText = "SINKRONKAN GPS & SATELIT";
     
-        try {
-            const URL_IKLIM_MAKRO = "https://script.google.com/macros/s/AKfycby-MACg8Y9qIohPbZc6g4gBrYhLxRf3N_0Vpz8FWT3qaDH-nTC7qGTYOGBhmyiQ4BU/exec";
-            const res = await fetch(URL_IKLIM_MAKRO, { method: 'POST' });
-            const data = await res.json();
-            
-            ensoContainer.style.display = 'block';
-            ensoContainer.innerHTML = `
-                <div class="info-box" style="border-left-color: var(--accent-soil); background: rgba(255, 215, 0, 0.02); padding: 12px; margin-top: 15px;">
-                    <strong>🌊 Analisis Makro Iklim Global (ENSO & IOD)</strong>
-                    <table style="width: 100%; margin-top: 8px; border: none;">
-                        <tr>
-                            <td style="border: none; padding: 4px 0;">🔴 Status ENSO (Pasifik)</td>
-                            <td class="row-val" style="color: ${data.ensoColor || 'var(--text-main)'}; font-weight: 700; font-size: 0.75rem;">${data.enso}</td>
-                        </tr>
-                        <tr>
-                            <td style="border: none; padding: 4px 0;">🔵 Indeks IOD (Hindia)</td>
-                            <td class="row-val" style="color: ${data.iodColor || 'var(--text-main)'}; font-weight: 700; font-size: 0.75rem;">${data.iod}</td>
-                        </tr>
-                    </table>
-                    <small style="font-size:0.6rem; opacity:0.5; display:block; margin-top:6px; line-height: 1.2;">
-                        *Sistem mendeteksi anomali suhu samudra secara langsung dari satelit NOAA via jembatan server mandiri.
-                    </small>
-                </div>
-            `;
-        } catch (error) {
-            console.error("Gagal memuat data indeks global:", error);
-            ensoContainer.style.display = 'block';
-            ensoContainer.innerHTML = `
-                <div class="info-box" style="border-left-color: var(--border); padding: 12px; margin-top: 15px;">
-                    <strong>🌊 Analisis Makro Iklim Global (ENSO & IOD)</strong>
-                    <p style="font-size: 0.75rem; margin: 5px 0 0; color: #8b949e;">Status: Jaringan NOAA Terputus / Neutral</p>
-                </div>
-            `;
-        }
+    try {
+        btn.innerText = "⏳ MENCARI SINYAL...";
+        btn.style.opacity = "0.7";
+        btn.disabled = true;
+        document.getElementById('resLabel').innerText = "Menghubungkan Satelit...";
+        
+        // JALANKAN PROSES UTAMA
+        await loadWeather(); 
+        
+        // PAKSA BUKA SEMUA GERBANG VISUAL SETELAH SUKSES
+        document.getElementById('gpsPrompt').style.display = 'none';
+        document.getElementById('weatherData').style.display = 'block';
+        document.getElementById('result').style.display = 'block'; // Amankan gerbang utama result
+    } catch (err) {
+        console.error("Gagal melakukan penarikan posisi:", err);
+        document.getElementById('resLabel').innerText = "GPS Gagal";
+        btn.innerText = originalText;
+        btn.style.opacity = "1";
+        btn.disabled = false;
+        
+        document.getElementById('gpsPrompt').style.display = 'block';
+        document.getElementById('weatherData').style.display = 'none';
+        document.getElementById('result').style.display = 'none';
+        
+        alert("Gagal Sinkronisasi. Pastikan GPS HP Aktif dan Izin Lokasi di Browser Diperbolehkan.");
     }
+}
 
+async function getWeather(lat, lon) {
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,dew_point_2m,rain,showers,wind_speed_10m,wind_direction_10m,surface_pressure&hourly=precipitation_probability,precipitation,temperature_850hPa,cape&timezone=auto`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Gagal data satelit");
+    return await res.json();
+}
+
+async function loadWeather() {
+    try {
+        const pos = await new Promise((res, rej) => {
+            navigator.geolocation.getCurrentPosition(res, rej, { 
+                enableHighAccuracy: true,
+                timeout: 10000 
+            });
+        });
+        
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        document.getElementById('lokasiSawah').innerText = `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
+        
+        // 1. Ambil Nama Desa & Kecamatan
+        try {
+            const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`);
+            const geoData = await geoRes.json();
+            const addr = geoData.address;
+            const desa = addr.village || addr.suburb || addr.hamlet || addr.town || addr.municipality || "Desa tidak terdeteksi";
+            const kecamatan = addr.subdistrict || addr.city_district || addr.district || "...";
+            document.getElementById('alamatDesa').innerHTML = `<b>Desa ${desa}</b>, Kec. ${kecamatan}`;
+        } catch (e) {
+            document.getElementById('alamatDesa').innerText = "Gagal memuat alamat";
+        }
+
+        // 2. Ambil Data Cuaca Satelit
+        const weatherData = await getWeather(lat, lon);
+        const cur = weatherData.current;
+        const hourly = weatherData.hourly;
+
+        const nowISO = new Date().toISOString().slice(0, 13); 
+        const nowIndex = hourly.time.findIndex(t => t.startsWith(nowISO));
+        const activeIndex = nowIndex >= 0 ? nowIndex : 0;
+
+        const currentCape = (hourly && hourly.cape) ? hourly.cape[activeIndex] : 0;
+        const dpSpread = (cur.temperature_2m - cur.dew_point_2m).toFixed(1);
+        const cloudTemp = (hourly && hourly.temperature_850hPa) ? hourly.temperature_850hPa[activeIndex] : "-";
+
+        if(document.getElementById('dpSpread')) {
+            document.getElementById('dpSpread').innerText = `${dpSpread} °C`;
+        }
+
+        if(document.getElementById('capeVal')) {
+            let capeStatus = currentCape > 2500 ? "‼️ EKSTREM" : (currentCape > 1000 ? "⚠️ WASPADA" : "✅ STABIL");
+            document.getElementById('capeVal').innerHTML = `${currentCape} J/kg <br><small style="font-size:0.65rem;">Status: ${capeStatus}</small>`;
+        }
+
+        // 3. Hybrid Rain Scoring
+        let rainScore = 0;
+        const nextHourProb = (hourly && hourly.precipitation_probability) ? hourly.precipitation_probability[activeIndex + 1] || 0 : 0;
+
+        if (nextHourProb >= 30) rainScore += 40;
+        if (currentCape >= 1000) rainScore += 30;
+        if (parseFloat(dpSpread) <= 2) rainScore += 20;
+        if (cur.relative_humidity_2m >= 90) rainScore += 10;
+
+        const elHujan = document.getElementById('prediksiHujan');
+        const txtHujan = document.getElementById('hujanNext');
+
+        if (elHujan) {
+            elHujan.style.display = 'block';
+            if (rainScore >= 70) {
+                txtHujan.innerHTML = `⛈️ <b>Hujan Sangat Mungkin</b><br><small>(Skor Atmosfer: ${rainScore}/100)</small>`;
+                elHujan.style.borderLeftColor = 'var(--red-alert)';
+            } else if (rainScore >= 40) {
+                txtHujan.innerHTML = `🌦️ <b>Potensi Hujan Lokal</b><br><small>(Skor Atmosfer: ${rainScore}/100)</small>`;
+                elHujan.style.borderLeftColor = 'var(--accent-soil)';
+            } else {
+                txtHujan.innerHTML = `🌤️ <b>Cerah / Berawan</b><br><small>(Skor Atmosfer: ${rainScore}/100)</small>`;
+                elHujan.style.borderLeftColor = 'var(--accent-green)';
+            }
+        }
+
+        // 4. Update UI Tabel Utama
+        document.getElementById('suhuNow').innerText = `${cur.temperature_2m} °C`;
+        document.getElementById('humidityNow').innerText = `${cur.relative_humidity_2m}%`;
+
+        const rainCurrent = cur.rain || 0;
+        const rainHourly = (hourly && hourly.precipitation) ? hourly.precipitation[0] : 0;
+        const rainProb = (hourly && hourly.precipitation_probability) ? hourly.precipitation_probability[0] : 0;
+
+        let finalRain = rainCurrent;
+        let rainStatus = "Tidak Hujan";
+
+        if (rainCurrent > 0) {
+            rainStatus = "Hujan Terdeteksi";
+        } else if (rainHourly > 0.2 || rainProb > 80 || cur.relative_humidity_2m >= 98) {
+            finalRain = rainHourly;
+            rainStatus = "Gerimis/Hujan Lokal";
+        }
+
+        const isLikelyRaining = cur.relative_humidity_2m >= 98 && parseFloat(dpSpread) <= 0.5 && currentCape > 1000;
+        if (isLikelyRaining && finalRain === 0) {
+            rainStatus = "Hujan Lokal Terdeteksi Atmosfer";
+        }
+
+        document.getElementById('rainNow').innerHTML = `
+            ${finalRain > 0 ? finalRain.toFixed(1) + ' mm' : '0.0 mm'}
+            <br>
+            <small style="font-size:0.65rem; color:var(--accent-soil);">${rainStatus}</small>
+        `;
+
+        document.getElementById('windNow').innerText = `${cur.wind_speed_10m} km/jam`;
+        document.getElementById('pressNow').innerText = `${cur.surface_pressure} hPa`;
+        document.getElementById('tempUpper').innerText = `${cloudTemp} °C`;
+
+        const getDirection = (degree) => {
+            const sectors = ["Utara", "Timur Laut", "Timur", "Tenggara", "Selatan", "Barat Daya", "Barat", "Barat Laut"];
+            return sectors[Math.round(degree / 45) % 8];
+        };
+
+        document.getElementById('windDir').innerHTML = `
+            <div style="display:flex; align-items:center; justify-content: flex-end; gap:5px;">
+                <span style="display:inline-block; transform:rotate(${cur.wind_direction_10m + 180}deg); transition: 1s ease;">⬆️</span>
+                <span>Dari ${getDirection(cur.wind_direction_10m)}</span>
+            </div>
+        `;
+
+        // 5. Update Status & Analisis Risiko Penyakit
+        document.getElementById('resLabel').innerText = "Laporan Cuaca Lokasi Anda";
+        document.getElementById('resConf').innerText = "Terhubung dengan Satelit";
+        analyzeDiseaseRisk(cur, dpSpread);
+
+        // --- SOLUSI UTAMA: AMANKAN PEMUATAN DATA IKLIM MAKRO ---
+        // Kita panggil tanpa await agar tidak mengunci fungsi utama jika server NOAA lambat merespons
+        loadGlobalClimateIndices();
+
+    } catch (err) {
+        console.error("Gagal sinkronisasi satelit:", err);
+        document.getElementById('resLabel').innerText = "GPS Gagal";
+        throw err;
+    }
+}
+
+// ==========================================
+// RESTRUKTURISASI FUNGSI INDEKS MAKR0 GLOBAL
+// ==========================================
+async function loadGlobalClimateIndices() {
+    // Amankan pengambilan elemen target untuk mengantisipasi duplikasi ID di DOM HTML
+    const containers = document.querySelectorAll('#ensoIodBox');
+    if (containers.length === 0) return;
+    
+    // Tembak container pertama dan paksa langsung membuka layout-nya
+    const ensoContainer = containers[0];
+    ensoContainer.style.display = 'block';
+    ensoContainer.innerHTML = `<div class="info-box" style="border-left-color: var(--accent-bwd);">🔄 Mengambil Data Indeks Iklim Global...</div>`;
+
+    try {
+        // ⚠️ PASTEKAN URL EXEC BARU ANDA DI SINI SETELAH MELAKUKAN PROSEDUR DEPLOY DI APPSCRIPT
+        const URL_IKLIM_MAKRO = "https://script.google.com/macros/s/AKfycbxYJU771bRn4B5Ox54yQ9VYXPnKXlm4MJOs7VZcojVhbWbI3XdC3gD40xkcfQNxY69b/exec";
+        
+        // Jabat tangan bersih menggunakan CORS mode untuk menangani pengalihan (302 Redirect) Google
+        const res = await fetch(URL_IKLIM_MAKRO, { 
+            method: 'GET',
+            mode: 'cors'
+        });
+        
+        if (!res.ok) throw new Error("Respons server Google Apps Script tidak valid");
+        const data = await res.json();
+        
+        ensoContainer.innerHTML = `
+            <div class="info-box" style="border-left-color: var(--accent-soil); background: rgba(255, 215, 0, 0.02); padding: 12px; margin-top: 15px;">
+                <strong>🌊 Analisis Makro Iklim Global (ENSO & IOD)</strong>
+                <table style="width: 100%; margin-top: 8px; border: none;">
+                    <tr>
+                        <td style="border: none; padding: 4px 0;">🔴 Status ENSO (Pasifik)</td>
+                        <td class="row-val" style="color: ${data.ensoColor || 'var(--text-main)'}; font-weight: 700; font-size: 0.75rem;">${data.enso}</td>
+                    </tr>
+                    <tr>
+                        <td style="border: none; padding: 4px 0;">🔵 Indeks IOD (Hindia)</td>
+                        <td class="row-val" style="color: ${data.iodColor || 'var(--text-main)'}; font-weight: 700; font-size: 0.75rem;">${data.iod}</td>
+                    </tr>
+                </table>
+                <small style="font-size:0.6rem; opacity:0.5; display:block; margin-top:6px; line-height: 1.2;">
+                    *Data dihitung real-time via koordinat anomali suhu laut lepas Pasifik Tengah & Samudra Hindia.
+                </small>
+            </div>
+        `;
+    } catch (error) {
+        console.error("Gagal memuat data indeks global:", error);
+        ensoContainer.innerHTML = `
+            <div class="info-box" style="border-left-color: var(--red-alert); padding: 12px; margin-top: 15px;">
+                <strong>🌊 Analisis Makro Iklim Global (ENSO & IOD)</strong>
+                <p style="font-size: 0.75rem; margin: 5px 0 0; color: #8b949e;">Status: Koneksi Web App Terputus</p>
+                <small style="font-size: 0.6rem; color: var(--red-alert);">Pastikan URL Web App baru sudah di-paste ke file HTML dan dideploy ulang.</small>
+            </div>
+        `;
+    }
+}
     async function mulaiAnalisis() {
         document.getElementById('scanWindow').classList.add('is-scanning');
         document.getElementById('loader').style.display = 'block';
@@ -592,29 +774,49 @@
         document.getElementById('loader').style.display = 'none';
     }
     
-    function analyzeDiseaseRisk(cur, dpSpread) {
-        const spreadNum = parseFloat(dpSpread);
-        const result = blastRisk(cur.temperature_2m, cur.relative_humidity_2m, cur.rain, spreadNum);
-        const el = document.getElementById('riskResult');
-        if (el) {
-            el.innerHTML = `<span style="color:${result.color}; font-weight:800;">${result.level}</span><br>${result.msg}`;
-        }
+   
+// PERBAIKAN FUNGSI ANALISIS RISIKO
+// PERBAIKAN FUNGSI ANALISIS RISIKO
+function analyzeDiseaseRisk(cur, dpSpread) {
+    // Mengonversi dpSpread menjadi angka (float) agar skoring akurat
+    const spreadNum = parseFloat(dpSpread);
+    const result = blastRisk(cur.temperature_2m, cur.relative_humidity_2m, cur.rain, spreadNum);
+    
+    const el = document.getElementById('riskResult');
+    if (el) {
+        el.innerHTML = `<span style="color:${result.color}; font-weight:800;">${result.level}</span><br>${result.msg}`;
     }
+}
 
-    function blastRisk(temp, humidity, rain, spreadNum) {
-        let score = 0;
-        if (humidity >= 85) score += 30;
-        if (spreadNum <= 2) score += 30; 
-        if (rain >= 1) score += 20;
-        if (temp <= 27) score += 20;
+// PERBAIKAN LOGIKA BLAST RISK
+function blastRisk(temp, humidity, rain, spreadNum) {
+    let score = 0;
+    
+    if (humidity >= 85) score += 30;
+    // Deteksi embun daun: jika selisih suhu & titik embun <= 2 derajat
+    if (spreadNum <= 2) score += 30; 
+    if (rain >= 1) score += 20;
+    if (temp <= 27) score += 20;
 
-        if (score >= 70) {
-            return { level: "TINGGI", color: "#f85149", msg: "Risiko Blast Tinggi: Udara sangat jenuh (embun tebal). Hindari Urea berlebih!" };
-        } else if (score >= 40) {
-            return { level: "SEDANG", color: "#ffd700", msg: "Kondisi mendukung perkembangan jamur. Pantau gejala bercak belah ketupat." };
-        }
-        return { level: "RENDAH", color: "#00ff88", msg: "Kondisi sawah relatif aman dari serangan Blast saat ini." };
+    if (score >= 70) {
+        return { 
+            level: "TINGGI", 
+            color: "#f85149", 
+            msg: "Risiko Blast Tinggi: Udara sangat jenuh (embun tebal). Hindari Urea berlebih!" 
+        };
+    } else if (score >= 40) {
+        return { 
+            level: "SEDANG", 
+            color: "#ffd700", 
+            msg: "Kondisi mendukung perkembangan jamur. Pantau gejala bercak belah ketupat." 
+        };
     }
+    return { 
+        level: "RENDAH", 
+        color: "#00ff88", 
+        msg: "Kondisi sawah relatif aman dari serangan Blast saat ini." 
+    };
+}
 
     function tampilkanHasil(data) {
         let out = Array.isArray(data) ? data[0] : data;
@@ -627,6 +829,7 @@
         
         let label = "unlabeled", conf = 0;
 
+        // --- LOGIKA 1: PENYAKIT PADI ---
         if (currentMode === 'daun') {
             if (out.classification_result) {
                 const res = out.classification_result;
@@ -641,8 +844,12 @@
             document.getElementById('resMerek').innerText = info.merek || "-";
             document.getElementById('resAplikasi').innerText = info.aplikasi || "-";
         } 
+
+    
+        // --- LOGIKA 2: ANALISIS TANAH ---
         else if (currentMode === 'tanah') {
             let foundBlock = null;
+            // Mencari data klasifikasi di dalam respon Roboflow
             if (out.predictions && out.predictions.predicted_classes) {
                 foundBlock = out.predictions;
             } else {
@@ -654,12 +861,14 @@
                 const container = document.getElementById('soilList');
                 container.innerHTML = ""; 
 
+                // 1. Urutkan Prediksi
                 let sortedSoil = Object.keys(preds).sort((a, b) => {
                     let valA = typeof preds[a] === 'number' ? preds[a] : (preds[a].confidence || 0);
                     let valB = typeof preds[b] === 'number' ? preds[b] : (preds[b].confidence || 0);
                     return valB - valA;
                 });
 
+                // 2. Tampilkan Bar Progress
                 sortedSoil.forEach(soilKey => {
                     const p = preds[soilKey];
                     const val = typeof p === 'number' ? p : (p.confidence || 0);
@@ -680,6 +889,7 @@
                     }
                 });
 
+                // --- TEMPELKAN KODE PERBAIKAN DI SINI ---
                 const topKeyRaw = sortedSoil[0]; 
                 const topValue = (typeof preds[topKeyRaw] === 'number' ? preds[topKeyRaw] : (preds[topKeyRaw].confidence || 0)) * 100;
 
@@ -690,9 +900,11 @@
 
                 const info = kamusTanah[finalKey] || kamusTanah.unlabeled;
 
+                // Update Judul & Confidence
                 document.getElementById('resLabel').innerText = (finalKey === "unlabeled") ? "Objek Kurang Jelas" : info.nama;
                 document.getElementById('resConf').innerText = `Tingkat Keyakinan: ${topValue.toFixed(1)}%`;
                 
+                // Update Tabel Parameter (Agar tidak lagi muncul tanda strip -)
                 const tableResult = document.querySelector("#boxTanah table");
                 tableResult.innerHTML = `
                     <tr><td>Kesuburan</td><td class="row-val">${info.subur || "Sedang"}</td></tr>
@@ -707,17 +919,21 @@
                 
                 conf = topValue.toFixed(1);
                 setTimeout(() => { drawTriangle(finalKey); }, 80);
+                // --- AKHIR PENEMPELAN ---
             }
         }
+
+        // --- LOGIKA 3: BWD SISTEM VOTING ---
         else if (currentMode === 'bwd') {
             const list = document.getElementById('leafList');
             list.innerHTML = '';
+            document.getElementById('boxBWD').style.display = 'block';
 
             const colors = out.leafColors || out.leaf_colors || [];
             const dets = Array.isArray(out.detections) ? out.detections : (out.detections?.predictions || []);
 
             if (colors.length === 0) {
-                document.getElementById('bwdRecommendationContainer').innerHTML = `<div class="info-box">⚠️ Daun tidak terdeteksi</div>`;
+                document.getElementById('voteInfo').innerText = "⚠️ Daun tidak terdeteksi";
                 return;
             }
 
@@ -758,9 +974,10 @@
                 }
             }
 
-            // PERBAIKAN TOTAL: Disuntikkan ke container khusus rekomendasi, bukan menimpa elemen induk
             const winData = RECOMMENDATIONS[winnerKey];
-            document.getElementById('bwdRecommendationContainer').innerHTML = `
+            const bwdContainer = document.getElementById('boxBWD');
+            bwdContainer.innerHTML = `
+                <div id="leafList">${list.innerHTML}</div>
                 <div class="recommendation-box">
                     <h4 style="color:var(--accent-green); margin:0 0 5px 0; font-size:0.9rem;">📋 Rekomendasi Utama:</h4>
                     <div class="vote-summary">📊 Mayoritas: ${kamusWarna[winnerKey]} (${maxVotes} dari ${colors.length} daun)</div>
@@ -770,7 +987,7 @@
                     </div>
                 </div>`;
 
-            document.getElementById('resLabel').innerText = "Hasil Analisis Warna Daun";
+            document.getElementById('resLabel').innerText = "Hasil Analisis";
             conf = 100;
         }
         document.getElementById('resConf').innerText = `Tingkat Keyakinan: ${conf}%`;
