@@ -137,6 +137,39 @@
             justify-content: space-between;
             font-size: 0.8rem;
         }
+        /* Style Tambahan untuk Form Kepadatan Lahan Malai */
+        .form-lahan {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        .form-group {
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 0.75rem;
+            color: #8b949e;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+        .form-group select, .form-group input {
+            width: 100%;
+            background: #0d1117;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 10px;
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.8rem;
+            box-sizing: border-box;
+        }
+        .form-group select:focus, .form-group input:focus {
+            border-color: var(--accent-malai);
+            outline: none;
+        }
     </style>
 </head>
 <body>
@@ -150,12 +183,41 @@
         <button class="tab-btn" id="tabCuaca" onclick="switchMode('cuaca')">🌦️ CUACA</button>
         <button class="tab-btn active" id="tabDaun" onclick="switchMode('daun')">🍃 PENYAKIT</button>
         <button class="tab-btn" id="tabTanah" onclick="switchMode('tanah')">🏜️ TANAH</button>
-        <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">📊 BWD UREA</button>
+        <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">📊 UJI UREA</button>
         <button class="tab-btn" id="tabMalai" onclick="switchMode('malai')">🌾 PANEN</button>
     </div>
 
     <div class="card">
         <h3 id="modeTitle" style="margin-top:0; color: var(--accent-green); font-size: 1rem;">Deteksi Penyakit Padi</h3>
+        
+        <div id="formParameterLahan" class="form-lahan" style="display: none;">
+            <div class="form-group">
+                <label>🌾 METODE TANAM / POPULASI</label>
+                <select id="metodeTanam" onchange="updateEstimasiKepadatan()">
+                    <option value="tapin">Tapin (±25 rumpun/m²)</option>
+                    <option value="legowo">Jajar Legowo 2:1 atau 4:1 (±33 rumpun/m²)</option>
+                    <option value="tabela_larikan">Tabela Larikan / Drum Seeder (±40 rumpun/m²)</option>
+                    <option value="tabela_hambur">Tabela Hambur Langsung / Sere (±60 rumpun/m²)</option>
+                    <option value="custom">atau Input Kepadatan...
+                </select>
+            </div>
+            <div id="customPopulasiBox" class="form-group" style="display: none;">
+                <label>Jumlah Rumpun / Populasi Per m²</label>
+                <input type="number" id="manualRumpun" value="25" min="1">
+            </div>
+            <div class="form-group">
+                <label>🌱 UMUR / JENIS VARIETAS (BOBOT GABAH)</label>
+                <select id="jenisVarietas">
+                    <option value="genjah">Genjah (Cakrabuana, M70D, dll) - Pengisian Cepat
+                    <option value="sedang">Sedang (Ciherang, Mekongga, Inpari 32, dll) - Menengah
+                    <option value="dalam">Dalam / Lokal (Padi Hitam, Varietas Lokal/Luar) - Pengisian Panjang
+                </select>
+            </div>
+            <div class="form-group">
+                <label>🌾 RATA-RATA JUMLAH MALAI PER RUMPUN</label>
+                <input type="number" id="malaiPerRumpun" value="16" min="1">
+            </div>
+        </div>
          
         <input type="file" id="fileInput" accept="image/*" hidden onchange="handleFile(event)">
         <button id="btnCamera" class="btn-main btn-camera" onclick="document.getElementById('fileInput').click()">📸 AMBIL FOTO / GALERI</button>
@@ -166,7 +228,7 @@
             <img id="preview" alt="Preview">
         </div>
 
-        <button id="btnAnalisis" class="btn-main" style="display: none;" onclick="mulaiAnalisis()">🚀 MULAI ANALISIS AI</button>
+        <button id="btnAnalisis" class="btn-main" style="display: none;" onclick="mulaiAnalisis()">🚀 MULAI ANALISIS</button>
         <div id="loader" style="display:none; text-align:center; margin-top:10px; font-size:0.7rem; color:var(--accent-green);">📡 MENGANALISIS...</div>
 
         <div id="result">
@@ -295,12 +357,12 @@
 
     <script>
         let currentMode = 'cuaca', base64Image = "";
-        let hasilSampelBulir = []; // Antrean untuk menampung data 3 foto malai padi
+        let hasilSampelBulir = []; // Antrean penampung 3 foto sampel malai padi
 
         const URL_DAUN = "https://script.google.com/macros/s/AKfycbyCYh65h_3lT4iWr97_RHJNZmaPTSHDp_uFPy_pAP_rvC5BxYHI1n3dn5iwrnNcER1X/exec";
         const URL_TANAH = "https://script.google.com/macros/s/AKfycbz11zWKGj2xxgS5_W8GmBU8qqWV3r4WDP9mOK8drEiMs5xLeX871y5liqDsdD0qGz_N/exec";
         const URL_BWD = "https://script.google.com/macros/s/AKfycbzFjOp9bMzegNFw3JUz9YkdoG64iHDocfinixziFR19z0ZEG6qHlKa2bT6RjvzjCehv/exec";
-        const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec"; 
+        const URL_MALAI = "https://script.google.com/macros/s/AKfycbxe-X60f3v_G8Y7TmdPllWfK6H_UubfV42Z_Ex_PPL-SAMPLE/exec"; // Masukkan URL Deploy Apps Script Ubinan Malai Anda di sini
 
         const kamusTani = {
             "healthy": { nama: "Tanaman Sehat", gejala: "Warna hijau segar, pertumbuhan normal tanpa bercak.", penyebab: "Kondisi lingkungan dan nutrisi optimal.", solusi: "Lanjutkan pemupukan berimbang dan pantau secara rutin." },
@@ -427,7 +489,7 @@
             } else if (skor >= 45) {
                 level = "SEDANG";
                 warna = "var(--accent-soil)";
-                detail = "Kondisi cukup mendukung serangan Sheath Blight, terutama pada tanaman yang rapat and kelebihan N.";
+                detail = "Kondisi cukup mendukung serangan Sheath Blight, terutama pada tanaman yang rapat dan kelebihan N.";
                 saran = "✅ Pantau pelepah daun bagian bawah. Jaga jarak tanam dan hindari pengairan berlebih.";
             } else {
                 level = "RENDAH";
@@ -504,7 +566,7 @@
             } else {
                 skorHama += 15;
                 analisisTeks = "Diprediksi aktivitas ngengat sedang. Larva yang berada di dalam batang sedang berganti kulit (instar).";
-                tindakanPPL = "Lakukan pemupukan berimbang (jangan over Urea) and jaga air sawah agar tidak terlalu menggenang tinggi.";
+                tindakanPPL = "Lakukan pemupukan berimbang (jangan over Urea) dan jaga air sawah agar tidak terlalu menggenang tinggi.";
             }
 
             if (kelembapan >= 80) skorHama += 25;
@@ -556,7 +618,7 @@
         // ==================== ANALISIS FASE TANAMAN + CUACA ====================
         function analisisFaseTanaman() {
             const sekarang = new Date();
-            const bulan = sekarang.getMonth() + 1;
+            const bulan = ClinicalDay = sekarang.getMonth() + 1;
 
             let musim = "";
             let fase = "";
@@ -593,6 +655,17 @@
             return { musim, fase, umurHari, risikoFase, bulan };
         }
 
+        // LOGIKA DINAMIS UPDATE INPUT POPULASI MANUAL
+        function updateEstimasiKepadatan() {
+            const metode = document.getElementById('metodeTanam').value;
+            const customBox = document.getElementById('customPopulasiBox');
+            if (metode === 'custom') {
+                customBox.style.display = 'block';
+            } else {
+                customBox.style.display = 'none';
+            }
+        }
+
         function switchMode(mode) {
             currentMode = mode;
             let color = 'var(--accent-green)';
@@ -601,7 +674,7 @@
             if (mode === 'tanah') { color = 'var(--accent-soil)'; title = 'Analisis Jenis Tanah'; }
             if (mode === 'bwd') { color = 'var(--accent-bwd)'; title = 'Analisis Warna Daun (BWD)'; }
             if (mode === 'cuaca') { color = '#4fc3f7'; title = 'Cuaca & Risiko Penyakit Tanaman'; }
-            if (mode === 'malai') { color = 'var(--accent-malai)'; title = 'Cacah Bulir Padi & Estimasi Panen'; }
+            if (mode === 'malai') { color = 'var(--accent-malai)'; title = 'Estimasi Panen - Ambil 3 foto malai'; }
 
             document.getElementById('tabDaun').className = mode === 'daun' ? 'tab-btn active' : 'tab-btn';
             document.getElementById('tabTanah').className = mode === 'tanah' ? 'tab-btn active soil-mode' : 'tab-btn';
@@ -618,6 +691,9 @@
             document.getElementById('boxBWD').style.display = mode === 'bwd' ? 'block' : 'none';
             document.getElementById('boxCuaca').style.display = mode === 'cuaca' ? 'block' : 'none';
             document.getElementById('boxMalai').style.display = mode === 'malai' ? 'block' : 'none';
+            
+            // Kontrol Tampilan Form Parameter Lapangan
+            document.getElementById('formParameterLahan').style.display = mode === 'malai' ? 'block' : 'none';
 
             if (mode === 'cuaca') {
                 document.getElementById('btnCamera').style.display = 'none';
@@ -1196,7 +1272,7 @@
                 document.getElementById('resLabel').innerText = "Hasil Analisis Warna Daun";
                 conf = (totalConfidence / colors.length).toFixed(1);
             }
-            // ==================== INTEGRASI AMAN LOGIKA MODE BARU: HITUNG MALAI PADI ====================
+            // ==================== LOGIKA INTEGRASI METODE TANAM & UMUR VARIETAS DI LAPANGAN ====================
             else if (currentMode === 'malai') {
                 const listM = document.getElementById('listMalai');
                 let totalBulirFotoIni = out.count || 0; 
@@ -1220,20 +1296,52 @@
                 if (hasilSampelBulir.length === 3) {
                     let rataBulir = (hasilSampelBulir[0] + hasilSampelBulir[1] + hasilSampelBulir[2]) / 3;
                     
-                    const berat1000Butir = 27; 
-                    const persenBernas = 0.85; 
-                    const totalRumpunHa = 25 * 10000;
-                    const totalBeratGram = totalRumpunHa * 16 * (rataBulir * persenBernas) * (berat1000Butir / 1000);
+                    // 1. Ambil Parameter Kepadatan Rumpun Berdasarkan Metode Tanam Lapangan
+                    const metode = document.getElementById('metodeTanam').value;
+                    let rumpunPerMeter = 25; // Default Tapin Tegel
+                    let namaMetode = "Tapin Tradisional / Tegel";
+                    
+                    if (metode === 'legowo') { rumpunPerMeter = 33; namaMetode = "Jajar Legowo"; }
+                    else if (metode === 'tabela_larikan') { rumpunPerMeter = 40; namaMetode = "Tabela Larikan"; }
+                    else if (metode === 'tabela_hambur') { rumpunPerMeter = 60; namaMetode = "Tabela Hambur / Sere"; }
+                    else if (metode === 'custom') { 
+                        rumpunPerMeter = parseInt(document.getElementById('manualRumpun').value) || 25; 
+                        namaMetode = "Kepadatan Manual (" + rumpunPerMeter + " rumpun/m²)";
+                    }
+                    
+                    // 2. Ambil Parameter Bobot Gabah & Koefisien Bernas Berdasarkan Klasifikasi Umur Varietas
+                    const varietas = document.getElementById('jenisVarietas').value;
+                    let berat1000Butir = 27; // Ciherang Standar (Gram)
+                    let persenBernas = 0.85; // Koreksi Gabah Berisi (85%)
+                    let namaVarietas = "Umur Sedang (Standar)";
+                    
+                    if (varietas === 'genjah') { 
+                        berat1000Butir = 25.5; // Genjah cenderung bulirnya sedikit lebih ringan
+                        persenBernas = 0.88;   // Tetapi biasanya persentase kematangan seragam/bernas tinggi
+                        namaVarietas = "Umur Genjah";
+                    } else if (varietas === 'dalam') { 
+                        berat1000Butir = 29.0; // Varietas lokal/dalam bulir lebih besar/berat
+                        persenBernas = 0.80;   // Namun risiko hampa puyung ujung malai lebih tinggi
+                        namaVarietas = "Umur Dalam / Lokal";
+                    }
+
+                    // 3. Ambil Input Jumlah Malai per Rumpun
+                    let malaiPerRumpunInput = parseInt(document.getElementById('malaiPerRumpun').value) || 16;
+
+                    // 4. Proses Kalkulasi Rumus Ubinan Komponen Komplet Skala 1 Hektar (10.000 m2)
+                    const totalRumpunHa = rumpunPerMeter * 10000;
+                    const totalBeratGram = totalRumpunHa * malaiPerRumpunInput * (rataBulir * persenBernas) * (berat1000Butir / 1000);
                     const hasilTonPerHa = totalBeratGram / 1000000;
 
-                    document.getElementById('resLabel').innerText = "Kalkulasi Estimasi Hasil Panen Selesai";
+                    document.getElementById('resLabel').innerText = "Kalkulasi Hasil Panen Akurat";
                     document.getElementById('resUbinanTeks').innerHTML = `
                         📊 <b>Rata-rata Cacah Bulir AI:</b> ${rataBulir.toFixed(1)} bulir per malai.<br>
-                        🌱 <b>Simulasi Densitas Lapangan:</b> 25 rumpun/m² dengan rata-rata 16 malai/rumpun.<br>
-                        <h3 style="color:var(--accent-green); margin:10px 0 0 0; font-size:1.2rem;">🌾 Estimasi Hasil: ${hasilTonPerHa.toFixed(2)} Ton/Ha</h3>
+                        ⚙️ <b>Sistem Lahan:</b> ${namaMetode} (${rumpunPerMeter} rumpun/m²) | ${malaiPerRumpunInput} malai/rumpun.<br>
+                        🌾 <b>Karakteristik:</b> ${namaVarietas} (Bobot G1000: ${berat1000Butir}g | Faktor Bernas: ${(persenBernas*100)}%)<br>
+                        <h3 style="color:var(--accent-green); margin:10px 0 0 0; font-size:1.2rem;">🌾 Estimasi Riil Lahan: ${hasilTonPerHa.toFixed(2)} Ton/Ha</h3>
                     `;
                     
-                    hasilSampelBulir = []; 
+                    hasilSampelBulir = []; // Reset antrean
                 } else {
                     document.getElementById('resUbinanTeks').innerHTML = `
                         ⏳ <b>Antrean Sampel:</b> Baru terkumpul <b>${hasilSampelBulir.length} dari 3</b> foto sampel.<br>
