@@ -1213,7 +1213,7 @@
                 }
 
                 const voteCount = {};
-                let totalConfidence = 0;
+                let akumulasiSalah = 1; // Variabel pembantu untuk rumus akumulasi komplemen
                 
                 const colorToClass = {
                     "yellow": "skala-1", 
@@ -1230,9 +1230,12 @@
                     const info = RECOMMENDATIONS[key] || { label: c };
                     const warnaIndo = kamusWarna[key] || c;
                     
+                    // Mengambil nilai confidence dari server
                     const serverConf = dets[i] ? (dets[i].confidence || 0.85) : 0.85;
                     const rawConf = serverConf * 100;
-                    totalConfidence += rawConf;
+
+                    // Mengalikan komplemen kesalahan untuk rumus akumulasi akhir
+                    akumulasiSalah *= (1 - (serverConf > 1 ? serverConf / 100 : serverConf));
 
                     const confidenceText = rawConf.toFixed(1);
                     const styleClass = colorToClass[key] || "skala-3";
@@ -1270,7 +1273,14 @@
                     </div>`;
 
                 document.getElementById('resLabel').innerText = "Hasil Analisis Warna Daun";
-                conf = (totalConfidence / colors.length).toFixed(1);
+                
+                // Rumus Akumulasi Probabilitas Akhir: 1 - (Hasil Perkalian Semua Komplemen Kesalahan)
+                let finalConfidence = (1 - akumulasiSalah) * 100;
+                
+                // Berikan batas atas logis 99.9% agar tampilan visual futuristik tetap rapi
+                if (finalConfidence > 99.9) finalConfidence = 99.9;
+                
+                conf = finalConfidence.toFixed(1);
             }
             // ==================== LOGIKA INTEGRASI METODE TANAM & UMUR VARIETAS DI LAPANGAN ====================
             else if (currentMode === 'malai') {
