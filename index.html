@@ -1054,20 +1054,45 @@
                     return;
                 }
 
-                // Cari akurasi terkuat dari daftar bingkai yang masuk
+                // ========================================================
+                // 1. LOGIKA PRIORITAS: Cari apakah ada model baru di dalam list
+                // ========================================================
+                let adaModelBaru = daftarGulma.some(g => g.raw_class === "Limnocharis flava" || g.raw_class === "Monochoria_vaginalis");
+                
                 let akurasiTertinggi = 0;
-                daftarGulma.forEach(g => {
+                let indeksPemenangUtama = 0;
+
+                daftarGulma.forEach((g, index) => {
                     let nilaiAkurasi = parseFloat(g.akurasi) || 0;
-                    if (nilaiAkurasi > akurasiTertinggi) {
-                        akurasiTertinggi = nilaiAkurasi;
+                    
+                    if (adaModelBaru) {
+                        // Jika ada model baru di dalam list, HANYA model baru yang boleh memperebutkan posisi juara utama
+                        if ((g.raw_class === "Limnocharis flava" || g.raw_class === "Monochoria_vaginalis") && nilaiAkurasi > akurasiTertinggi) {
+                            akurasiTertinggi = nilaiAkurasi;
+                            indeksPemenangUtama = index;
+                        }
+                    } else {
+                        // Jika tidak ada model baru, cari akurasi tertinggi seperti biasa (model lama)
+                        if (nilaiAkurasi > akurasiTertinggi) {
+                            akurasiTertinggi = nilaiAkurasi;
+                            indeksPemenangUtama = index;
+                        }
                     }
                 });
                 
-                conf = akurasiTertinggi.toFixed(1); // Set nilai ke variabel conf global agar tidak jadi 0%
+                // Set akurasi header utama berdasarkan pemenang kompetisi prioritas
+                conf = akurasiTertinggi.toFixed(1); 
 
-                // Satukan jika ada nama spesies gulma yang terdeteksi ganda
+                // ========================================================
+                // 2. FILTER TOTAL: Bersihkan duplikasi cross-model (Menghilangkan klaim palsu model lama)
+                // ========================================================
                 let gulmaUnik = [];
                 daftarGulma.forEach(g => {
+                    // Jika ada model baru, langsung buang klaim dari Morning glory / model lama yang menimpa koordinat tersebut
+                    if (adaModelBaru && (g.raw_class === "Morning glory" || g.raw_class === "Morning Glory")) {
+                        return; // Lewati / buang model lama yang sok tahu
+                    }
+
                     let sudahAda = gulmaUnik.some(item => item.detail.nama === g.detail.nama);
                     if (!sudahAda) {
                         gulmaUnik.push(g);
@@ -1079,15 +1104,18 @@
                     }
                 });
 
-                document.getElementById('resLabel').innerText = `Teridentifikasi: ${gulmaUnik.length} Spesies Gulma`;
+                // Set teks label berdasarkan nama gulma pemenang prioritas
+                document.getElementById('resLabel').innerText = daftarGulma[indeksPemenangUtama].detail.nama;
+                document.getElementById('resConf').innerText = `Tingkat Keyakinan: ${conf}%`;
 
+                // 3. Render Elemen Unik ke Layar HP
                 gulmaUnik.forEach((gulma, index) => {
                     let boxColor = gulma.detail.karakteristik.includes("Sempit") ? "var(--accent-soil)" : (gulma.detail.karakteristik.includes("Teki") ? "var(--red-alert)" : "#0ea5e9");
                     
                     container.innerHTML += `
                         <div style="margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08); padding: 16px; border-radius: 18px; background: rgba(22, 30, 49, 0.4);">
                             <div style="font-size: 0.75rem; color: var(--accent-green); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;">
-                                🌱 SPESIES KE-${index + 1} (Akurasi Terkuat: ${gulma.akurasi}%)
+                                🌱 DATA DETEKSI (Akurasi: ${gulma.akurasi}%)
                             </div>
                             <div class="info-box" style="border-left-color: #00ff9d; margin-top: 5px;">
                                 <strong>🌱 Nama Gulma:</strong><br>${gulma.detail.nama}
