@@ -331,7 +331,7 @@
     </div>
 
     <div class="tab-container">
-        <button class="tab-btn" id="tabCuaca" onclick="switchMode('cuaca')">CUACA</button>
+        <button class="tab-btn active" id="tabCuaca" onclick="switchMode('cuaca')">CUACA</button>
         <button class="tab-btn" id="tabBiaya" onclick="switchMode('biaya')">BIAYA</button>
         <button class="tab-btn" id="tabDaun" onclick="switchMode('daun')">PENYAKIT</button>
         <button class="tab-btn" id="tabHama" onclick="switchMode('hama')">HAMA</button>
@@ -339,14 +339,14 @@
         <button class="tab-btn" id="tabTanah" onclick="switchMode('tanah')">TANAH</button>
         <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">BWD</button>
         <button class="tab-btn" id="tabMalai" onclick="switchMode('malai')">PANEN</button>
-        <button class="tab-btn active" id="tabReport" onclick="switchMode('report')">REPORT</button>
+        <button class="tab-btn" id="tabReport" onclick="switchMode('report')">DOSIS</button>
     </div>
 
     <div class="card">
-        <h3 id="modeTitle">Kalkulator Pupuk</h3>
-        <div id="tabSubtitleDisplay" class="tab-subtitle">Sesuai Rekomendasi ERDKK Nasional</div>
+        <h3 id="modeTitle">Cuaca & Risiko Penyakit Tanaman</h3>
+        <div id="tabSubtitleDisplay" class="tab-subtitle" style="display:none;"></div>
           
-        <div id="boxKalkulatorPupuk" style="display: block;">
+        <div id="boxKalkulatorPupuk" style="display: none;">
             <div class="form-group">
                 <label>📍 Cari Kecamatan</label>
                 <input type="text" id="cariKecamatan" class="form-input" placeholder="Ketik nama kecamatan...">
@@ -607,7 +607,7 @@
     </footer>
 
     <script>
-        let currentMode = 'report', base64Image = "";
+        let currentMode = 'cuaca', base64Image = "";
         let hasilSampelBulir = []; 
         let isGpsSynced = false; 
          
@@ -1507,8 +1507,8 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
         }
 
-        // Set default awal ke mode REPORT saat halaman diakses petani pertama kali
-        switchMode('report');
+        // 🚀 Set default awal halaman dimuat ke mode CUACA asli milikmu
+        switchMode('cuaca');
     </script>
 </body>
 </html>
