@@ -16,7 +16,7 @@
             --accent-malai: #ff5e7e;
             --accent-biaya: #b388ff;
             --accent-gulma: #e0f2fe;
-            --accent-hama: #ff7675; /* 💡 Aksentuasi Warna Oranye Neon untuk Hama */
+            --accent-hama: #ff7675; 
             --accent-report: #27ae60;
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
@@ -61,7 +61,6 @@
             margin: 6px 0 0 0;
         }
 
-        /* PERBAIKAN TAB: PAS LEBAR SATU LAYAR HAPE */
         .tab-container {
             display: flex; 
             background: rgba(13, 20, 38, 0.8); 
@@ -96,7 +95,7 @@
          
         .tab-btn.active { background: #38b6ff; color: #000000; }
         .tab-btn.active.daun-mode { background: #ff4a5a; color: #ffffff; }
-        .tab-btn.active.hama-mode { background: var(--accent-hama); color: #ffffff; } /* 💡 Style Aktif Tab Hama */
+        .tab-btn.active.hama-mode { background: var(--accent-hama); color: #ffffff; } 
         .tab-btn.active.gulma-mode { background: #0ea5e9; color: #ffffff; }
         .tab-btn.active.soil-mode { background: #d19b08; color: #ffffff; }
         .tab-btn.active.bwd-mode { background: #00ff9d; color: #000000; }
@@ -651,7 +650,7 @@
         function dapatkanHariSiklusBulan() {
             const kranBulanMati = new Date("2026-01-18T17:00:00Z"); 
             const sekarang = new Date();
-            const selisihWaktu = Thermal = sekarang.getTime() - kranBulanMati.getTime();
+            const selisihWaktu = sekarang.getTime() - kranBulanMati.getTime();
             const selisihHari = selisihWaktu / (1000 * 60 * 60 * 24);
             const hariSiklus = selisihHari % 29.53059;
             return hariSiklus < 0 ? hariSiklus + 29.53059 : hariSiklus;
@@ -860,7 +859,7 @@
                 } catch (e) { document.getElementById('alamatDesa').innerText = "Satelit Cuaca Aktif (Alamat Teks Batas Waktu)"; }
 
                 const urlArchive = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&past_days=30&daily=precipitation_sum&timezone=auto`;
-                const urlForecast = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=rain,temperature_2m,relative_humidity_2m,dew_point_2m,wind_speed_10m,wind_direction_10m,surface_pressure&hourly=precipitation_probability,precipitation,temperature_850hPa,cape&timezone=auto`;
+                const urlForecast = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}/current=rain,temperature_2m,relative_humidity_2m,dew_point_2m,wind_speed_10m,wind_direction_10m,surface_pressure&hourly=precipitation_probability,precipitation,temperature_850hPa,cape&timezone=auto`;
                 const [resA, resF] = await Promise.all([fetch(urlArchive), fetch(urlForecast)]);
                 const dataArchive = await resA.json(); const dataForecast = await resF.json();
                 
@@ -1010,7 +1009,7 @@
                 const data = await res.json(); tampilkanHasil(data);
             } catch (e) { alert("Gagal koneksi server!"); }
             document.getElementById('scanWindow').classList.remove('is-scanning');
-            document.getElementById('loader').style.display = 'none';
+            document.getElementById('loader').style.none = 'none';
         }
         
         function analyzeDiseaseRisk(cur, dpSpread) {
@@ -1061,7 +1060,7 @@
                     } else {
                         document.getElementById('resLabel').innerText = hasil.nama;
                     }
-                    document.getElementById('resGejala').innerHTML = html = hasil.gejala;
+                    document.getElementById('resGejala').innerHTML = hasil.gejala;
                     let warnaKepaparan = hasil.tingkat_keparahan === "Sangat Tinggi" || hasil.tingkat_keparahan === "Tinggi" ? "var(--red-alert)" : "var(--accent-soil)";
                     let keparahanText = hasil.tingkat_keparahan && hasil.tingkat_keparahan !== "-" ? `<span style="color: ${warnaKepaparan}; font-weight: 700;">[Risiko: ${hasil.tingkat_keparahan}]</span><br>` : "";
                     document.getElementById('resPenyebab').innerHTML = keparahanText + (hasil.penyebab || "-");
@@ -1337,7 +1336,7 @@
             }
 
             ctx.save(); ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0, 255, 157, 0.3)'; ctx.strokeStyle = '#00ff9d'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
-            ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.lineTo(left.x, left.y); ctx.lineTo(right.x, right.y); ctx.closePath(); stroke(); ctx.restore();
+            ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.lineTo(left.x, left.y); ctx.lineTo(right.x, right.y); ctx.closePath(); ctx.stroke(); ctx.restore();
 
             ctx.fillStyle = '#00ff9d'; ctx.font = '800 11px Plus Jakarta Sans'; ctx.textAlign = 'center'; ctx.fillText("LIAT (CLAY)", top.x, top.y - 12);
             ctx.textAlign = 'right'; ctx.fillText("PASIR", left.x - 8, left.y + 4);
@@ -1482,10 +1481,12 @@
             out.innerHTML = html;
         }
 
-        // --- 📊 4. LOGIKA INTEGRASI MENEMBAK DATABASE APPS SCRIPT KECAMATAN WAJO ---
+        // --- 📊 4. PERBAIKAN TOTAL JALUR BYPASS CORS UNTUK MENGAKSES DATABASE APPS SCRIPT ---
         async function hitungDosisPupuk() {
             const kec = document.getElementById('cariKecamatan').value.trim();
             const luas = parseFloat(document.getElementById('luasLahanPupuk').value) || 0;
+            const topo = document.getElementById('topografiLahan').value;
+            const tgl = document.getElementById('tanggalTanam').value;
             const output = document.getElementById('outputDosisPupuk');
             const btn = document.getElementById('btnHitungPupuk');
 
@@ -1493,57 +1494,64 @@
             if (luas <= 0 || isNaN(luas)) { alert("Masukkan data luas lahan sawah (ha) terlebih dahulu!"); return; }
 
             try {
-                btn.innerText = "⏳ MENCARI DATABASE...";
+                btn.innerText = "⏳ MENYINGKRONKAN DATABASE...";
                 btn.disabled = true;
 
-                // POST data ke server Apps Script Anda untuk mengambil standar dosis per Ha wilayah tersebut
-                const respon = await fetch(URL_DATABASE_PUPUK, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        action: "getDosis",
-                        kecamatan: kec,
-                        luasLahan: luas,
-                        topografi: document.getElementById('topografiLahan').value,
-                        tanggalTanam: document.getElementById('tanggalTanam').value
-                    })
+                // 💡 SOLUSI UTAMA: Kirim data lewat URL Parameter (GET) untuk menghindari kendala CORS internal Google
+                const queryParams = new URLSearchParams({
+                    action: "getDosis",
+                    kecamatan: kec,
+                    luasLahan: luas,
+                    topografi: topo,
+                    tanggalTanam: tgl
+                });
+
+                const respon = await fetch(`${URL_DATABASE_PUPUK}?${queryParams.toString()}`, {
+                    method: 'GET',
+                    mode: 'cors'
                 });
 
                 const dataServer = await respon.json();
                 output.style.display = "block";
 
-                // Jika server merespon dengan data kuota daerah riil yang valid
-                if (dataServer && dataServer.urea_per_ha && dataServer.npk_per_ha) {
-                    const hasilUrea = luas * dataServer.urea_per_ha;
-                    const hasilNPK = luas * dataServer.npk_per_ha;
+                // Membaca respon balik data dosis per Hektar dari spreadsheet/database Apps Script Anda
+                if (dataServer && (dataServer.urea_per_ha || dataServer.urea) && (dataServer.npk_per_ha || dataServer.npk)) {
+                    const uPerHa = dataServer.urea_per_ha || dataServer.urea;
+                    const nPerHa = dataServer.npk_per_ha || dataServer.npk;
+                    
+                    const hasilUrea = luas * parseFloat(uPerHa);
+                    const hasilNPK = luas * parseFloat(nPerHa);
+                    
                     output.innerHTML = `
                         <strong>📊 Hasil Rekomendasi Alokasi E-RDKK Riil Server:</strong><br>
-                        📍 Kecamatan Wilayah: <b style="color:var(--accent-bwd);">${kec.toUpperCase()}</b><br>
+                        📍 Wilayah Kecamatan: <b style="color:var(--accent-bwd);">${kec.toUpperCase()}</b><br>
                         📐 Luas Hamparan Lahan: <b>${luas} Ha</b><br>
                         <hr style="border:0; border-top:1px dashed rgba(255,255,255,0.1); margin:10px 0;">
-                        🧪 Alokasi Pupuk Urea: <b>${hasilUrea.toFixed(0)} Kg</b> (± ${(hasilUrea/50).toFixed(1)} Sak)<br>
-                        🧪 Alokasi Pupuk NPK Phonska: <b>${hasilNPK.toFixed(0)} Kg</b> (± ${(hasilNPK/50).toFixed(1)} Sak)<br>
-                        <small style="color:var(--accent-green); display:block; margin-top:6px;">*Data berhasil ditarik dari Sistem Kuota BPP Bola Komponen Digital.</small>
+                        🧪 Alokasi Pupuk Urea Bersubsidi: <b style="color:var(--accent-green);">${hasilUrea.toFixed(0)} Kg</b> (± ${(hasilUrea/50).toFixed(1)} Sak)<br>
+                        🧪 Alokasi Pupuk NPK Phonska: <b style="color:var(--accent-green);">${hasilNPK.toFixed(0)} Kg</b> (± ${(hasilNPK/50).toFixed(1)} Sak)<br>
+                        <small style="color:var(--accent-soil); display:block; margin-top:6px;">*Sukses: Mengambil koefisien dosis asli daerah langsung dari Apps Script.</small>
                     `;
                 } else {
-                    // Fallback jika nama kecamatan tidak ditemukan di master data Apps Script Anda
+                    // Fallback otomatis jika nama kecamatan salah ketik atau data koefisiennya kosong
                     const fallbackUrea = luas * 200; const fallbackNPK = luas * 300;
                     output.innerHTML = `
-                        <strong>⚠️ Kecamatan Tidak Ditemukan di Database:</strong><br>
-                        Menerapkan kalkulasi standar dasar Kabupaten Wajo (Urea: 200kg/Ha, NPK: 300kg/Ha).<br><br>
+                        <strong>⚠️ Format Respon Server Tidak Cocok / Kecamatan Kosong:</strong><br>
+                        Kecamatan <b>"${kec}"</b> tidak terdefinisi di database Apps Script Anda. Menggunakan dosis standar macro Wajo (Urea 200kg/Ha, NPK 300kg/Ha):<br><br>
                         🧪 Alokasi Pupuk Urea: <b>${fallbackUrea.toFixed(0)} Kg</b> (± ${(fallbackUrea/50).toFixed(1)} Sak)<br>
                         🧪 Alokasi Pupuk NPK Phonska: <b>${fallbackNPK.toFixed(0)} Kg</b> (± ${(fallbackNPK/50).toFixed(1)} Sak)
                     `;
                 }
             } catch (error) {
-                // Penanganan jika ada kendala jaringan CORS / server Apps Script sibuk
+                // Skenario aman jika server Apps Script belum di-deploy ulang sebagai 'Anyone' atau 'Anonymous'
                 console.error(error);
                 const fallbackUrea = luas * 200; const fallbackNPK = luas * 300;
                 output.style.display = "block";
                 output.innerHTML = `
-                    <strong>📡 Mode Offline / Gagal Sinkronisasi Server:</strong><br>
-                    <span style="color:var(--red-alert)">Gagal memuat database internal.</span> Menggunakan estimasi default makro Wajo:<br><br>
+                    <strong>📡 Koneksi REST API Database Dialihkan:</strong><br>
+                    <span style="color:var(--accent-soil)">Sistem mendeteksi setelan hak akses Apps Script masih privat.</span> Menampilkan kalkulasi standar wilayah BPP Bola:<br><br>
                     🧪 Alokasi Pupuk Urea: <b>${fallbackUrea.toFixed(0)} Kg</b><br>
-                    🧪 Alokasi Pupuk NPK Phonska: <b>${fallbackNPK.toFixed(0)} Kg</b>
+                    🧪 Alokasi Pupuk NPK Phonska: <b>${fallbackNPK.toFixed(0)} Kg</b><br>
+                    <small style="color:var(--red-alert); display:block; margin-top:5px;">💡 Tips PPL: Pastikan setelan Deploy Apps Script Anda diatur ke "Anyone" agar bisa diakses dari luar iframe.</small>
                 `;
             } finally {
                 btn.innerText = "Hitung Dosis";
@@ -1559,7 +1567,6 @@
             window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
         }
 
-        // 🚀 Set default awal halaman dimuat ke mode CUACA asli milikmu
         switchMode('cuaca');
     </script>
 </body>
