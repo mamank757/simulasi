@@ -349,7 +349,7 @@
         <div id="boxKalkulatorPupuk" style="display: none;">
             <div class="form-group">
                 <label>📍 Cari Kecamatan</label>
-                <input type="text" id="cariKecamatan" class="form-input" placeholder="Ketik nama kecamatan...">
+                <input type="text" id="cariKecamatan" class="form-input" placeholder="Ketik nama kecamatan di Wajo...">
             </div>
             <div class="form-group">
                 <label>📐 Luas Lahan (ha)</label>
@@ -367,7 +367,7 @@
                 <label>📅 Tanggal Tanam</label>
                 <input type="date" id="tanggalTanam" class="form-input">
             </div>
-            <button class="btn-main" onclick="hitungDosisPupuk()">Hitung Dosis</button>
+            <button class="btn-main" id="btnHitungPupuk" onclick="hitungDosisPupuk()">Hitung Dosis</button>
             <button class="btn-main btn-whatsapp" onclick="kirimWhatsAppPupuk()">Kirim WhatsApp</button>
             <div class="info-box" id="outputDosisPupuk" style="display:none; border-left-color: var(--accent-green);"></div>
         </div>
@@ -618,6 +618,9 @@
         const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_I2uy6FQjd-5eE2p1UuhQTde2lEbokpAquACyutg8kBDi/exec";
         const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
         const URL_IKLIM = "https://script.google.com/macros/s/AKfycbxyPG7e8EqK6_bc09kqITIpqtrWL45jyQs2TtUuT8KySwnvII_ZyHAcyDI1F8uA7H6A/exec";
+        
+        // 🗄️ URL API DATABASE KECAMATAN APPS SCRIPT ANDA
+        const URL_DATABASE_PUPUK = "https://script.google.com/macros/s/AKfycbzsx9osMY8lU8GKewA3k7z0YBwPkrQB8sk71HaLVdctLzR1qDJIlHHcIbgbm9fpn8uh/exec";
 
         const kamusTanah = {
             "alluvial": { "nama": "Tanah Alluvial", "penjelasan": "Tanah yang terbentuk dari endapan material sedimen (lumpur, pasir, kerikil) yang terbawa aliran sungai. Ditemukan di dataran rendah atau delta. Sangat subur dan kaya unsur hara.", "pH": "6.0 - 7.0", "organik": "Sedang", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Padi, Jagung, Sayuran", "saran": "Ideal untuk Padi. Jaga sirkulasi air agar mineral tetap terjaga." },
@@ -631,7 +634,7 @@
             "red": { "nama": "Tanah Merah", "penjelasan": "Tanah yang mengalami pelapukan lanjut and pencucian hara. Warna merah berasal dari kandungan besi oksida yang tinggi. Teksturnya remah namun miskin akan hara organik.", "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Singkong, Karet", "saran": "Beri pupuk Fosfat (SP-36) dosis ekstra & pupuk kandang untuk memperbaiki kesuburan." },
             "sandy": { "nama": "Tanah Berpasir", "penjelasan": "Tanah dengan partikel kasar yang tidak dapat menahan air dan unsur hara dengan baik. Teksturnya remah dan sangat mudah diolah, namun sangat cepat kering di musim kemarau.", "pH": "5.5 - 7.0", "organik": "Rendah", "npk": "Rendah", "subur": "Rendah", "tanaman": "Kelapa, Semangka", "saran": "Wajib tambah kompos/pupuk kandang tiap musim untuk meningkatkan daya ikat air tanah." },
             "sandy_loam": { "nama": "Lempung Berpasir", "penjelasan": "Tanah dengan campuran pasir (50-70%) and liat/debu (30-50%). Tekstur lebih padat dari pasir murni, mampu menahan air dan hara lebih baik, namun tetap cepat kering dan mudah diolah.", "pH": "5.0 - 7.5", "organik": "Sedang-Rendah", "npk": "Sedang", "subur": "Sedang", "tanaman": "Jagung, Kacang Tanah, Ubi Kayu, Cabe", "saran": "Tambahkan pupuk organik 10-20 ton/ha per musim, irigasi teratur, serta mulsa untuk mengurangi evaporasi." },
-            "yellow": { "nama": "Tanah Kuning", "penjelasan": "Tanah yang mirip dengan tanah merah namun memiliki hidrasi mineral besi yang berbeda. Biasanya terbentuk di lingkungan yang lebih lembap namun tetap memiliki tingkat kesuburan yang rendah.", "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Ubi Kayu, Karet", "saran": "Pakai mulsa agar tanah tidak cepat mengeras dan tererosi saat hujan lebat." },
+            "yellow": { "nama": "Tanah Kuning", "penjelasan": "Tanah yang mirip dengan tanah merah namun memiliki hidrasi mineral besi yang berbeda. Biasanya terbentuk di lingkungan yang lebih lembap namun tetap memiliki tingkat kesuburan yang rendah.", "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Ubi Kayu, Karet", "saran": "Pakai mulsa agar tanah tidak cepat mengeras and tererosi saat hujan lebat." },
             "unlabeled": { "nama": "Objek Tidak Dikenali", "penjelasan": "AI tidak dapat memastikan jenis tanah karena foto kurang jelas atau terhalang benda lain.", "saran": "Ambil foto kembali dengan cahaya terang. Pastikan tanah bersih dari sampah plastik atau daun kering." }
         };
 
@@ -648,7 +651,7 @@
         function dapatkanHariSiklusBulan() {
             const kranBulanMati = new Date("2026-01-18T17:00:00Z"); 
             const sekarang = new Date();
-            const selisihWaktu = sekarang.getTime() - kranBulanMati.getTime();
+            const selisihWaktu = Thermal = sekarang.getTime() - kranBulanMati.getTime();
             const selisihHari = selisihWaktu / (1000 * 60 * 60 * 24);
             const hariSiklus = selisihHari % 29.53059;
             return hariSiklus < 0 ? hariSiklus + 29.53059 : hariSiklus;
@@ -1058,7 +1061,7 @@
                     } else {
                         document.getElementById('resLabel').innerText = hasil.nama;
                     }
-                    document.getElementById('resGejala').innerHTML = hasil.gejala;
+                    document.getElementById('resGejala').innerHTML = html = hasil.gejala;
                     let warnaKepaparan = hasil.tingkat_keparahan === "Sangat Tinggi" || hasil.tingkat_keparahan === "Tinggi" ? "var(--red-alert)" : "var(--accent-soil)";
                     let keparahanText = hasil.tingkat_keparahan && hasil.tingkat_keparahan !== "-" ? `<span style="color: ${warnaKepaparan}; font-weight: 700;">[Risiko: ${hasil.tingkat_keparahan}]</span><br>` : "";
                     document.getElementById('resPenyebab').innerHTML = keparahanText + (hasil.penyebab || "-");
@@ -1334,7 +1337,7 @@
             }
 
             ctx.save(); ctx.shadowBlur = 10; ctx.shadowColor = 'rgba(0, 255, 157, 0.3)'; ctx.strokeStyle = '#00ff9d'; ctx.lineWidth = 2.5; ctx.lineJoin = 'round';
-            ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.lineTo(left.x, left.y); ctx.lineTo(right.x, right.y); ctx.closePath(); ctx.stroke(); ctx.restore();
+            ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.lineTo(left.x, left.y); ctx.lineTo(right.x, right.y); ctx.closePath(); stroke(); ctx.restore();
 
             ctx.fillStyle = '#00ff9d'; ctx.font = '800 11px Plus Jakarta Sans'; ctx.textAlign = 'center'; ctx.fillText("LIAT (CLAY)", top.x, top.y - 12);
             ctx.textAlign = 'right'; ctx.fillText("PASIR", left.x - 8, left.y + 4);
@@ -1479,24 +1482,73 @@
             out.innerHTML = html;
         }
 
-        // --- Fungsi Logika Tambahan Konten Kalkulator Pupuk E-RDKK ---
-        function hitungDosisPupuk() {
-            const kec = document.getElementById('cariKecamatan').value || "Wilayah Terkait";
+        // --- 📊 4. LOGIKA INTEGRASI MENEMBAK DATABASE APPS SCRIPT KECAMATAN WAJO ---
+        async function hitungDosisPupuk() {
+            const kec = document.getElementById('cariKecamatan').value.trim();
             const luas = parseFloat(document.getElementById('luasLahanPupuk').value) || 0;
             const output = document.getElementById('outputDosisPupuk');
+            const btn = document.getElementById('btnHitungPupuk');
 
+            if (!kec) { alert("Masukkan nama kecamatan di Kabupaten Wajo!"); return; }
             if (luas <= 0 || isNaN(luas)) { alert("Masukkan data luas lahan sawah (ha) terlebih dahulu!"); return; }
-            const butuhUrea = luas * 200; const butuhNPK = luas * 300;
-            output.style.display = "block";
-            output.innerHTML = `
-                <strong>📊 Hasil Rekomendasi Alokasi E-RDKK Nasional:</strong><br>
-                📍 Kecamatan/Wilayah: <b>${kec}</b><br>
-                📐 Luas Hamparan Lahan: <b>${luas} Ha</b><br>
-                <hr style="border:0; border-top:1px dashed rgba(255,255,255,0.1); margin:10px 0;">
-                🧪 Dosis Pupuk Urea Bersubsidi: <b>${butuhUrea.toFixed(0)} Kg</b> (± ${(butuhUrea/50).toFixed(1)} Sak)<br>
-                🧪 Dosis Pupuk NPK Phonska: <b>${butuhNPK.toFixed(0)} Kg</b> (± ${(butuhNPK/50).toFixed(1)} Sak)<br>
-                <small style="color:var(--accent-soil); display:block; margin-top:6px;">*Gunakan secara berimbang sesuai petunjuk pemupukan presisi daerah.</small>
-            `;
+
+            try {
+                btn.innerText = "⏳ MENCARI DATABASE...";
+                btn.disabled = true;
+
+                // POST data ke server Apps Script Anda untuk mengambil standar dosis per Ha wilayah tersebut
+                const respon = await fetch(URL_DATABASE_PUPUK, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: "getDosis",
+                        kecamatan: kec,
+                        luasLahan: luas,
+                        topografi: document.getElementById('topografiLahan').value,
+                        tanggalTanam: document.getElementById('tanggalTanam').value
+                    })
+                });
+
+                const dataServer = await respon.json();
+                output.style.display = "block";
+
+                // Jika server merespon dengan data kuota daerah riil yang valid
+                if (dataServer && dataServer.urea_per_ha && dataServer.npk_per_ha) {
+                    const hasilUrea = luas * dataServer.urea_per_ha;
+                    const hasilNPK = luas * dataServer.npk_per_ha;
+                    output.innerHTML = `
+                        <strong>📊 Hasil Rekomendasi Alokasi E-RDKK Riil Server:</strong><br>
+                        📍 Kecamatan Wilayah: <b style="color:var(--accent-bwd);">${kec.toUpperCase()}</b><br>
+                        📐 Luas Hamparan Lahan: <b>${luas} Ha</b><br>
+                        <hr style="border:0; border-top:1px dashed rgba(255,255,255,0.1); margin:10px 0;">
+                        🧪 Alokasi Pupuk Urea: <b>${hasilUrea.toFixed(0)} Kg</b> (± ${(hasilUrea/50).toFixed(1)} Sak)<br>
+                        🧪 Alokasi Pupuk NPK Phonska: <b>${hasilNPK.toFixed(0)} Kg</b> (± ${(hasilNPK/50).toFixed(1)} Sak)<br>
+                        <small style="color:var(--accent-green); display:block; margin-top:6px;">*Data berhasil ditarik dari Sistem Kuota BPP Bola Komponen Digital.</small>
+                    `;
+                } else {
+                    // Fallback jika nama kecamatan tidak ditemukan di master data Apps Script Anda
+                    const fallbackUrea = luas * 200; const fallbackNPK = luas * 300;
+                    output.innerHTML = `
+                        <strong>⚠️ Kecamatan Tidak Ditemukan di Database:</strong><br>
+                        Menerapkan kalkulasi standar dasar Kabupaten Wajo (Urea: 200kg/Ha, NPK: 300kg/Ha).<br><br>
+                        🧪 Alokasi Pupuk Urea: <b>${fallbackUrea.toFixed(0)} Kg</b> (± ${(fallbackUrea/50).toFixed(1)} Sak)<br>
+                        🧪 Alokasi Pupuk NPK Phonska: <b>${fallbackNPK.toFixed(0)} Kg</b> (± ${(fallbackNPK/50).toFixed(1)} Sak)
+                    `;
+                }
+            } catch (error) {
+                // Penanganan jika ada kendala jaringan CORS / server Apps Script sibuk
+                console.error(error);
+                const fallbackUrea = luas * 200; const fallbackNPK = luas * 300;
+                output.style.display = "block";
+                output.innerHTML = `
+                    <strong>📡 Mode Offline / Gagal Sinkronisasi Server:</strong><br>
+                    <span style="color:var(--red-alert)">Gagal memuat database internal.</span> Menggunakan estimasi default makro Wajo:<br><br>
+                    🧪 Alokasi Pupuk Urea: <b>${fallbackUrea.toFixed(0)} Kg</b><br>
+                    🧪 Alokasi Pupuk NPK Phonska: <b>${fallbackNPK.toFixed(0)} Kg</b>
+                `;
+            } finally {
+                btn.innerText = "Hitung Dosis";
+                btn.disabled = false;
+            }
         }
 
         function kirimWhatsAppPupuk() {
