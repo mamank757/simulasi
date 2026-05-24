@@ -203,7 +203,7 @@
         .btn-live {
             animation: pulse-blue 2s infinite;
             background: var(--accent-bwd) !important;
-            color: #00 tactics !important;
+            color: #000000 !important;
         }
         @keyframes pulse-blue {
             0% { box-shadow: 0 0 0 0 rgba(56, 182, 255, 0.5); }
@@ -366,22 +366,6 @@
             </div>
         </div>
 
-        <div id="boxPupukKalkulator" style="display: none;">
-            <label class="form-label">Luas Lahan Sawah (Hektar)</label>
-            <input type="number" id="luasLahanPupuk" class="form-input" step="0.01" min="0" placeholder="Contoh: 1.2 atau 0.5">
-            <small id="errLuasPupuk" class="error">❗ Wajib diisi angka valid & tidak boleh kosong</small>
-
-            <label class="form-label">Varietas / Potensi Target Hasil</label>
-            <select id="targetYield" class="form-select">
-                <option value="normal" selected>Varietas Unggul Baru Inpari (Dosis Rekomendasi Standar)</option>
-                <option value="tinggi">Potensi Tinggi / Varietas Hibrida (+20% NPK)</option>
-            </select>
-
-            <button class="btn-main" style="background: var(--accent-pupuk); color: #040814;" onclick="hitungDosisPupukLokal()">🚀 Hitung Rekomendasi Pemupukan</button>
-
-            <div class="info-box" id="outputHasilPupuk" style="display:none; border-left-color: var(--accent-pupuk);"></div>
-        </div>
-
         <div id="boxBiayaTani" style="display: none;">
             <label class="form-label">Luas Lahan (Ha)</label>
             <input type="number" id="luas" class="form-input" step="0.01" min="0" placeholder="Contoh: 1.5">
@@ -467,6 +451,11 @@
                 <div class="info-box" style="border-left-color: var(--accent-green);"><strong>✅ Solusi Teknis (Agens / Budidaya):</strong><br><span id="resSolusiHama">-</span></div>
                 <div class="info-box" style="border-left-color: var(--accent-soil);"><strong>🔬 Rekomendasi Insektisida:</strong><br><span id="resMerekHama">-</span></div>
                 <div class="info-box" style="border-left-color: var(--accent-bwd);"><strong>⏱️ Tata Cara & Waktu Aplikasi:</strong><br><span id="resAplikasiHama">-</span></div>
+            </div>
+
+            <div id="boxPupuk" style="display:none;">
+                <div class="info-box" style="border-left-color: var(--accent-pupuk);"><strong>🔍 Hasil Analisis Rekomendasi Pupuk:</strong><br><span id="resGejalaPupuk">-</span></div>
+                <div class="info-box" style="border-left-color: var(--accent-soil);"><strong>📋 Kebutuhan Dosis Unsur Hara:</strong><br><span id="resSolusiPupuk">-</span></div>
             </div>
 
             <div id="boxGulma" style="display:none;">
@@ -568,7 +557,7 @@
                     <div class="info-box" style="border-left-color: var(--accent-bwd); padding: 6px; margin-top: 16px; overflow: hidden;">
                         <strong style="margin-left: 10px; margin-top: 10px;">🛰️ Analisis Satelit Mikro Spasial Lahan</strong>
                         <div style="position: relative; width: 100%; height: 400px; margin-top: 10px; border-radius: 16px; overflow: hidden; border: 1px solid var(--card-border);">
-                            <iframe id="radarMap" width="100%" height="100%" frameborder="0" style="border:0; background: #060913;" allowfullscreen></iframe>
+                            <iframe id="radarMap" width="100%" height="100%" frameborder="0; background: #060913;" allowfullscreen></iframe>
                         </div>
                     </div>
                      
@@ -599,12 +588,15 @@
         const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_I2uy6FQjd-5eE2p1UuhQTde2lEbokpAquACyutg8kBDi/exec";
         const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
         const URL_IKLIM = "https://script.google.com/macros/s/AKfycbxyPG7e8EqK6_bc09kqITIpqtrWL45jyQs2TtUuT8KySwnvII_ZyHAcyDI1F8uA7H6A/exec";
+        
+        // 🔒 DISISIPKAN KEMBALI SECARA SEMPURNA: Alamat URL Web App Apps Script Pupuk Milik Anda!
+        const URL_PUPUK = "https://script.google.com/macros/s/AKfycbzsx9osMY8lU8GKewA3k7z0YBwPkrQB8sk71HaLVdctLzR1qDJIlHHcIbgbm9fpn8uh/exec";
 
         const kamusTanah = {
             "alluvial": { "nama": "Tanah Alluvial", "penjelasan": "Tanah yang terbentuk dari endapan material sedimen (lumpur, pasir, kerikil) yang terbawa aliran sungai. Ditemukan di dataran rendah atau delta. Sangat subur dan kaya unsur hara.", "pH": "6.0 - 7.0", "organik": "Sedang", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Padi, Jagung, Sayuran", "saran": "Ideal untuk Padi. Jaga sirkulasi air agar mineral tetap terjaga." },
             "black": { "nama": "Tanah Hitam", "penjelasan": "Tanah yang memiliki kandungan organik tinggi and mineral yang kaya, biasanya berwarna gelap hingga hitam pekat. Memiliki kemampuan menahan air yang baik dan sangat produktif.", "pH": "6.5 - 7.5", "organik": "Tinggi", "npk": "Tinggi", "subur": "Subur", "tanaman": "Kedelai, Kapas, Palawija", "saran": "Sangat bagus untuk Kedelai. Lakukan pengolahan tanah saat kondisi lembap agar struktur tetap remah." },
             "cinder": { "nama": "Tanah Vulkanik", "penjelasan": "Tanah yang berasal dari pelapukan material letusan gunung berapi. Teksturnya seringkali berpori, sangat kaya akan unsur hara alami, dan memiliki kemampuan menyimpan air yang luar biasa.", "pH": "5.0 - 7.0", "organik": "Tinggi", "npk": "Sangat Tinggi", "subur": "Sangat Subur", "tanaman": "Sayuran, Hortikultura, Kopi", "saran": "Terbaik untuk Sayuran/Horti. Gunakan pupuk organik tambahan untuk menjaga kelembapan jangka panjang." },
-            "clay": { "nama": "Tanah Liat (Clay)", "penjelasan": "Tanah dengan partikel mineral sangat halus. Memiliki kemampuan menahan air yang sangat kuat namun sulit ditembus air (drainase lambat). Bersifat lengket saat basah dan keras saat kering.", "pH": "4.5 - 6.0", "organik": "Sedang", "npk": "Sedang", "subur": "Sedang", "tanaman": "Padi, Rumput Gajah", "saran": "Drainase wajib lancar agar akar tak busuk. Tambahkan bahan organik untuk memperbaiki struktur tanah." },
+            "clay": { "nama": "Tanah Liat (Clay)", "penjelasan": "Tanah dengan partipel mineral sangat halus. Memiliki kemampuan menahan air yang sangat kuat namun sulit ditembus air (drainase lambat). Bersifat lengket saat basah dan keras saat kering.", "pH": "4.5 - 6.0", "organik": "Sedang", "npk": "Sedang", "subur": "Sedang", "tanaman": "Padi, Rumput Gajah", "saran": "Drainase wajib lancar agar akar tak busuk. Tambahkan bahan organik untuk memperbaiki struktur tanah." },
             "laterite": { "nama": "Tanah Laterit", "penjelasan": "Tanah tua yang telah mengalami pencucian hara secara intensif oleh curah hujan tinggi. Kaya akan oksida besi dan aluminium, sehingga teksturnya seringkali keras and kurang subur.", "pH": "4.0 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Karet, Kelapa Sawit", "saran": "Wajib tambah pupuk organik dosis tinggi & pengapuran (Dolomit) untuk menaikkan pH." },
             "loamy": { "nama": "Tanah Lempung", "penjelasan": "Kombinasi ideal antara pasir, debu, dan sedikit liat. Tanah ini memiliki drainase yang baik sekaligus mampu menyimpan nutrisi dengan efektif. Teksturnya sangat remah and mudah diolah.", "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Palawija, Buah-buahan", "saran": "Tanah prima untuk semua tanaman. Pertahankan kualitas dengan penggunaan pupuk organik konsisten." },
             "loam": { "nama": "Tanah Lempung", "penjelasan": "Tekstur tanah yang paling seimbang untuk pertanian. Mampu menjaga kelembapan tanpa tergenang, serta menyediakan ruang udara yang cukup bagi pernapasan akar tanaman.", "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Sayuran, Buah-buahan", "saran": "Gunakan mulsa organik untuk menjaga kegemburan tanah 'emas' ini." },
@@ -626,48 +618,6 @@
 
         const kamusWarna = { "yellow": "Kuning", "yellowish green": "Hijau Kekuningan", "light green": "Hijau Muda", "green": "Hijau", "dark green": "Hijau Tua" };
          
-        // ⚡ GABUNGKAN: Rumus Perhitungan Form Input Manual Anda untuk Rekomendasi Pemupukan E-RDKK Wajo
-        function hitungDosisPupukLokal() {
-            let luas = parseFloat(document.getElementById("luasLahanPupuk").value);
-            if (isNaN(luas) || luas <= 0) {
-                document.getElementById("errLuasPupuk").style.display = "block";
-                return;
-            }
-            document.getElementById("errLuasPupuk").style.display = "none";
-
-            let target = document.getElementById("targetYield").value;
-            
-            let dosisDasarUrea = target === 'normal' ? 175 : 200;
-            let dosisDasarNPK = target === 'normal' ? 250 : 300;
-
-            let totalUrea = luas * dosisDasarUrea;
-            let totalNPK = luas * dosisDasarNPK;
-
-            let sakUrea = (Math.round(totalUrea / 25) / 2).toFixed(1);
-            let sakNPK = (Math.round(totalNPK / 25) / 2).toFixed(1);
-
-            let htmlPupuk = `
-                <div style="font-size: 1.1rem; font-weight:800; color:var(--accent-pupuk); margin-bottom:12px; text-align:center;">🧪 Rekomendasi Kebutuhan Pupuk</div>
-                🌾 <b>Luas Amparan Lahan:</b> ${luas.toFixed(2)} Hektar<br>
-                📈 <b>Rekomendasi Standar Kelompok:</b> ${dosisDasarUrea} kg Urea/Ha & ${dosisDasarNPK} kg NPK/Ha<br><br>
-                <div style="border-top: 1px dashed rgba(255,255,255,0.12); padding-top:10px;">
-                    ⚪ <b>Kebutuhan Pupuk Urea:</b><br>
-                    Total Berat: <span style="color:#ffffff; font-weight:700;">${totalUrea.toFixed(0)} Kg</span> (~ <b>${sakUrea} Sak</b> isi 50kg)<br>
-                    <small style="opacity:0.7;">• Aplikasi I (Umur 7-10 HST): 30% dari dosis</small><br>
-                    <small style="opacity:0.7;">• Aplikasi II (Umur 21-25 HST): 40% dari dosis</small><br>
-                    <small style="opacity:0.7;">• Aplikasi III (Umur 35-40 HST): 30% dari dosis</small>
-                </div><br>
-                <div style="border-top: 1px dashed rgba(255,255,255,0.12); padding-top:10px;">
-                    🔴 <b>Kebutuhan Pupuk NPK Phonska:</b><br>
-                    Total Berat: <span style="color:#ffffff; font-weight:700;">${totalNPK.toFixed(0)} Kg</span> (~ <b>${sakNPK} Sak</b> isi 50kg)<br>
-                    <small style="opacity:0.7;">• Aplikasi Dasar / Awal (Umur 7-10 HST): Diaplikasikan sekaligus</small>
-                </div>
-            `;
-            let outPupuk = document.getElementById("outputHasilPupuk");
-            outPupuk.style.display = "block";
-            outPupuk.innerHTML = htmlPupuk;
-        }
-
         function dapatkanHariSiklusBulan() {
             const kranBulanMati = new Date("2026-01-18T17:00:00Z"); 
             const sekarang = new Date();
@@ -733,7 +683,6 @@
             if (metode === 'custom') { customBox.style.display = 'block'; } else { customBox.style.display = 'none'; }
         }
 
-        // ⚡ GABUNGKAN: Peta Kontrol Switch Mode yang Mengondisikan Tombol Kamera Hilang/Mati Saat Tab PUPUK Dipilih
         function switchMode(mode) {
             currentMode = mode;
             let color = '#4fc3f7'; 
@@ -744,7 +693,7 @@
             if (mode === 'daun') { color = '#ff4a5a'; title = 'Deteksi Penyakit Padi'; }
             if (mode === 'hama') { color = 'var(--accent-hama)'; title = 'Pendeteksi & Solusi Hama Padi'; } 
             if (mode === 'gulma') { color = '#0ea5e9'; title = 'Identifikasi & Solusi Gulma'; }
-            if (mode === 'pupuk') { color = 'var(--accent-pupuk)'; title = 'Kalkulator Dosis Pupuk E-RDKK'; sub = 'Takaran Kebutuhan Berdasarkan Rekomendasi Luas Sawah Sub-distrik'; }
+            if (mode === 'pupuk') { color = 'var(--accent-pupuk)'; title = 'Analisis Kebutuhan Pupuk Lahan'; } // Judul tab kembali untuk urusan Citra foto/gambar
             if (mode === 'tanah') { color = '#d19b08'; title = 'Analisis Jenis Tanah'; }
             if (mode === 'bwd') { color = '#00ff9d'; title = 'Analisis Warna Daun (BWD)'; }
             if (mode === 'malai') { color = '#ffcc00'; title = 'Estimasi Panen - Ambil 3 foto malai'; }
@@ -775,7 +724,7 @@
             document.getElementById('boxPenyakit').style.display = mode === 'daun' ? 'block' : 'none';
             document.getElementById('boxHama').style.display = mode === 'hama' ? 'block' : 'none'; 
             document.getElementById('boxGulma').style.display = mode === 'gulma' ? 'block' : 'none';
-            document.getElementById('boxPupukKalkulator').style.display = mode === 'pupuk' ? 'block' : 'none'; 
+            document.getElementById('boxPupuk').style.display = mode === 'pupuk' ? 'block' : 'none'; 
             document.getElementById('boxTanah').style.display = mode === 'tanah' ? 'block' : 'none';
             document.getElementById('boxBWD').style.display = mode === 'bwd' ? 'block' : 'none';
             document.getElementById('boxCuaca').style.display = mode === 'cuaca' ? 'block' : 'none';
@@ -784,8 +733,7 @@
              
             document.getElementById('formParameterLahan').style.display = mode === 'malai' ? 'block' : 'none';
 
-            // ⚡ SINKRONKAN: Matikan jendela kamera & tombol scan jika berada di tab Cuaca, Biaya Tani, dan PUPUK manual
-            if (mode === 'cuaca' || mode === 'biaya' || mode === 'pupuk') {
+            if (mode === 'cuaca' || mode === 'biaya') {
                 document.getElementById('btnCamera').style.display = 'none';
                 document.getElementById('scanWindow').style.display = 'none';
                 document.getElementById('btnAnalisis').style.display = 'none';
@@ -1002,11 +950,12 @@
                 <div class="info-box" style="border-left-color: ${data.iodColor}; background: rgba(255,255,255,0.01);"><strong>🌍 Indeks Samudera Hindia (IOD):</strong><br><span style="font-weight: 700; color: ${data.iodColor};">${data.iod}</span></div>`;
         }
 
+        // 🔒 TERINTEGRASI SEMPURNA: Menambahkan endpoint URL_PUPUK ke dalam fungsi POST citra gambar analisis
         async function mulaiAnalisis() {
             document.getElementById('scanWindow').classList.add('is-scanning');
             document.getElementById('loader').style.display = 'block';
             try {
-                const urls = { daun: URL_DAUN, hama: URL_HAMA, gulma: URL_GULMA, tanah: URL_TANAH, bwd: URL_BWD, malai: URL_MALAI };
+                const urls = { daun: URL_DAUN, hama: URL_HAMA, gulma: URL_GULMA, tanah: URL_TANAH, bwd: URL_BWD, malai: URL_MALAI, pupuk: URL_PUPUK };
                 const res = await fetch(urls[currentMode], { method: 'POST', body: JSON.stringify({ image: base64Image }) });
                 const data = await res.json(); tampilkanHasil(data);
             } catch (e) { alert("Gagal koneksi server!"); }
@@ -1037,6 +986,7 @@
             document.getElementById('boxPenyakit').style.display = currentMode === 'daun' ? 'block' : 'none';
             document.getElementById('boxHama').style.display = currentMode === 'hama' ? 'block' : 'none'; 
             document.getElementById('boxGulma').style.display = currentMode === 'gulma' ? 'block' : 'none';
+            document.getElementById('boxPupuk').style.display = currentMode === 'pupuk' ? 'block' : 'none'; 
             document.getElementById('boxTanah').style.display = currentMode === 'tanah' ? 'block' : 'none';
             document.getElementById('boxBWD').style.display = currentMode === 'bwd' ? 'block' : 'none';
             document.getElementById('boxMalai').style.display = currentMode === 'malai' ? 'block' : 'none';
@@ -1102,6 +1052,21 @@
                     } else { document.getElementById('resAplikasiHama').innerHTML = formatAplikasi; }
 
                     conf = (out.akurasi && parseFloat(out.akurasi) > 0) ? out.akurasi : "80.0";
+                }
+            }
+            // 🔒 TERINTEGRASI SEMPURNA: Menangkap data dari response Web App Apps Script Pupuk Anda ke UI Box Output
+            else if (currentMode === 'pupuk') {
+                if (out.error) {
+                    document.getElementById('resLabel').innerText = "Gagal Analisis Kandungan";
+                    document.getElementById('resGejalaPupuk').innerText = out.error;
+                    return;
+                }
+                const hasilPupuk = out.mapped_result;
+                if (hasilPupuk) {
+                    document.getElementById('resLabel').innerText = hasilPupuk.nama || "Rekomendasi Hara Lahan";
+                    document.getElementById('resGejalaPupuk').innerHTML = hasilPupuk.gejala || "-";
+                    document.getElementById('resSolusiPupuk').innerHTML = hasilPupuk.solusi || "-";
+                    conf = (out.akurasi && parseFloat(out.akurasi) > 0) ? out.akurasi : "85.0";
                 }
             }
             else if (currentMode === 'gulma') {
