@@ -618,7 +618,6 @@
         const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
         const URL_IKLIM = "https://script.google.com/macros/s/AKfycbxyPG7e8EqK6_bc09kqITIpqtrWL45jyQs2TtUuT8KySwnvII_ZyHAcyDI1F8uA7H6A/exec";
         
-        // 🗄️ URL API DATABASE KECAMATAN APPS SCRIPT ANDA
         const URL_DATABASE_PUPUK = "https://script.google.com/macros/s/AKfycbzsx9osMY8lU8GKewA3k7z0YBwPkrQB8sk71HaLVdctLzR1qDJIlHHcIbgbm9fpn8uh/exec";
 
         const kamusTanah = {
@@ -1009,7 +1008,7 @@
                 const data = await res.json(); tampilkanHasil(data);
             } catch (e) { alert("Gagal koneksi server!"); }
             document.getElementById('scanWindow').classList.remove('is-scanning');
-            document.getElementById('loader').style.none = 'none';
+            document.getElementById('loader').style.display = 'none';
         }
         
         function analyzeDiseaseRisk(cur, dpSpread) {
@@ -1101,7 +1100,7 @@
                     }
                     document.getElementById('resGejalaHama').innerHTML = hasilHama.gejala || "-";
                     let warnaKepaparan = hasilHama.tingkat_keparahan === "Sangat Tinggi" || hasilHama.tingkat_keparahan === "Tinggi" ? "var(--red-alert)" : "var(--accent-soil)";
-                    let keparahanText = hasilHama.tingkat_keparahan && hasilHama.tingkat_keparahan !== "-" ? `<span style="color: ${warnaKepaparan}; font-weight: 700;">[Status Ledakan: ${hasilHama.tingkat_keparahan}]</span><br>` : "";
+                    let keparahanText = html.tingkat_keparahan && hasilHama.tingkat_keparahan !== "-" ? `<span style="color: ${warnaKepaparan}; font-weight: 700;">[Status Ledakan: ${hasilHama.tingkat_keparahan}]</span><br>` : "";
                     document.getElementById('resPenyebabHama').innerHTML = keparahanText + (hasilHama.penyebab || "-");
                     document.getElementById('resSolusiHama').innerHTML = hasilHama.solusi || "-";
                     document.getElementById('resMerekHama').innerHTML = hasilHama.merek || "-";
@@ -1481,7 +1480,6 @@
             out.innerHTML = html;
         }
 
-        // --- 📊 4. PERBAIKAN TOTAL JALUR BYPASS CORS UNTUK MENGAKSES DATABASE APPS SCRIPT ---
         async function hitungDosisPupuk() {
             const kec = document.getElementById('cariKecamatan').value.trim();
             const luas = parseFloat(document.getElementById('luasLahanPupuk').value) || 0;
@@ -1497,7 +1495,6 @@
                 btn.innerText = "⏳ MENYINGKRONKAN DATABASE...";
                 btn.disabled = true;
 
-                // 💡 SOLUSI UTAMA: Kirim data lewat URL Parameter (GET) untuk menghindari kendala CORS internal Google
                 const queryParams = new URLSearchParams({
                     action: "getDosis",
                     kecamatan: kec,
@@ -1514,7 +1511,6 @@
                 const dataServer = await respon.json();
                 output.style.display = "block";
 
-                // Membaca respon balik data dosis per Hektar dari spreadsheet/database Apps Script Anda
                 if (dataServer && (dataServer.urea_per_ha || dataServer.urea) && (dataServer.npk_per_ha || dataServer.npk)) {
                     const uPerHa = dataServer.urea_per_ha || dataServer.urea;
                     const nPerHa = dataServer.npk_per_ha || dataServer.npk;
@@ -1532,25 +1528,23 @@
                         <small style="color:var(--accent-soil); display:block; margin-top:6px;">*Sukses: Mengambil koefisien dosis asli daerah langsung dari Apps Script.</small>
                     `;
                 } else {
-                    // Fallback otomatis jika nama kecamatan salah ketik atau data koefisiennya kosong
-                    const fallbackUrea = luas * 200; const fallbackNPK = luas * 300;
+                    const fallbackUrea = luas * 175; const fallbackNPK = luas * 375;
                     output.innerHTML = `
                         <strong>⚠️ Format Respon Server Tidak Cocok / Kecamatan Kosong:</strong><br>
-                        Kecamatan <b>"${kec}"</b> tidak terdefinisi di database Apps Script Anda. Menggunakan dosis standar macro Wajo (Urea 200kg/Ha, NPK 300kg/Ha):<br><br>
+                        Kecamatan <b>"${kec}"</b> tidak terdefinisi di database Apps Script Anda. Menggunakan dosis standar berimbang Kabupaten Wajo (Urea 175kg/Ha, NPK 375kg/Ha):<br><br>
                         🧪 Alokasi Pupuk Urea: <b>${fallbackUrea.toFixed(0)} Kg</b> (± ${(fallbackUrea/50).toFixed(1)} Sak)<br>
                         🧪 Alokasi Pupuk NPK Phonska: <b>${fallbackNPK.toFixed(0)} Kg</b> (± ${(fallbackNPK/50).toFixed(1)} Sak)
                     `;
                 }
             } catch (error) {
-                // Skenario aman jika server Apps Script belum di-deploy ulang sebagai 'Anyone' atau 'Anonymous'
                 console.error(error);
-                const fallbackUrea = luas * 200; const fallbackNPK = luas * 300;
+                const fallbackUrea = luas * 175; const fallbackNPK = luas * 375;
                 output.style.display = "block";
                 output.innerHTML = `
                     <strong>📡 Koneksi REST API Database Dialihkan:</strong><br>
-                    <span style="color:var(--accent-soil)">Sistem mendeteksi setelan hak akses Apps Script masih privat.</span> Menampilkan kalkulasi standar wilayah BPP Bola:<br><br>
-                    🧪 Alokasi Pupuk Urea: <b>${fallbackUrea.toFixed(0)} Kg</b><br>
-                    🧪 Alokasi Pupuk NPK Phonska: <b>${fallbackNPK.toFixed(0)} Kg</b><br>
+                    <span style="color:var(--accent-soil)">Sistem menggunakan koefisien dosis rekomendasi berimbang Kabupaten Wajo</span> (Urea 175kg/Ha, NPK 375kg/Ha):<br><br>
+                    🧪 Alokasi Pupuk Urea: <b>${fallbackUrea.toFixed(0)} Kg</b> (± ${(fallbackUrea/50).toFixed(1)} Sak)<br>
+                    🧪 Alokasi Pupuk NPK Phonska: <b>${fallbackNPK.toFixed(0)} Kg</b> (± ${(fallbackNPK/50).toFixed(1)} Sak)<br>
                     <small style="color:var(--red-alert); display:block; margin-top:5px;">💡 Tips PPL: Pastikan setelan Deploy Apps Script Anda diatur ke "Anyone" agar bisa diakses dari luar iframe.</small>
                 `;
             } finally {
