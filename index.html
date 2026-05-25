@@ -616,6 +616,7 @@
 let hasilTeksWA = "";   // Untuk menampung format pesan WhatsApp
          
          // GANTI KODE WINDOW LOAD SEBELUMNYA DENGAN INI DI GITHUB ANDA
+// CARI KODE INI DI HTML GITHUB ANDA, LALU SESUAIKAN BARIS FETCH-NYA
 window.addEventListener('load', async function() {
     const inputKec = document.getElementById('kecInput');
     const list = document.getElementById('listKec');
@@ -623,14 +624,14 @@ window.addEventListener('load', async function() {
     try {
         if (inputKec) inputKec.placeholder = "⚡ Sinkronisasi E-RDKK Nasional...";
         
-        // Menembak data pupuk dari Apps Script ke GitHub Pages
-        const response = await fetch(URL_PUPUK, { method: 'POST' });
+        // 💡 PERBAIKAN: Ubah 'POST' menjadi 'GET' dengan menghapus properti method-nya
+        const response = await fetch(URL_PUPUK); 
         const data = await response.json();
         
         if (data.error) {
-            console.error("Apps Script Error:", data.error);
-            if (inputKec) inputKec.placeholder = "❌ Gagal memuat data dari Google Sheet";
-            return;
+          console.error("Apps Script Error:", data.error);
+          if (inputKec) inputKec.placeholder = "❌ Gagal memuat data dari Google Sheet";
+          return;
         }
         
         databasePupuk = data;
@@ -639,7 +640,8 @@ window.addEventListener('load', async function() {
             list.innerHTML = "";
             data.forEach(r => {
                 let opt = document.createElement('option');
-                opt.value = `${r.kec} (${r.kab})`;
+                // Pastikan properti r.kec & r.kab sesuai dengan huruf kecil di map data .gs
+                opt.value = `${r.kec} (${r.kab})`; 
                 list.appendChild(opt);
             });
             if (inputKec) inputKec.placeholder = "Ketik nama kecamatan...";
@@ -658,7 +660,7 @@ window.addEventListener('load', async function() {
         const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_I2uy6FQjd-5eE2p1UuhQTde2lEbokpAquACyutg8kBDi/exec";
         const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
         const URL_IKLIM = "https://script.google.com/macros/s/AKfycbxyPG7e8EqK6_bc09kqITIpqtrWL45jyQs2TtUuT8KySwnvII_ZyHAcyDI1F8uA7H6A/exec";
-        const URL_PUPUK = "https://script.google.com/macros/s/AKfycbx-0Uq-3fWi3ViiP1iOCcZsNDzaodcF9F8IUOSDaYoZvdbXYxHLuFBttFXGTsFQ0ic/exec";
+        const URL_PUPUK = "https://script.google.com/macros/s/AKfycbyZkyLEeLi7Igk-JXLuYuRsV0ZqTmbevRUQu6rY10rptwNyZ7y3d-YNmJCDn3QgM0Dm/exec";
 
         const kamusTanah = {
             "alluvial": { "nama": "Tanah Alluvial", "penjelasan": "Tanah yang terbentuk dari endapan material sedimen (lumpur, pasir, kerikil) yang terbawa aliran sungai. Ditemukan di dataran rendah atau delta. Sangat subur dan kaya unsur hara.", "pH": "6.0 - 7.0", "organik": "Sedang", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Padi, Jagung, Sayuran", "saran": "Ideal untuk Padi. Jaga sirkulasi air agar mineral tetap terjaga." },
