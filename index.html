@@ -1279,13 +1279,13 @@ function getFormatTanggal(selisihHari) {
        async function loadGlobalClimateIndices() {
             const container = document.getElementById('ensoIodBox'); if (!container) return;
             
-            // 💡 PERBAIKAN 1: Parameter cfs_v2 telah diganti menjadi cfs
-            const urlNINO3 = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=-120.00&monthly=temperature_2m&models=cfs";
-            const urlNINO4 = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=-160.00&monthly=temperature_2m&models=cfs";
-            const urlWTIO = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=60.00&monthly=temperature_2m&models=cfs";
-            const urlSETIO = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=-10.00&longitude=110.00&monthly=temperature_2m&models=cfs";
-            const urlBone = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=-4.85&longitude=120.60&monthly=temperature_2m&models=cfs";
-            const urlMakassar = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=-4.00&longitude=118.80&monthly=temperature_2m&models=cfs";
+            // MENGGUNAKAN ECMWF SEAS5 & VARIABEL TEMPERATURE_2M_MEAN
+            const urlNINO3 = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=-120.00&monthly=temperature_2m_mean&models=ecmwf_seas5";
+            const urlNINO4 = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=-160.00&monthly=temperature_2m_mean&models=ecmwf_seas5";
+            const urlWTIO = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=60.00&monthly=temperature_2m_mean&models=ecmwf_seas5";
+            const urlSETIO = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=-10.00&longitude=110.00&monthly=temperature_2m_mean&models=ecmwf_seas5";
+            const urlBone = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=-4.85&longitude=120.60&monthly=temperature_2m_mean&models=ecmwf_seas5";
+            const urlMakassar = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=-4.00&longitude=118.80&monthly=temperature_2m_mean&models=ecmwf_seas5";
 
             const fetchJSONP = (targetUrl) => {
                 return new Promise((resolve) => {
@@ -1303,8 +1303,8 @@ function getFormatTanggal(selisihHari) {
                     fetchJSONP(urlSETIO), fetchJSONP(urlBone), fetchJSONP(urlMakassar)
                 ]);
                 
-                // Cek log di Console untuk memastikan status sukses dari API
-                console.log("Status Koneksi NINO3:", dN3);
+                // Indikator sukses di Console
+                console.log("Status API ECMWF (NINO3):", dN3);
 
                 const namaBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
                 const sekarang = new Date();
@@ -1315,40 +1315,39 @@ function getFormatTanggal(selisihHari) {
                     labelsMasaDepan.push(`${namaBulan[targetDate.getMonth()]} ${targetDate.getFullYear().toString().substring(2)}`);
                 }
 
-                // 💡 PERBAIKAN 2: Mengunci indeks [1], [2], dan [3] untuk akurasi data 3 bulan ke depan
                 let ensoTrend = [0.12, 0.25, 0.18]; // Fallback
-                if (dN3?.monthly?.temperature_2m && dN4?.monthly?.temperature_2m && dN3.monthly.temperature_2m.length >= 4) {
+                if (dN3?.monthly?.temperature_2m_mean && dN4?.monthly?.temperature_2m_mean && dN3.monthly.temperature_2m_mean.length >= 4) {
                     ensoTrend = [
-                        parseFloat((((dN3.monthly.temperature_2m[1] + dN4.monthly.temperature_2m[1]) / 2) - 27.0).toFixed(2)),
-                        parseFloat((((dN3.monthly.temperature_2m[2] + dN4.monthly.temperature_2m[2]) / 2) - 27.0).toFixed(2)),
-                        parseFloat((((dN3.monthly.temperature_2m[3] + dN4.monthly.temperature_2m[3]) / 2) - 27.0).toFixed(2))
+                        parseFloat((((dN3.monthly.temperature_2m_mean[1] + dN4.monthly.temperature_2m_mean[1]) / 2) - 27.0).toFixed(2)),
+                        parseFloat((((dN3.monthly.temperature_2m_mean[2] + dN4.monthly.temperature_2m_mean[2]) / 2) - 27.0).toFixed(2)),
+                        parseFloat((((dN3.monthly.temperature_2m_mean[3] + dN4.monthly.temperature_2m_mean[3]) / 2) - 27.0).toFixed(2))
                     ];
                 }
 
                 let iodTrend = [-0.05, -0.12, -0.02]; // Fallback
-                if (dW?.monthly?.temperature_2m && dS?.monthly?.temperature_2m && dW.monthly.temperature_2m.length >= 4) {
+                if (dW?.monthly?.temperature_2m_mean && dS?.monthly?.temperature_2m_mean && dW.monthly.temperature_2m_mean.length >= 4) {
                     iodTrend = [
-                        parseFloat((dW.monthly.temperature_2m[1] - dS.monthly.temperature_2m[1]).toFixed(2)),
-                        parseFloat((dW.monthly.temperature_2m[2] - dS.monthly.temperature_2m[2]).toFixed(2)),
-                        parseFloat((dW.monthly.temperature_2m[3] - dS.monthly.temperature_2m[3]).toFixed(2))
+                        parseFloat((dW.monthly.temperature_2m_mean[1] - dS.monthly.temperature_2m_mean[1]).toFixed(2)),
+                        parseFloat((dW.monthly.temperature_2m_mean[2] - dS.monthly.temperature_2m_mean[2]).toFixed(2)),
+                        parseFloat((dW.monthly.temperature_2m_mean[3] - dS.monthly.temperature_2m_mean[3]).toFixed(2))
                     ];
                 }
 
                 let sstBoneTrend = [29.2, 29.5, 29.3]; // Fallback
-                if (dBl?.monthly?.temperature_2m && dBl.monthly.temperature_2m.length >= 4) {
+                if (dBl?.monthly?.temperature_2m_mean && dBl.monthly.temperature_2m_mean.length >= 4) {
                     sstBoneTrend = [
-                        parseFloat(dBl.monthly.temperature_2m[1].toFixed(1)),
-                        parseFloat(dBl.monthly.temperature_2m[2].toFixed(1)),
-                        parseFloat(dBl.monthly.temperature_2m[3].toFixed(1))
+                        parseFloat(dBl.monthly.temperature_2m_mean[1].toFixed(1)),
+                        parseFloat(dBl.monthly.temperature_2m_mean[2].toFixed(1)),
+                        parseFloat(dBl.monthly.temperature_2m_mean[3].toFixed(1))
                     ];
                 }
 
                 let sstMksTrend = [29.1, 29.4, 29.2]; // Fallback
-                if (dMk?.monthly?.temperature_2m && dMk.monthly.temperature_2m.length >= 4) {
+                if (dMk?.monthly?.temperature_2m_mean && dMk.monthly.temperature_2m_mean.length >= 4) {
                     sstMksTrend = [
-                        parseFloat(dMk.monthly.temperature_2m[1].toFixed(1)),
-                        parseFloat(dMk.monthly.temperature_2m[2].toFixed(1)),
-                        parseFloat(dMk.monthly.temperature_2m[3].toFixed(1))
+                        parseFloat(dMk.monthly.temperature_2m_mean[1].toFixed(1)),
+                        parseFloat(dMk.monthly.temperature_2m_mean[2].toFixed(1)),
+                        parseFloat(dMk.monthly.temperature_2m_mean[3].toFixed(1))
                     ];
                 }
 
