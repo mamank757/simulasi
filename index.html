@@ -615,8 +615,12 @@
                         </div>
                      
                     <div id="ensoIodBox" style="margin-top: 12px;">
-    <!-- Chart akan muncul di sini -->
-    <canvas id="climateChart" width="400" height="280" style="max-width:100%;"></canvas>
+    <div style="margin-bottom: 18px;">
+        <canvas id="ensoIodChart" height="140"></canvas>
+    </div>
+    <div>
+        <canvas id="sstLocalChart" height="140"></canvas>
+    </div>
 </div>
                      
                     
@@ -1256,7 +1260,6 @@ function getFormatTanggal(selisihHari) {
         <span style="color:var(--accent-bwd);">🔄 Mengambil data ENSO, IOD, Teluk Bone & Selat Makassar...</span>
     </div>`;
 
-    // URL Seasonal API
     const urlNINO3   = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=-120.00&variables=sea_surface_temperature_anomaly&forecast_months=3&timezone=auto";
     const urlNINO4   = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=-160.00&variables=sea_surface_temperature_anomaly&forecast_months=3&timezone=auto";
     const urlWTIO    = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=60.00&variables=sea_surface_temperature_anomaly&forecast_months=3&timezone=auto";
@@ -1270,8 +1273,8 @@ function getFormatTanggal(selisihHari) {
             window[callbackName] = (data) => { 
                 resolve(data); 
                 delete window[callbackName]; 
-                const scriptEl = document.getElementById(callbackName); 
-                if (scriptEl) scriptEl.remove(); 
+                const script = document.getElementById(callbackName); 
+                if (script) script.remove(); 
             };
             const script = document.createElement('script'); 
             script.id = callbackName;
@@ -1282,83 +1285,57 @@ function getFormatTanggal(selisihHari) {
 
     try {
         const [dN3, dN4, dW, dS, dBone, dMakassar] = await Promise.all([
-            fetchJSONP(urlNINO3),
-            fetchJSONP(urlNINO4),
-            fetchJSONP(urlWTIO),
-            fetchJSONP(urlSETIO),
-            fetchJSONP(urlBone),
-            fetchJSONP(urlMakassar)
+            fetchJSONP(urlNINO3), fetchJSONP(urlNINO4),
+            fetchJSONP(urlWTIO), fetchJSONP(urlSETIO),
+            fetchJSONP(urlBone), fetchJSONP(urlMakassar)
         ]);
 
-        // ENSO (Nino 3.4)
         let aN3 = 0.15, aN4 = 0.15;
-        if (dN3?.seasonal?.sea_surface_temperature_anomaly) {
-            aN3 = dN3.seasonal.sea_surface_temperature_anomaly[dN3.seasonal.sea_surface_temperature_anomaly.length - 1];
-        }
-        if (dN4?.seasonal?.sea_surface_temperature_anomaly) {
-            aN4 = dN4.seasonal.sea_surface_temperature_anomaly[dN4.seasonal.sea_surface_temperature_anomaly.length - 1];
-        }
+        if (dN3?.seasonal?.sea_surface_temperature_anomaly) aN3 = dN3.seasonal.sea_surface_temperature_anomaly.slice(-1)[0];
+        if (dN4?.seasonal?.sea_surface_temperature_anomaly) aN4 = dN4.seasonal.sea_surface_temperature_anomaly.slice(-1)[0];
         const nino34 = parseFloat(((aN3 + aN4) / 2).toFixed(2));
 
-        // IOD
         let iod = -0.05;
         if (dW?.seasonal?.sea_surface_temperature_anomaly && dS?.seasonal?.sea_surface_temperature_anomaly) {
-            const wtio = dW.seasonal.sea_surface_temperature_anomaly[dW.seasonal.sea_surface_temperature_anomaly.length - 1];
-            const setio = dS.seasonal.sea_surface_temperature_anomaly[dS.seasonal.sea_surface_temperature_anomaly.length - 1];
+            const wtio = dW.seasonal.sea_surface_temperature_anomaly.slice(-1)[0];
+            const setio = dS.seasonal.sea_surface_temperature_anomaly.slice(-1)[0];
             iod = parseFloat((wtio - setio).toFixed(2));
         }
 
-        // SST Teluk Bone & Selat Makassar
         let sstBone = 29.2;
         let sstMakassar = 29.3;
-        if (dBone?.seasonal?.sea_surface_temperature) {
-            sstBone = dBone.seasonal.sea_surface_temperature[dBone.seasonal.sea_surface_temperature.length - 1];
-        }
-        if (dMakassar?.seasonal?.sea_surface_temperature) {
-            sstMakassar = dMakassar.seasonal.sea_surface_temperature[dMakassar.seasonal.sea_surface_temperature.length - 1];
-        }
+        if (dBone?.seasonal?.sea_surface_temperature) sstBone = dBone.seasonal.sea_surface_temperature.slice(-1)[0];
+        if (dMakassar?.seasonal?.sea_surface_temperature) sstMakassar = dMakassar.seasonal.sea_surface_temperature.slice(-1)[0];
 
-        // Render Grafik (ENSO + IOD)
-        renderClimateChart(nino34, iod, sstBone, sstMakassar);
+        renderEnsoIodChart(nino34, iod);
+        renderSstLocalChart(sstBone, sstMakassar);
 
     } catch (er) {
         console.error(er);
-        container.innerHTML = `<div class="info-box" style="border-left-color: var(--red-alert);">
-            ⚠️ Gagal mengambil data iklim global. Silakan coba lagi.
-        </div>`;
+        container.innerHTML = `<div class="info-box" style="border-left-color: var(--red-alert);">⚠️ Gagal mengambil data iklim global.</div>`;
     }
 }
-        window.renderClimateUI = function(data) {
-            const container = document.getElementById('ensoIodBox'); if (!container) return;
-            container.innerHTML = `
-                <div class="info-box" style="border-left-color: ${data.ensoColor}; background: rgba(255,255,255,0.01);"><strong>🌊 Indeks Samudera Pasifik (ENSO):</strong><br><span style="font-weight: 700; color: ${data.ensoColor};">${data.enso}</span></div>
-                <div class="info-box" style="border-left-color: ${data.iodColor}; background: rgba(255,255,255,0.01);"><strong>🌍 Indeks Samudera Hindia (IOD):</strong><br><span style="font-weight: 700; color: ${data.iodColor};">${data.iod}</span></div>
-                <div class="info-box" style="border-left-color: ${data.boneColor}; background: rgba(255,255,255,0.01);"><strong>⚓ Parameter Perairan Teluk Bone:</strong><br><span style="font-weight: 700; color: ${data.boneColor};">${data.sstBone}</span></div>
-                <div class="info-box" style="border-left-color: ${data.makassarColor}; background: rgba(255,255,255,0.01);"><strong>⚓ Parameter Perairan Selat Makassar:</strong><br><span style="font-weight: 700; color: ${data.makassarColor};">${data.sstMarketing}</span></div>`;
-        }
         
-        function renderClimateChart(ensoValue, iodValue, sstBone, sstMakassar) {
-    const ctx = document.getElementById('climateChart');
+        function renderEnsoIodChart(ensoValue, iodValue) {
+    const ctx = document.getElementById('ensoIodChart');
     if (!ctx) return;
 
-    if (window.climateChartInstance) {
-        window.climateChartInstance.destroy();
-    }
+    if (window.ensoIodChart) window.ensoIodChart.destroy();
 
     const ensoColor = ensoValue >= 0.5 ? '#ff4a5a' : (ensoValue <= -0.5 ? '#38b6ff' : '#00ff9d');
     const iodColor  = iodValue >= 0.4 ? '#ffcc00' : (iodValue <= -0.4 ? '#38b6ff' : '#00ff9d');
 
-    window.climateChartInstance = new Chart(ctx, {
+    window.ensoIodChart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['ENSO (Nino 3.4)', 'IOD', 'Teluk Bone', 'Selat Makassar'],
+            labels: ['ENSO (Nino 3.4)', 'IOD'],
             datasets: [{
                 label: 'Nilai Indeks (°C)',
-                data: [ensoValue, iodValue, sstBone, sstMakassar],
-                backgroundColor: [ensoColor, iodColor, '#22c55e', '#38b6ff'],
+                data: [ensoValue, iodValue],
+                backgroundColor: [ensoColor, iodColor],
                 borderColor: '#ffffff',
-                borderWidth: 1.5,
-                borderRadius: 6,
+                borderWidth: 2,
+                borderRadius: 8,
             }]
         },
         options: {
@@ -1368,25 +1345,52 @@ function getFormatTanggal(selisihHari) {
                 legend: { display: false },
                 title: {
                     display: true,
-                    text: 'Indeks Iklim & Suhu Laut (3 Bulan ke Depan)',
+                    text: 'ENSO & IOD (Prakiraan 3 Bulan)',
                     color: '#ffffff',
                     font: { size: 14, weight: '700' }
                 }
             },
-            scales: {
-                y: {
-                    grid: { color: 'rgba(255,255,255,0.08)' },
-                    ticks: { color: '#94a3b8' }
-                },
-                x: {
-                    grid: { color: 'rgba(255,255,255,0.08)' },
-                    ticks: { color: '#94a3b8', font: { size: 12 } }
-                }
-            }
+            scales: { y: { grid: { color: 'rgba(255,255,255,0.08)' }, ticks: { color: '#94a3b8' } } }
         }
     });
 }
 
+function renderSstLocalChart(sstBone, sstMakassar) {
+    const ctx = document.getElementById('sstLocalChart');
+    if (!ctx) return;
+
+    if (window.sstLocalChart) window.sstLocalChart.destroy();
+
+    window.sstLocalChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Teluk Bone', 'Selat Makassar'],
+            datasets: [{
+                label: 'Suhu Permukaan Laut (°C)',
+                data: [sstBone, sstMakassar],
+                backgroundColor: ['#22c55e', '#38b6ff'],
+                borderColor: '#ffffff',
+                borderWidth: 2,
+                borderRadius: 8,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Suhu Laut Lokal (Teluk Bone & Selat Makassar)',
+                    color: '#ffffff',
+                    font: { size: 14, weight: '700' }
+                }
+            },
+            scales: { y: { grid: { color: 'rgba(255,255,255,0.08)' }, ticks: { color: '#94a3b8' } } }
+        }
+    });
+}
+        
         async function mulaiAnalisis() {
             document.getElementById('scanWindow').classList.add('is-scanning');
             document.getElementById('loader').style.display = 'block';
