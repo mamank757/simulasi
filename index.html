@@ -994,9 +994,12 @@ function getFormatTanggal(selisihHari) {
         document.getElementById('weatherData').style.display = 'block';
         document.getElementById('result').style.display = 'block';
 
+        // 💡 TAMBAHKAN 2 BARIS INI UNTUK MEMBUKA GEMBOK GRAFIK LOKAL
+        const boxLokal = document.getElementById('localSstBox');
+        if (boxLokal) boxLokal.style.display = 'block';
+
         // Reset tombol ke kondisi sukses
-        btn.innerHTML = `✅ GPS & Satelit Terhubung`;
-        btn.style.background = "var(--accent-green)";
+        btn.innerHTML = `✅ GPS & Satelit Terhubung`;       btn.style.background = "var(--accent-green)";
         btn.style.color = "#000";
         btn.disabled = true; // Tetap disabled setelah sukses
 
