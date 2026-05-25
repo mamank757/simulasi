@@ -1369,12 +1369,26 @@ function getFormatTanggal(selisihHari) {
         }
 
         // 5. Data Lokal (Bone & Makassar)
-        let sstBoneTrend = dBl?.monthly?.temperature_2m_mean ? [dBl.monthly.temperature_2m_mean[1].toFixed(1), dBl.monthly.temperature_2m_mean[2].toFixed(1), dBl.monthly.temperature_2m_mean[3].toFixed(1)] : [29.2, 29.5, 29.3];
-        let sstMksTrend = dMk?.monthly?.temperature_2m_mean ? [dMk.monthly.temperature_2m_mean[1].toFixed(1), dMk.monthly.temperature_2m_mean[2].toFixed(1), dMk.monthly.temperature_2m_mean[3].toFixed(1)] : [29.1, 29.4, 29.2];
+        // 💡 KOREKSI BIAS: Mengurangi 0.4 agar proxy suhu udara mendekati suhu permukaan laut
+        const bias = 0.4;
 
-        renderSplitCharts(labelsMasaDepan, ensoAnomali, iodTrend, sstBoneTrend, sstMksTrend);
+        let sstBoneTrend = dBl?.monthly?.temperature_2m_mean 
+            ? [
+                (dBl.monthly.temperature_2m_mean[1] - bias).toFixed(1),
+                (dBl.monthly.temperature_2m_mean[2] - bias).toFixed(1),
+                (dBl.monthly.temperature_2m_mean[3] - bias).toFixed(1)
+              ] 
+            : ["28.8", "29.1", "28.9"]; // Fallback disesuaikan setelah koreksi
 
-    } catch (er) { 
+        let sstMksTrend = dMk?.monthly?.temperature_2m_mean 
+            ? [
+                (dMk.monthly.temperature_2m_mean[1] - bias).toFixed(1),
+                (dMk.monthly.temperature_2m_mean[2] - bias).toFixed(1),
+                (dMk.monthly.temperature_2m_mean[3] - bias).toFixed(1)
+              ] 
+            : ["28.7", "29.0", "28.8"]; // Fallback disesuaikan setelah koreksi
+
+        renderSplitCharts(labelsMasaDepan, ensoAnomali, iodTrend, sstBoneTrend, sstMksTrend);    } catch (er) { 
         console.error("Gagal Render Iklim:", er);
         if (container) container.innerHTML = `<div class="info-box">⚠️ Gagal memuat data prediksi iklim.</div>`; 
     }
