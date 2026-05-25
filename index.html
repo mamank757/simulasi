@@ -628,22 +628,42 @@
                     <div class="forecast-title">📅 Prakiraan 7 Hari Kedepan</div>
                     <div class="daily-list" id="dailyForecastContainer"></div>
                      
-                   <div id="ensoIodBox" class="card" style="display: block; margin-top: 16px;">
-    <div id="ensoStatus" style="font-size: 1.1rem; margin-bottom: 10px; text-align: center; font-weight: bold;">
-        Mendeteksi fase ENSO...
+                    <div id="ensoIodBox" style="display: block; margin-top: 20px; border-radius: 12px; backdrop-filter: blur(10px); background: rgba(20, 20, 25, 0.7); border: 1px solid rgba(255, 255, 255, 0.1); padding: 16px;">
+    
+    <div id="ensoStatus" style="font-size: 0.95rem; margin-bottom: 12px; text-align: center; color: var(--text-color); font-weight: 500; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
+        Mendeteksi fase iklim...
     </div>
 
-    <div id="localWarningStatus" style="font-size: 0.9rem; margin-bottom: 10px; text-align: center; color: #94a3b8;">
-        Menganalisis suhu laut lokal...
+    <strong style="display: block; margin-bottom: 12px; text-align: center; font-size: 0.9rem; color: #fff;">
+        📈 Proyeksi Iklim Makro (3 Bulan Ke Depan)
+    </strong>
+
+    <div style="position: relative; width: 100%; height: 200px;">
+        <canvas id="macroClimateChart"></canvas>
     </div>
 
-    <div class="info-box" style="border-left-color: #ff4a5a; background: rgba(255,255,255,0.01); padding: 16px;">
-        <strong style="display: block; margin-bottom: 12px;">📈 Proyeksi Indeks Iklim Makro (3 Bulan Ke Depan)</strong>
-        <div style="position: relative; width: 100%; height: 180px;">
-            <canvas id="macroClimateChart"></canvas>
-        </div>
-        </div>
+<div id="localWarningStatus" style="font-size: 0.85rem; margin-top: 10px; text-align: center; font-weight: 500; padding: 5px; border-radius: 6px; background: rgba(0,0,0,0.2);">
+    Menganalisis suhu laut lokal...
 </div>
+
+    <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 15px; text-align: center; display: flex; justify-content: center; gap: 15px;">
+        <span><span style="color:#ff4a5a;">■</span> ENSO (Pasifik)</span>
+        <span><span style="color:#ffcc00;">■</span> IOD (Hindia)</span>
+    </div>
+</div>
+
+                    <div id="localSstBox" style="display: block; margin-top: 16px;">
+                        <div class="info-box" style="border-left-color: #38b6ff; background: rgba(255,255,255,0.01); padding: 16px;">
+                            <strong style="display: block; margin-bottom: 12px;">🌊 Proyeksi Suhu Permukaan Laut Lokal (3 Bulan Ke Depan)</strong>
+                            <div style="position: relative; width: 100%; height: 180px;">
+                                <canvas id="localSstChart"></canvas>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; text-align: center;">
+                                <span style="color:#00ff9d;">■</span> Sst Teluk Bone (°C) | 
+                                <span style="color:#38b6ff;">■</span> Sst Selat Makassar (°C)
+                            </div>
+                        </div>
+                    </div>
                     
                     <div class="info-box" style="border-left-color: var(--accent-green); padding: 16px; margin-top: 16px;">
                         <strong>📊 Real-Time Parameter Lahan (Satelit)</strong>
