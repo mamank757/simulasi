@@ -1302,9 +1302,6 @@ function getFormatTanggal(selisihHari) {
                     fetchJSONP(urlNINO3), fetchJSONP(urlNINO4), fetchJSONP(urlWTIO), 
                     fetchJSONP(urlSETIO), fetchJSONP(urlBone), fetchJSONP(urlMakassar)
                 ]);
-                
-                // Indikator sukses di Console
-                console.log("Status API ECMWF (NINO3):", dN3);
 
                 const namaBulan = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
                 const sekarang = new Date();
@@ -1315,25 +1312,32 @@ function getFormatTanggal(selisihHari) {
                     labelsMasaDepan.push(`${namaBulan[targetDate.getMonth()]} ${targetDate.getFullYear().toString().substring(2)}`);
                 }
 
-                let ensoTrend = [0.12, 0.25, 0.18]; // Fallback
+                // 💡 PERBAIKAN 3: Menetapkan Baseline Historis Suhu Permukaan Laut (Klimatologi)
+                const baseNINO = 26.8;  // Baseline Pasifik Tengah (Nino 3.4)
+                const baseWTIO = 28.2;  // Baseline Samudera Hindia Barat (Lebih hangat alami)
+                const baseSETIO = 27.0; // Baseline Samudera Hindia Timur
+
+                let ensoTrend = [0.12, 0.25, 0.18]; 
                 if (dN3?.monthly?.temperature_2m_mean && dN4?.monthly?.temperature_2m_mean && dN3.monthly.temperature_2m_mean.length >= 4) {
+                    // ENSO: Rata-rata suhu absolut saat ini dikurangi baseline historis
                     ensoTrend = [
-                        parseFloat((((dN3.monthly.temperature_2m_mean[1] + dN4.monthly.temperature_2m_mean[1]) / 2) - 27.0).toFixed(2)),
-                        parseFloat((((dN3.monthly.temperature_2m_mean[2] + dN4.monthly.temperature_2m_mean[2]) / 2) - 27.0).toFixed(2)),
-                        parseFloat((((dN3.monthly.temperature_2m_mean[3] + dN4.monthly.temperature_2m_mean[3]) / 2) - 27.0).toFixed(2))
+                        parseFloat((((dN3.monthly.temperature_2m_mean[1] + dN4.monthly.temperature_2m_mean[1]) / 2) - baseNINO).toFixed(2)),
+                        parseFloat((((dN3.monthly.temperature_2m_mean[2] + dN4.monthly.temperature_2m_mean[2]) / 2) - baseNINO).toFixed(2)),
+                        parseFloat((((dN3.monthly.temperature_2m_mean[3] + dN4.monthly.temperature_2m_mean[3]) / 2) - baseNINO).toFixed(2))
                     ];
                 }
 
-                let iodTrend = [-0.05, -0.12, -0.02]; // Fallback
+                let iodTrend = [-0.05, -0.12, -0.02]; 
                 if (dW?.monthly?.temperature_2m_mean && dS?.monthly?.temperature_2m_mean && dW.monthly.temperature_2m_mean.length >= 4) {
+                    // IOD: (Anomali Barat) dikurangi (Anomali Timur)
                     iodTrend = [
-                        parseFloat((dW.monthly.temperature_2m_mean[1] - dS.monthly.temperature_2m_mean[1]).toFixed(2)),
-                        parseFloat((dW.monthly.temperature_2m_mean[2] - dS.monthly.temperature_2m_mean[2]).toFixed(2)),
-                        parseFloat((dW.monthly.temperature_2m_mean[3] - dS.monthly.temperature_2m_mean[3]).toFixed(2))
+                        parseFloat(((dW.monthly.temperature_2m_mean[1] - baseWTIO) - (dS.monthly.temperature_2m_mean[1] - baseSETIO)).toFixed(2)),
+                        parseFloat(((dW.monthly.temperature_2m_mean[2] - baseWTIO) - (dS.monthly.temperature_2m_mean[2] - baseSETIO)).toFixed(2)),
+                        parseFloat(((dW.monthly.temperature_2m_mean[3] - baseWTIO) - (dS.monthly.temperature_2m_mean[3] - baseSETIO)).toFixed(2))
                     ];
                 }
 
-                let sstBoneTrend = [29.2, 29.5, 29.3]; // Fallback
+                let sstBoneTrend = [29.2, 29.5, 29.3]; 
                 if (dBl?.monthly?.temperature_2m_mean && dBl.monthly.temperature_2m_mean.length >= 4) {
                     sstBoneTrend = [
                         parseFloat(dBl.monthly.temperature_2m_mean[1].toFixed(1)),
@@ -1342,7 +1346,7 @@ function getFormatTanggal(selisihHari) {
                     ];
                 }
 
-                let sstMksTrend = [29.1, 29.4, 29.2]; // Fallback
+                let sstMksTrend = [29.1, 29.4, 29.2]; 
                 if (dMk?.monthly?.temperature_2m_mean && dMk.monthly.temperature_2m_mean.length >= 4) {
                     sstMksTrend = [
                         parseFloat(dMk.monthly.temperature_2m_mean[1].toFixed(1)),
