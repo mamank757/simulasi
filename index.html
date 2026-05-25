@@ -17,7 +17,8 @@
             --accent-biaya: #b388ff;
             --accent-gulma: #e0f2fe;
             --accent-hama: #ff7675; 
-            --accent-report: #27ae60;
+            --accent-pupuk: #22c55e;
+            
             --text-main: #f1f5f9;
             --text-muted: #94a3b8;
             --red-alert: #ff4a5a;
@@ -61,6 +62,7 @@
             margin: 6px 0 0 0;
         }
 
+        /* PERBAIKAN TAB: PAS LEBAR SATU LAYAR HAPE */
         .tab-container {
             display: flex; 
             background: rgba(13, 20, 38, 0.8); 
@@ -95,13 +97,13 @@
          
         .tab-btn.active { background: #38b6ff; color: #000000; }
         .tab-btn.active.daun-mode { background: #ff4a5a; color: #ffffff; }
-        .tab-btn.active.hama-mode { background: var(--accent-hama); color: #ffffff; } 
+        .tab-btn.active.hama-mode { background: var(--accent-hama); color: #ffffff; } /* 💡 Style Aktif Tab Hama */
         .tab-btn.active.gulma-mode { background: #0ea5e9; color: #ffffff; }
         .tab-btn.active.soil-mode { background: #d19b08; color: #ffffff; }
         .tab-btn.active.bwd-mode { background: #00ff9d; color: #000000; }
         .tab-btn.active.malai-mode { background: #ffcc00; color: #000000; }
         .tab-btn.active.biaya-mode { background: var(--accent-biaya); color: #000000; }
-        .tab-btn.active.report-mode { background: var(--accent-report); color: #ffffff; }
+        .tab-btn.active.pupuk-mode { background: var(--accent-pupuk); color: #000000; }
          
         .card {
             background: var(--card-bg); 
@@ -185,14 +187,6 @@
             margin-top: 5px;
         }
         .btn-main:active { transform: scale(0.98); opacity: 0.9; }
-        
-        .btn-whatsapp {
-            background: #25d366;
-            color: #ffffff;
-            box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2);
-            margin-top: 12px;
-        }
-
         .btn-camera { 
             background: rgba(255, 255, 255, 0.06); 
             color: #ffffff; 
@@ -201,7 +195,7 @@
             box-shadow: none;
         }
         .btn-camera:active { background: rgba(255, 255, 255, 0.12); }
-         
+          
         .btn-biaya {
             background: linear-gradient(135deg, #651fff, var(--accent-biaya));
             color: white;
@@ -232,7 +226,7 @@
             background: #050811;
         }
         #preview { width: 100%; border-radius: 18px; display: none; }
-         
+          
         .laser-line {
             display: none; 
             position: absolute; 
@@ -256,7 +250,7 @@
             line-height: 1.5;
         }
         .info-box strong { color: #ffffff; display: inline-block; margin-bottom: 4px; font-weight: 600;}
-         
+          
         .leaf-card {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--card-border);
@@ -301,28 +295,10 @@
         .recommendation-box { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-top: 16px; }
         .vote-summary { font-size: 0.8rem; color: var(--accent-soil); margin-bottom: 10px; font-weight: 700; }
         .malai-counter-box { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 500; }
-         
+          
         .error { color: #ff5252; font-size: 12px; display: none; margin-top: -10px; margin-bottom: 10px; }
         .highlight { color: #81c784; font-weight: bold; }
         .big { font-size: 18px; font-weight: bold; }
-
-        /* AREA BINGKAI IFRAME BARU BERGAYA FUTURISTIK GLASSMORPHISM */
-        .iframe-container {
-            width: 100%;
-            height: 380px;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid var(--card-border);
-            margin-top: 20px;
-            background: #0d1424;
-            display: none;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
-        }
-        .iframe-container iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
 
         footer.fixed-footer {
             position: fixed;
@@ -348,50 +324,21 @@
     </div>
 
     <div class="tab-container">
-        <button class="tab-btn active" id="tabCuaca" onclick="switchMode('cuaca')">CUACA</button>
-        <button class="tab-btn" id="tabBiaya" onclick="switchMode('biaya')">BIAYA</button>
-        <button class="tab-btn" id="tabDaun" onclick="switchMode('daun')">PENYAKIT</button>
-        <button class="tab-btn" id="tabHama" onclick="switchMode('hama')">HAMA</button>
-        <button class="tab-btn" id="tabGulma" onclick="switchMode('gulma')">GULMA</button>
-        <button class="tab-btn" id="tabTanah" onclick="switchMode('tanah')">TANAH</button>
-        <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">BWD</button>
-        <button class="tab-btn" id="tabMalai" onclick="switchMode('malai')">PANEN</button>
-        <button class="tab-btn" id="tabReport" onclick="switchMode('report')">DOSIS</button>
-    </div>
+    <button class="tab-btn" id="tabCuaca" onclick="switchMode('cuaca')">CUACA</button>
+    <button class="tab-btn" id="tabPupuk" onclick="switchMode('pupuk')">PUPUK</button> 
+    <button class="tab-btn" id="tabBiaya" onclick="switchMode('biaya')">BIAYA</button>
+    <button class="tab-btn active" id="tabDaun" onclick="switchMode('daun')">PENYAKIT</button>
+    <button class="tab-btn" id="tabHama" onclick="switchMode('hama')">HAMA</button>
+    <button class="tab-btn" id="tabGulma" onclick="switchMode('gulma')">GULMA</button>
+    <button class="tab-btn" id="tabTanah" onclick="switchMode('tanah')">TANAH</button>
+    <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">BWD</button>
+    <button class="tab-btn" id="tabMalai" onclick="switchMode('malai')">PANEN</button>
+</div>
 
     <div class="card">
-        <h3 id="modeTitle">Cuaca & Risiko Penyakit Tanaman</h3>
+        <h3 id="modeTitle">Deteksi Penyakit Padi</h3>
         <div id="tabSubtitleDisplay" class="tab-subtitle" style="display:none;"></div>
           
-        <div id="boxKalkulatorPupuk" style="display: none;">
-            <div class="form-group">
-                <label>📍 Cari Kecamatan</label>
-                <input type="text" id="cariKecamatan" class="form-input" placeholder="Ketik nama kecamatan di Wajo...">
-            </div>
-            <div class="form-group">
-                <label>📐 Luas Lahan (ha)</label>
-                <input type="number" id="luasLahanPupuk" class="form-input" step="0.01" min="0" placeholder="Contoh: 1.65">
-            </div>
-            <div class="form-group">
-                <label>⛰️ Jenis Topografi Lahan</label>
-                <select id="topografiLahan" class="form-select">
-                    <option value="bukit">Bukit (Dataran Tinggi)</option>
-                    <option value="dataran_rendah">Dataran Rendah / Sawah Irigasi</option>
-                    <option value="rawa">Rawa / Lebak</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>📅 Tanggal Tanam</label>
-                <input type="date" id="tanggalTanam" class="form-input">
-            </div>
-            <button class="btn-main" id="btnHitungPupuk" onclick="hitungDosisPupuk()">Hitung Dosis</button>
-            <button class="btn-main btn-whatsapp" onclick="kirimWhatsAppPupuk()">Kirim WhatsApp</button>
-            
-            <div class="iframe-container" id="containerIframePupuk">
-                <iframe id="iframeHasilPupuk" src=""></iframe>
-            </div>
-        </div>
-
         <div id="formParameterLahan" class="form-lahan" style="display: none;">
             <div class="form-group">
                 <label>🌾 METODE TANAM / POPULASI</label>
@@ -420,7 +367,42 @@
                 <input type="number" id="malaiPerRumpun" value="16" min="1">
             </div>
         </div>
+<div id="boxKalkulatorPupuk" style="display: none;">
+    <div class="form-group">
+        <label>📍 CARI KECAMATAN</label>
+        <input type="text" id="kecInput" class="form-input" list="listKec" placeholder="Memuat data wilayah...">
+        <datalist id="listKec"></datalist>
+    </div>
 
+    <div class="form-group">
+        <label>📐 LUAS LAHAN (HA)</label>
+        <input type="number" id="luasPupuk" class="form-input" placeholder="Contoh: 1.65" step="0.01" min="0">
+    </div>
+
+    <div class="form-group">
+        <label>⛰️ JENIS TOPOGRAFI LAHAN</label>
+        <select id="lahanTopografi" class="form-select">
+            <option value="bukit">Bukit (Dataran Tinggi)</option>
+            <option value="lembah">Lembah (Dataran Rendah)</option>
+            <option value="rawa">Rawa / Daerah Aliran Sungai</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>📅 TANGGAL TANAM</label>
+        <input type="date" id="tanggalTanam" class="form-input">
+    </div>
+
+    <button class="btn-main" style="background: var(--accent-pupuk); color: #000; margin-bottom: 12px;" onclick="hitungRekomendasiPupuk()">
+        🚀 HITUNG DOSIS PUPUK
+    </button>
+    
+    <button class="btn-main" style="background: #25D366; color: #fff; margin-top: 0;" onclick="kirimHasilKeWhatsApp()">
+        💬 KIRIM WA KE PETANI
+    </button>
+
+    <div id="outputHasilPupuk" class="info-box" style="display:none; border-left-color: var(--accent-pupuk); background: rgba(34, 197, 94, 0.02); margin-top: 20px;"></div>
+</div>
         <div id="boxBiayaTani" style="display: none;">
             <label class="form-label">Luas Lahan (Ha)</label>
             <input type="number" id="luas" class="form-input" step="0.01" min="0" placeholder="Contoh: 1.5">
@@ -630,16 +612,53 @@
         let currentMode = 'cuaca', base64Image = "";
         let hasilSampelBulir = []; 
         let isGpsSynced = false; 
+        let databasePupuk = []; // Untuk menampung data Sheet ERDKK
+let hasilTeksWA = "";   // Untuk menampung format pesan WhatsApp
          
-        const URL_DAUN = "https://script.google.com/macros/s/AKfycbwCRdyOUC5IHnAsqY350uP0JjsP-uhK_YKlF-h11D95DqSMVv9Uwpr1WSbzx4NvxlHUKA/exec";
-        const URL_HAMA = "https://script.google.com/macros/s/AKfycbxvTO21WCScYxldu2WsZkMVOWi6U7Uc8n7ECoavGv0YcaJtGMLGjHSbdIuicnpauTNfLA/exec"; 
+         // GANTI KODE WINDOW LOAD SEBELUMNYA DENGAN INI DI GITHUB ANDA
+window.addEventListener('load', async function() {
+    const inputKec = document.getElementById('kecInput');
+    const list = document.getElementById('listKec');
+    
+    try {
+        if (inputKec) inputKec.placeholder = "⚡ Sinkronisasi E-RDKK Nasional...";
+        
+        // Menembak data pupuk dari Apps Script ke GitHub Pages
+        const response = await fetch(URL_PUPUK, { method: 'POST' });
+        const data = await response.json();
+        
+        if (data.error) {
+            console.error("Apps Script Error:", data.error);
+            if (inputKec) inputKec.placeholder = "❌ Gagal memuat data dari Google Sheet";
+            return;
+        }
+        
+        databasePupuk = data;
+        
+        if (list) {
+            list.innerHTML = "";
+            data.forEach(r => {
+                let opt = document.createElement('option');
+                opt.value = `${r.kec} (${r.kab})`;
+                list.appendChild(opt);
+            });
+            if (inputKec) inputKec.placeholder = "Ketik nama kecamatan...";
+        }
+    } catch (err) {
+        console.error("Fetch Data Pupuk Gagal:", err);
+        if (inputKec) inputKec.placeholder = "⚠️ Gangguan server data wilayah";
+    }
+});
+         
+        const URL_DAUN = "https://script.google.com/macros/s/AKfycby2arYHCsqKV3FZm14JB0W0LMGn1PfJ_26EoTAeVERAL0OsN0B0-4enXzap5KN9RMPsag/exec";
+        // 💡 Masukkan URL Web App Google Apps Script Pendeteksi Hama Anda di bawah ini
+        const URL_HAMA = "https://script.google.com/macros/s/AKfycbyTGmbTGlnaJWuSgrhzHneqYHlzzybJtYssAT-C4kwemFGtGnn0AR27CcsvXQKBeqU9/exec"; 
         const URL_GULMA = "https://script.google.com/macros/s/AKfycbxGBDW3g9NmpHoijkvtRC5onwV02EBDLCuszLPLu1tY8NMv74fpnKVKwc4LWQ_GQ-SGZg/exec";
         const URL_TANAH = "https://script.google.com/macros/s/AKfycbwlryQ9ZZvgc1WjZAavj1J4KbUaaJPluZorOLzIEM12fOy19bKP56mdaITAt7jDZ5XYKg/exec";
         const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_I2uy6FQjd-5eE2p1UuhQTde2lEbokpAquACyutg8kBDi/exec";
         const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
         const URL_IKLIM = "https://script.google.com/macros/s/AKfycbxyPG7e8EqK6_bc09kqITIpqtrWL45jyQs2TtUuT8KySwnvII_ZyHAcyDI1F8uA7H6A/exec";
-        
-        const URL_DATABASE_PUPUK = "https://script.google.com/macros/s/AKfycbzsx9osMY8lU8GKewA3k7z0YBwPkrQB8sk71HaLVdctLzR1qDJIlHHcIbgbm9fpn8uh/exec";
+        const URL_PUPUK = "https://script.google.com/macros/s/AKfycbx-0Uq-3fWi3ViiP1iOCcZsNDzaodcF9F8IUOSDaYoZvdbXYxHLuFBttFXGTsFQ0ic/exec";
 
         const kamusTanah = {
             "alluvial": { "nama": "Tanah Alluvial", "penjelasan": "Tanah yang terbentuk dari endapan material sedimen (lumpur, pasir, kerikil) yang terbawa aliran sungai. Ditemukan di dataran rendah atau delta. Sangat subur dan kaya unsur hara.", "pH": "6.0 - 7.0", "organik": "Sedang", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Padi, Jagung, Sayuran", "saran": "Ideal untuk Padi. Jaga sirkulasi air agar mineral tetap terjaga." },
@@ -653,7 +672,7 @@
             "red": { "nama": "Tanah Merah", "penjelasan": "Tanah yang mengalami pelapukan lanjut and pencucian hara. Warna merah berasal dari kandungan besi oksida yang tinggi. Teksturnya remah namun miskin akan hara organik.", "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Singkong, Karet", "saran": "Beri pupuk Fosfat (SP-36) dosis ekstra & pupuk kandang untuk memperbaiki kesuburan." },
             "sandy": { "nama": "Tanah Berpasir", "penjelasan": "Tanah dengan partikel kasar yang tidak dapat menahan air dan unsur hara dengan baik. Teksturnya remah dan sangat mudah diolah, namun sangat cepat kering di musim kemarau.", "pH": "5.5 - 7.0", "organik": "Rendah", "npk": "Rendah", "subur": "Rendah", "tanaman": "Kelapa, Semangka", "saran": "Wajib tambah kompos/pupuk kandang tiap musim untuk meningkatkan daya ikat air tanah." },
             "sandy_loam": { "nama": "Lempung Berpasir", "penjelasan": "Tanah dengan campuran pasir (50-70%) and liat/debu (30-50%). Tekstur lebih padat dari pasir murni, mampu menahan air dan hara lebih baik, namun tetap cepat kering dan mudah diolah.", "pH": "5.0 - 7.5", "organik": "Sedang-Rendah", "npk": "Sedang", "subur": "Sedang", "tanaman": "Jagung, Kacang Tanah, Ubi Kayu, Cabe", "saran": "Tambahkan pupuk organik 10-20 ton/ha per musim, irigasi teratur, serta mulsa untuk mengurangi evaporasi." },
-            "yellow": { "nama": "Tanah Kuning", "penjelasan": "Tanah yang mirip dengan tanah merah namun memiliki hidrasi mineral besi yang berbeda. Biasanya terbentuk di lingkungan yang lebih lembap namun tetap memiliki tingkat kesuburan yang rendah.", "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Ubi Kayu, Karet", "saran": "Pakai mulsa agar tanah tidak cepat mengeras and tererosi saat hujan lebat." },
+            "yellow": { "nama": "Tanah Kuning", "penjelasan": "Tanah yang mirip dengan tanah merah namun memiliki hidrasi mineral besi yang berbeda. Biasanya terbentuk di lingkungan yang lebih lembap namun tetap memiliki tingkat kesuburan yang rendah.", "pH": "4.5 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Ubi Kayu, Karet", "saran": "Pakai mulsa agar tanah tidak cepat mengeras dan tererosi saat hujan lebat." },
             "unlabeled": { "nama": "Objek Tidak Dikenali", "penjelasan": "AI tidak dapat memastikan jenis tanah karena foto kurang jelas atau terhalang benda lain.", "saran": "Ambil foto kembali dengan cahaya terang. Pastikan tanah bersih dari sampah plastik atau daun kering." }
         };
 
@@ -732,84 +751,86 @@
             if (metode === 'custom') { customBox.style.display = 'block'; } else { customBox.style.display = 'none'; }
         }
 
+        // 💡 Diperbarui untuk mendukung penamaan dan pewarnaan tab menu HAMA baru Anda
         function switchMode(mode) {
-            currentMode = mode;
-            let color = '#4fc3f7'; 
-            let title = 'Cuaca & Risiko Penyakit Tanaman';
-            let sub = '';
-            const subEl = document.getElementById('tabSubtitleDisplay');
+    currentMode = mode;
+    let color = '#4fc3f7'; 
+    let title = 'Cuaca & Risiko Penyakit Tanaman';
+    let sub = '';
+    const subEl = document.getElementById('tabSubtitleDisplay');
 
-            if (mode === 'daun') { color = '#ff4a5a'; title = 'Deteksi Penyakit Padi'; }
-            if (mode === 'hama') { color = 'var(--accent-hama)'; title = 'Pendeteksi & Solusi Hama Padi'; } 
-            if (mode === 'gulma') { color = '#0ea5e9'; title = 'Identifikasi & Solusi Gulma'; }
-            if (mode === 'tanah') { color = '#d19b08'; title = 'Analisis Jenis Tanah'; }
-            if (mode === 'bwd') { color = '#00ff9d'; title = 'Analisis Warna Daun (BWD)'; }
-            if (mode === 'malai') { color = '#ffcc00'; title = 'Estimasi Panen - Ambil 3 foto malai'; }
-            if (mode === 'biaya') { color = '#b388ff'; title = '📱 Analisis Usaha Tani'; sub = 'Menghitung Kebutuhan, Keuntungan dan Perencanaan'; }
-            if (mode === 'cuaca') { color = '#4fc3f7'; title = 'Satelit Cuaca & Risiko'; sub = 'Data Spasial Iklim'; }
-            if (mode === 'report') { color = 'var(--accent-green)'; title = 'Kalkulator Pupuk'; sub = 'Sesuai Rekomendasi ERDKK Nasional'; }
+    if (mode === 'daun') { color = '#ff4a5a'; title = 'Deteksi Penyakit Padi'; }
+    if (mode === 'hama') { color = 'var(--accent-hama)'; title = 'Pendeteksi & Solusi Hama Padi'; } 
+    if (mode === 'gulma') { color = '#0ea5e9'; title = 'Identifikasi & Solusi Gulma'; }
+    if (mode === 'tanah') { color = '#d19b08'; title = 'Analisis Jenis Tanah'; }
+    if (mode === 'bwd') { color = '#00ff9d'; title = 'Analisis Warna Daun (BWD)'; }
+    if (mode === 'malai') { color = '#ffcc00'; title = 'Estimasi Panen - Ambil 3 foto malai'; }
+    if (mode === 'biaya') { color = '#b388ff'; title = '📱 Analisis Usaha Tani'; sub = 'Menghitung Kebutuhan, Keuntungan dan Perencanaan'; }
+    // Judul & warna menu pupuk baru
+    if (mode === 'pupuk') { color = 'var(--accent-pupuk)'; title = '🧮 Kalkulator Pupuk E-RDKK'; sub = 'Rekomendasi Dosis Berdasarkan Wilayah Nasional'; }
 
-            if (sub !== '') { subEl.innerText = sub; subEl.style.display = 'block'; } else { subEl.style.display = 'none'; }
+    if (sub !== '') { subEl.innerText = sub; subEl.style.display = 'block'; } else { subEl.style.display = 'none'; }
 
-            if (mode !== 'malai') {
-                hasilSampelBulir = [];
-                const listM = document.getElementById('listMalai');
-                if (listM) listM.innerHTML = "";
-            }
+    if (mode !== 'malai') {
+        hasilSampelBulir = [];
+        const listM = document.getElementById('listMalai');
+        if (listM) listM.innerHTML = "";
+    }
 
-            document.getElementById('tabCuaca').className = mode === 'cuaca' ? 'tab-btn active' : 'tab-btn';
-            document.getElementById('tabBiaya').className = mode === 'biaya' ? 'tab-btn active biaya-mode' : 'tab-btn';
-            document.getElementById('tabDaun').className = mode === 'daun' ? 'tab-btn active daun-mode' : 'tab-btn';
-            document.getElementById('tabHama').className = mode === 'hama' ? 'tab-btn active hama-mode' : 'tab-btn'; 
-            document.getElementById('tabGulma').className = mode === 'gulma' ? 'tab-btn active gulma-mode' : 'tab-btn';
-            document.getElementById('tabTanah').className = mode === 'tanah' ? 'tab-btn active soil-mode' : 'tab-btn';
-            document.getElementById('tabBWD').className = mode === 'bwd' ? 'tab-btn active bwd-mode' : 'tab-btn';
-            document.getElementById('tabMalai').className = mode === 'malai' ? 'tab-btn active malai-mode' : 'tab-btn';
-            document.getElementById('tabReport').className = mode === 'report' ? 'tab-btn active report-mode' : 'tab-btn';
+    // Atur Class Active Tombol Navigasi
+    document.getElementById('tabCuaca').className = mode === 'cuaca' ? 'tab-btn active' : 'tab-btn';
+    document.getElementById('tabBiaya').className = mode === 'biaya' ? 'tab-btn active biaya-mode' : 'tab-btn';
+    document.getElementById('tabPupuk').className = mode === 'pupuk' ? 'tab-btn active pupuk-mode' : 'tab-btn'; // Tambahan untuk pupuk
+    document.getElementById('tabDaun').className = mode === 'daun' ? 'tab-btn active daun-mode' : 'tab-btn';
+    document.getElementById('tabHama').className = mode === 'hama' ? 'tab-btn active hama-mode' : 'tab-btn'; 
+    document.getElementById('tabGulma').className = mode === 'gulma' ? 'tab-btn active gulma-mode' : 'tab-btn';
+    document.getElementById('tabTanah').className = mode === 'tanah' ? 'tab-btn active soil-mode' : 'tab-btn';
+    document.getElementById('tabBWD').className = mode === 'bwd' ? 'tab-btn active bwd-mode' : 'tab-btn';
+    document.getElementById('tabMalai').className = mode === 'malai' ? 'tab-btn active malai-mode' : 'tab-btn';
 
-            document.getElementById('modeTitle').innerText = title;
-            document.getElementById('modeTitle').style.color = color;
-            document.getElementById('laser').style.background = color;
+    document.getElementById('modeTitle').innerText = title;
+    document.getElementById('modeTitle').style.color = color;
+    document.getElementById('laser').style.background = color;
 
-            document.getElementById('boxKalkulatorPupuk').style.display = mode === 'report' ? 'block' : 'none';
-            document.getElementById('boxPenyakit').style.display = mode === 'daun' ? 'block' : 'none';
-            document.getElementById('boxHama').style.display = mode === 'hama' ? 'block' : 'none'; 
-            document.getElementById('boxGulma').style.display = mode === 'gulma' ? 'block' : 'none';
-            document.getElementById('boxTanah').style.display = mode === 'tanah' ? 'block' : 'none';
-            document.getElementById('boxBWD').style.display = mode === 'bwd' ? 'block' : 'none';
-            document.getElementById('boxCuaca').style.display = mode === 'cuaca' ? 'block' : 'none';
-            document.getElementById('boxMalai').style.display = mode === 'malai' ? 'block' : 'none';
-            document.getElementById('boxBiayaTani').style.display = mode === 'biaya' ? 'block' : 'none';
-             
-            document.getElementById('formParameterLahan').style.display = mode === 'malai' ? 'block' : 'none';
+    // Kontrol Visibilitas Box Kontainer Menu
+    document.getElementById('boxPenyakit').style.display = mode === 'daun' ? 'block' : 'none';
+    document.getElementById('boxHama').style.display = mode === 'hama' ? 'block' : 'none'; 
+    document.getElementById('boxGulma').style.display = mode === 'gulma' ? 'block' : 'none';
+    document.getElementById('boxTanah').style.display = mode === 'tanah' ? 'block' : 'none';
+    document.getElementById('boxBWD').style.display = mode === 'bwd' ? 'block' : 'none';
+    document.getElementById('boxCuaca').style.display = mode === 'cuaca' ? 'block' : 'none';
+    document.getElementById('boxMalai').style.display = mode === 'malai' ? 'block' : 'none';
+    document.getElementById('boxBiayaTani').style.display = mode === 'biaya' ? 'block' : 'none';
+    document.getElementById('boxKalkulatorPupuk').style.display = mode === 'pupuk' ? 'block' : 'none'; // Tambahan untuk pupuk
+     
+    document.getElementById('formParameterLahan').style.display = mode === 'malai' ? 'block' : 'none';
 
-            const needsCamera = ['daun', 'hama', 'gulma', 'tanah', 'bwd', 'malai'].includes(mode);
-            if (mode === 'cuaca') {
-                document.getElementById('btnCamera').style.display = 'none';
-                document.getElementById('scanWindow').style.display = 'none';
-                document.getElementById('btnAnalisis').style.display = 'none';
-                document.getElementById('result').style.display = 'block';
-                if (isGpsSynced) {
-                    document.getElementById('gpsPrompt').style.display = 'none';
-                    document.getElementById('weatherData').style.display = 'block';
-                } else {
-                    document.getElementById('gpsPrompt').style.display = 'block';
-                    document.getElementById('weatherData').style.display = 'none';
-                }
-            } else if (mode === 'biaya' || mode === 'report') {
-                document.getElementById('btnCamera').style.display = 'none';
-                document.getElementById('scanWindow').style.display = 'none';
-                document.getElementById('btnAnalisis').style.display = 'none';
-                document.getElementById('result').style.display = 'none';
-                document.getElementById('gpsPrompt').style.display = 'none';
-            } else {
-                document.getElementById('btnCamera').style.display = 'block';
-                document.getElementById('scanWindow').style.display = 'flex';
-                document.getElementById('gpsPrompt').style.display = 'none';
-                document.getElementById('result').style.display = 'none';
-                document.getElementById('btnAnalisis').style.display = base64Image !== "" ? 'block' : 'none';
-            }
+    // Manajemen Tombol Kamera Utama Dashboard
+    // === PERBAIKI BLOK INI DI DALAM switchMode() ===
+    if (mode === 'cuaca' || mode === 'biaya' || mode === 'pupuk') {
+        document.getElementById('btnCamera').style.display = 'none';
+        document.getElementById('scanWindow').style.display = 'none';
+        document.getElementById('btnAnalisis').style.display = 'none';
+        
+        // Mode cuaca menampilkan hasil parameter, mode lain menyembunyikannya
+        document.getElementById('result').style.display = mode === 'cuaca' ? 'block' : 'none';
+        document.getElementById('resConf').style.display = mode === 'cuaca' ? 'none' : 'block';
+        
+        // 💡 PERBAIKAN: Jika GPS belum sinkron, tampilkan prompt GPS. Jika sudah, sembunyikan.
+        if (mode === 'cuaca') {
+            document.getElementById('gpsPrompt').style.display = isGpsSynced ? 'none' : 'block';
+            document.getElementById('weatherData').style.display = isGpsSynced ? 'block' : 'none';
+        } else {
+            document.getElementById('gpsPrompt').style.display = 'none';
         }
+    } else {
+        document.getElementById('btnCamera').style.display = 'block';
+        document.getElementById('scanWindow').style.display = 'flex';
+        document.getElementById('gpsPrompt').style.display = 'none';
+        document.getElementById('result').style.display = 'none';
+        document.getElementById('btnAnalisis').style.display = base64Image !== "" ? 'block' : 'none';
+    }
+}
 
         function handleFile(event) {
             const file = event.target.files[0];
@@ -879,7 +900,7 @@
                 } catch (e) { document.getElementById('alamatDesa').innerText = "Satelit Cuaca Aktif (Alamat Teks Batas Waktu)"; }
 
                 const urlArchive = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&past_days=30&daily=precipitation_sum&timezone=auto`;
-                const urlForecast = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}/current=rain,temperature_2m,relative_humidity_2m,dew_point_2m,wind_speed_10m,wind_direction_10m,surface_pressure&hourly=precipitation_probability,precipitation,temperature_850hPa,cape&timezone=auto`;
+                const urlForecast = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=rain,temperature_2m,relative_humidity_2m,dew_point_2m,wind_speed_10m,wind_direction_10m,surface_pressure&hourly=precipitation_probability,precipitation,temperature_850hPa,cape&timezone=auto`;
                 const [resA, resF] = await Promise.all([fetch(urlArchive), fetch(urlForecast)]);
                 const dataArchive = await resA.json(); const dataForecast = await resF.json();
                 
@@ -1024,6 +1045,7 @@
             document.getElementById('scanWindow').classList.add('is-scanning');
             document.getElementById('loader').style.display = 'block';
             try {
+                // 💡 Jalur pipa URL ditambahkan untuk currentMode === 'hama'
                 const urls = { daun: URL_DAUN, hama: URL_HAMA, gulma: URL_GULMA, tanah: URL_TANAH, bwd: URL_BWD, malai: URL_MALAI };
                 const res = await fetch(urls[currentMode], { method: 'POST', body: JSON.stringify({ image: base64Image }) });
                 const data = await res.json(); tampilkanHasil(data);
@@ -1045,6 +1067,7 @@
         }
 
         function tampilkanHasil(data) {
+            // JALUR ADAPTIF GULMA: Agar tidak sengaja menyaring objek outputs milik modul pendeteksi hama/penyakit
             let out = data;
             if (currentMode !== 'gulma') {
                 out = Array.isArray(data) ? data[0] : data;
@@ -1053,7 +1076,7 @@
 
             document.getElementById('result').style.display = 'block';
             document.getElementById('boxPenyakit').style.display = currentMode === 'daun' ? 'block' : 'none';
-            document.getElementById('boxHama').style.display = currentMode === 'hama' ? 'block' : 'none'; 
+            document.getElementById('boxHama').style.display = currentMode === 'hama' ? 'block' : 'none'; /* 💡 Kontrol Tampilan Box Hama */
             document.getElementById('boxGulma').style.display = currentMode === 'gulma' ? 'block' : 'none';
             document.getElementById('boxTanah').style.display = currentMode === 'tanah' ? 'block' : 'none';
             document.getElementById('boxBWD').style.display = currentMode === 'bwd' ? 'block' : 'none';
@@ -1061,6 +1084,9 @@
             
             let conf = 0;
 
+            // ==========================================
+            // LOGIKA TAB DAUN / PENYAKIT (UTUH - ASLI)
+            // ==========================================
             if (currentMode === 'daun') {
                 if (out.error) {
                     document.getElementById('resLabel').innerText = "Gagal Deteksi";
@@ -1080,19 +1106,28 @@
                     } else {
                         document.getElementById('resLabel').innerText = hasil.nama;
                     }
+
                     document.getElementById('resGejala').innerHTML = hasil.gejala;
+
                     let warnaKepaparan = hasil.tingkat_keparahan === "Sangat Tinggi" || hasil.tingkat_keparahan === "Tinggi" ? "var(--red-alert)" : "var(--accent-soil)";
-                    let keparahanText = hasil.tingkat_keparahan && hasil.tingkat_keparahan !== "-" ? `<span style="color: ${warnaKepaparan}; font-weight: 700;">[Risiko: ${hasil.tingkat_keparahan}]</span><br>` : "";
+                    let keparahanText = originalText = hasil.tingkat_keparahan && hasil.tingkat_keparahan !== "-" ? `<span style="color: ${warnaKepaparan}; font-weight: 700;">[Risiko: ${hasil.tingkat_keparahan}]</span><br>` : "";
                     document.getElementById('resPenyebab').innerHTML = keparahanText + (hasil.penyebab || "-");
+
                     document.getElementById('resSolusi').innerHTML = hasil.solusi;
                     document.getElementById('resMerek').innerHTML = hasil.merek || "-";
                     
                     let formatAplikasi = hasil.aplikasi ? hasil.aplikasi.replace(/\n/g, "<br>") : "-"; 
                     if (hasil.catatan && hasil.catatan !== "-" && hasil.catatan !== "") {
-                        document.getElementById('resAplikasi').innerHTML = `${formatAplikasi}<br><br><div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px; margin-top: 5px; color: #ff7675; font-size: 0.75rem;">💡 <b>Catatan Lapangan:</b> ${hasil.catatan}</div>`;
+                        document.getElementById('resAplikasi').innerHTML = `
+                            ${formatAplikasi}<br><br>
+                            <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px; margin-top: 5px; color: #ff7675; font-size: 0.75rem;">
+                                💡 <b>Catatan Lapangan:</b> ${hasil.catatan}
+                            </div>
+                        `;
                     } else {
                         document.getElementById('resAplikasi').innerHTML = formatAplikasi;
                     }
+
                     conf = (out.akurasi && parseFloat(out.akurasi) > 0) ? out.akurasi : "85.0";
                 } else {
                     document.getElementById('resLabel').innerText = "❌ Gagal Membaca Data Apps Script";
@@ -1100,6 +1135,9 @@
                     conf = 0;
                 }
             } 
+            // ==========================================
+            // 💡 LOGIKA TAB HAMA BARU (SINKRON MAPPER DATA)
+            // ==========================================
             else if (currentMode === 'hama') {
                 if (out.error) {
                     document.getElementById('resLabel').innerText = "Gagal Deteksi Hama";
@@ -1119,19 +1157,28 @@
                     } else {
                         document.getElementById('resLabel').innerText = hasilHama.nama;
                     }
+
                     document.getElementById('resGejalaHama').innerHTML = hasilHama.gejala || "-";
+
                     let warnaKepaparan = hasilHama.tingkat_keparahan === "Sangat Tinggi" || hasilHama.tingkat_keparahan === "Tinggi" ? "var(--red-alert)" : "var(--accent-soil)";
                     let keparahanText = hasilHama.tingkat_keparahan && hasilHama.tingkat_keparahan !== "-" ? `<span style="color: ${warnaKepaparan}; font-weight: 700;">[Status Ledakan: ${hasilHama.tingkat_keparahan}]</span><br>` : "";
                     document.getElementById('resPenyebabHama').innerHTML = keparahanText + (hasilHama.penyebab || "-");
+
                     document.getElementById('resSolusiHama').innerHTML = hasilHama.solusi || "-";
                     document.getElementById('resMerekHama').innerHTML = hasilHama.merek || "-";
                     
                     let formatAplikasi = hasilHama.aplikasi ? hasilHama.aplikasi.replace(/\n/g, "<br>") : "-";
                     if (hasilHama.catatan && hasilHama.catatan !== "-" && hasilHama.catatan !== "") {
-                        document.getElementById('resAplikasiHama').innerHTML = `${formatAplikasi}<br><br><div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px; margin-top: 5px; color: #ff7675; font-size: 0.75rem;">💡 <b>Rekomendasi:</b> ${hasilHama.catatan}</div>`;
+                        document.getElementById('resAplikasiHama').innerHTML = `
+                            ${formatAplikasi}<br><br>
+                            <div style="border-top: 1px dashed rgba(255,255,255,0.1); padding-top: 8px; margin-top: 5px; color: #ff7675; font-size: 0.75rem;">
+                                💡 <b>Rekomendasi:</b> ${hasilHama.catatan}
+                            </div>
+                        `;
                     } else {
                         document.getElementById('resAplikasiHama').innerHTML = formatAplikasi;
                     }
+
                     conf = (out.akurasi && parseFloat(out.akurasi) > 0) ? out.akurasi : "80.0";
                 } else {
                     document.getElementById('resLabel').innerText = "Objek Tidak Dikenali";
@@ -1139,7 +1186,18 @@
                     conf = 0;
                 }
             }
+            // ==========================================
+            // LOGIKA TAB GULMA (ASLI)
+            // ==========================================
             else if (currentMode === 'gulma') {
+                if (out.error) {
+                    document.getElementById('resLabel').innerText = "Gagal Identifikasi";
+                    document.getElementById('containerListGulma').innerHTML = `<div class="info-box" style="border-left-color: var(--red-alert);"><strong>⚠️ Error:</strong><br>${out.error}</div>`;
+                    conf = 0;
+                    document.getElementById('resConf').innerText = `Tingkat Keyakinan: ${conf}%`;
+                    return;
+                }
+
                 const container = document.getElementById('containerListGulma');
                 container.innerHTML = ""; 
 
@@ -1196,6 +1254,7 @@
 
                 gulmaUnik.forEach((gulma, index) => {
                     let boxColor = gulma.detail.karakteristik.includes("Sempit") ? "var(--accent-soil)" : (gulma.detail.karakteristik.includes("Teki") ? "var(--red-alert)" : "#0ea5e9");
+                    
                     container.innerHTML += `
                         <div style="margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.08); padding: 16px; border-radius: 18px; background: rgba(22, 30, 49, 0.4);">
                             <div style="font-size: 0.75rem; color: var(--accent-green); font-weight: 800; margin-bottom: 10px; letter-spacing: 0.5px;">
@@ -1213,9 +1272,13 @@
                             <div class="info-box" style="border-left-color: #b388ff;">
                                 <strong>🔬 Pengendalian Chemical (Rekomendasi):</strong><br>${gulma.detail.kimiawi}
                             </div>
-                        </div>`;
+                        </div>
+                    `;
                 });
             }
+            // ==========================================
+            // LOGIKA TAB TANAH (ASLI)
+            // ==========================================
             else if (currentMode === 'tanah') {
                 let foundBlock = null;
                 if (out.predictions && out.predictions.predicted_classes) { foundBlock = out.predictions; } 
@@ -1257,6 +1320,9 @@
                     document.getElementById('resSaranTanah').innerText = info.saran;
                 }
             } 
+            // ==========================================
+            // LOGIKA TAB UJI UREA / BWD (ASLI)
+            // ==========================================
             else if (currentMode === 'bwd') {
                 const bwdContainer = document.getElementById('boxBWD');
                 let listTempHTML = '';
@@ -1296,6 +1362,9 @@
                 let finalConfidence = (1 - akumulasiSalah) * 100; if (finalConfidence > 99.9) finalConfidence = 99.9;
                 conf = finalConfidence.toFixed(1);
             }
+            // ==========================================
+            // LOGIKA TAB PANEN / MALAI (ASLI)
+            // ==========================================
             else if (currentMode === 'malai') {
                 const listM = document.getElementById('listMalai'); let totalBulirFotoIni = out.count || 0; 
                 if (hasilSampelBulir.length < 3) { hasilSampelBulir.push(totalBulirFotoIni); }
@@ -1342,6 +1411,95 @@
             document.getElementById('resConf').innerText = `Tingkat Keyakinan: ${parseFloat(conf).toFixed(1)}%`;
         }
 
+// Fungsi hitung faktor pengali berdasarkan topografi wilayah sawah
+function hitungFaktorTopografi(lahan, nilai) {
+    if(lahan === "lembah") return nilai * 0.7;
+    if(lahan === "rawa") return nilai * 0.5;
+    return nilai; 
+}
+
+// Fungsi penambah hari untuk jadwal pemupukan
+function hitungFormasiTanggal(tgl, hari) {
+    let t = new Date(tgl);
+    t.setDate(t.getDate() + hari);
+    return t.toLocaleDateString("id-ID", { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// Fungsi inti kalkulator rekomendasi dosis pupuk
+function hitungRekomendasiPupuk() {
+    let kecInput = document.getElementById("kecInput").value;
+    let luas = parseFloat(document.getElementById("luasPupuk").value);
+    let lahan = document.getElementById("lahanTopografi").value;
+    let tanggal = document.getElementById("tanggalTanam").value;
+
+    const d = databasePupuk.find(r => `${r.kec} (${r.kab})` === kecInput);
+
+    if(!d || isNaN(luas) || !tanggal){ 
+        alert("Pilih kecamatan dari daftar & isi seluruh data dengan benar!"); 
+        return; 
+    }
+
+    let org = luas * hitungFaktorTopografi(lahan, d.o);
+    let u1 = luas * hitungFaktorTopografi(lahan, d.u * 0.57);
+    let u2 = luas * hitungFaktorTopografi(lahan, d.u * 0.43);
+    let p1 = luas * hitungFaktorTopografi(lahan, d.n * 0.4);
+    let p2 = luas * hitungFaktorTopografi(lahan, d.n * 0.3);
+    let p3 = luas * hitungFaktorTopografi(lahan, d.n * 0.3);
+
+    let totalU = u1 + u2;
+    let totalP = p1 + p2 + p3;
+    let t1 = hitungFormasiTanggal(tanggal, 7), t2 = hitungFormasiTanggal(tanggal, 30), t3 = hitungFormasiTanggal(tanggal, 40);
+
+    let hasilHTML = `
+        <div style="font-size: 1rem; font-weight:800; color:var(--accent-pupuk); margin-bottom:12px; text-align:center; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 8px;">
+            📋 HASIL REKOMENDASI DOSIS
+        </div>
+        <b>📍 Wilayah Binaan:</b> ${kecInput}<br>
+        <b>📐 Luas Hamparan:</b> ${luas} Ha<br><br>
+        
+        <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid var(--accent-soil)">
+            <b>📦 Pupuk Organik Dasar:</b><br>
+            Kebutuhan: <span style="color: #fff; font-weight:700;">${org.toFixed(0)} kg</span> (${sak(org)} Sak)
+        </div>
+
+        <b>⏱️ Jadwal Aplikasi di Lapangan:</b><br>
+        • <b>Tahap I (${t1}):</b> Urea: ${u1.toFixed(0)} kg | Phonska: ${p1.toFixed(0)} kg<br>
+        • <b>Tahap II (${t2}):</b> Urea: ${u2.toFixed(0)} kg | Phonska: ${p2.toFixed(0)} kg<br>
+        • <b>Tahap III (${t3}):</b> Phonska: ${p3.toFixed(0)} kg<br><br>
+        
+        <div style="background: #166534; padding: 12px; border-radius: 10px; border-left: 4px solid var(--accent-pupuk);">
+            <b>📊 REKAP TOTAL KEBUTUHAN:</b><br>
+            • <b>Urea (Subsidi):</b> ${totalU.toFixed(0)} kg (<span style="color:var(--accent-soil)">${sak(totalU)} sak</span>)<br>
+            • <b>Phonska (NPK):</b> ${totalP.toFixed(0)} kg (<span style="color:var(--accent-soil)">${sak(totalP)} sak</span>)
+        </div>`;
+
+    // Amankan string enkripsi untuk WhatsApp text generator
+    hasilTeksWA = `*SMART FARMING - BPP BOLA*\n*REKOMENDASI DOSIS PUPUK E-RDKK*\n\n` +
+                  `📍 Wilayah: ${kecInput}\n` +
+                  `📐 Luas Lahan: ${luas} Ha\n` +
+                  `📦 Organik: ${org.toFixed(0)} kg (${sak(org)} sak)\n\n` +
+                  `*Jadwal Pemupukan:*\n` +
+                  `1. Pemupukan I (${t1}): U: ${u1.toFixed(0)}kg, P: ${p1.toFixed(0)}kg\n` +
+                  `2. Pemupukan II (${t2}): U: ${u2.toFixed(0)}kg, P: ${p2.toFixed(0)}kg\n` +
+                  `3. Pemupukan III (${t3}): P: ${p3.toFixed(0)}kg\n\n` +
+                  `*REKAP TOTAL BERSIH:*\n` +
+                  `• Total Urea: ${totalU.toFixed(0)} kg (${sak(totalU)} sak)\n` +
+                  `• Total Phonska: ${totalP.toFixed(0)} kg (${sak(totalP)} sak)\n\n` +
+                  `_Diproduksi Otomatis oleh Sistem Aplikasi Penyuluh Milenial Wajo_`;
+
+    let div = document.getElementById("outputHasilPupuk");
+    div.style.display = "block";
+    div.innerHTML = hasilHTML;
+}
+
+// Fungsi pengiriman pesan WA
+function kirimHasilKeWhatsApp() {
+    if(!hasilTeksWA){ 
+        alert("Silakan isi data dan klik tombol HITUNG DOSIS terlebih dahulu!"); 
+        return; 
+    }
+    window.open("https://wa.me/?text=" + encodeURIComponent(hasilTeksWA));
+}
         function drawTriangle(label) {
             const canvas = document.getElementById('textureTriangle'); const ctx = canvas.getContext('2d'); ctx.clearRect(0, 0, canvas.width, canvas.height);
             const top = { x: 150, y: 45 }; const left = { x: 45, y: 215 }; const right = { x: 255, y: 215 };
@@ -1370,7 +1528,7 @@
             else if (labelLower.includes("peat") || labelLower.includes("black")) { dot = { x: 150, y: 140 }; }
 
             ctx.beginPath(); ctx.arc(dot.x, dot.y, 8, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255, 74, 90, 0.3)'; ctx.fill();
-            ctx.beginPath(); ctx.arc(dot.x, dot.y, 4, 0, Math.PI * 2); ctx.shadowBlur = 8; ctx.shadowColor = "#ff4a5a"; ctx.fillStyle = '#ff4a5a'; fill();
+            ctx.beginPath(); ctx.arc(dot.x, dot.y, 4, 0, Math.PI * 2); ctx.shadowBlur = 8; ctx.shadowColor = "#ff4a5a"; ctx.fillStyle = '#ff4a5a'; ctx.fill();
         }
 
         function formatRupiah(el){
@@ -1438,7 +1596,7 @@
             else if(rc < 4) status = "✅ Layak";
             else status = "🔥 Sangat Menguntungkan";
 
-           let htmlText = `
+           let html = `
             <div style="font-size: 1.1rem; font-weight:800; color:var(--accent-biaya); margin-bottom:12px; text-align:center;">📊 Hasil Analisis Usaha Tani</div>
 
             🌾 <b>Benih:</b> ${totalBenih.toFixed(1)} kg<br>
@@ -1494,40 +1652,12 @@
                 
                 🏷️ <b>BEP Harga jual minimal:</b> <span style="color:var(--text-main); font-weight:700;">${rupiah(bepHarga)} / Kg</span><br>
                 <small style="color:var(--text-muted); font-size:0.75rem; display:block;">(Gabah harus terjual minimal seharga di atas agar modal kembali)</small>
-            </div>`;
+            </div>
+            `;
 
             let out = document.getElementById("outputBiaya");
             out.style.display = "block";
-            out.innerHTML = htmlText;
-        }
-
-        // --- FUNGSI BARU: MENEMBAK DATABASE LANGSUNG KE DALAM IFRAME DASHBOARD (GAYA APLIKASI UTAMA ANDA) ---
-        function hitungDosisPupuk() {
-            const kec = document.getElementById('cariKecamatan').value.trim();
-            const luas = document.getElementById('luasLahanPupuk').value;
-            const topo = document.getElementById('topografiLahan').value;
-            const tgl = document.getElementById('tanggalTanam').value;
-            
-            const containerBox = document.getElementById('containerIframePupuk');
-            const targetIframe = document.getElementById('iframeHasilPupuk');
-
-            if (!kec) { alert("Masukkan nama kecamatan di Kabupaten Wajo!"); return; }
-            if (!luas || luas <= 0) { alert("Masukkan data luas lahan sawah (ha) terlebih dahulu!"); return; }
-
-            // Menggabungkan seluruh data inputan form sebagai parameter URL
-            const urlTujuan = `${URL_DATABASE_PUPUK}?kecamatan=${encodeURIComponent(kec)}&luas=${encodeURIComponent(luas)}&topografi=${encodeURIComponent(topo)}&tanggal=${encodeURIComponent(tgl)}`;
-            
-            // Set sumber dokumen Iframe dan munculkan kotaknya ke layar
-            targetIframe.src = urlTujuan;
-            containerBox.style.display = "block";
-        }
-
-        function kirimWhatsAppPupuk() {
-            const kec = document.getElementById('cariKecamatan').value || "-";
-            const luas = document.getElementById('luasLahanPupuk').value || "0";
-            const tgl = document.getElementById('tanggalTanam').value || "-";
-            const teks = `Kalkulator Pupuk Presisi E-RDKK Milenial\nKecamatan: ${kec}\nLuas Lahan: ${luas} Ha\nTanggal Tanam: ${tgl}\n\nDosis perhitungan berimbang siap diaplikasikan ke lapangan.`;
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(teks)}`, '_blank');
+            out.innerHTML = html;
         }
 
         switchMode('cuaca');
