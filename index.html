@@ -586,7 +586,7 @@
                 </div>
             </div>
 
-            <div id="boxCuaca" style="display:none; text-align: center;">
+          <div id="boxCuaca" style="display:none; text-align: center;">
                 <div id="gpsPrompt" style="padding: 15px 5px;">
                     <div style="font-size: 2.5rem; margin-bottom: 12px;">🛰️</div>
                     <h4 style="margin: 0; color: var(--text-main); font-size: 1.1rem; font-weight: 700;">Akses Lokasi / Lahan Sawah</h4>
@@ -602,46 +602,45 @@
                         <span id="lokasiSawah" style="font-size: 0.8rem; opacity: 0.6; font-weight: 600;">-</span><br>
                         <span id="alamatDesa" style="color: var(--accent-green); font-weight: 700; font-size: 0.9rem; display: inline-block; margin-top: 4px;">Mencari alamat...</span>
                     </div>
-<div id="prediksiHujan" class="info-box" style="border-left-color: var(--accent-soil); background: rgba(255, 215, 0, 0.02); display: none;">
+
+                    <div id="prediksiHujan" class="info-box" style="border-left-color: var(--accent-soil); background: rgba(255, 215, 0, 0.02); display: none;">
                         <strong>🔮 Prediksi Atmosfer (1 Jam Kedepan)</strong><br>
                         <span id="hujanNext">-</span>
                     </div>
+
                     <div class="forecast-title">🕒 Prakiraan Cuaca Per Jam</div>
-                    <div class="hourly-scroll" id="hourlyForecastContainer">
-                        </div>
+                    <div class="hourly-scroll" id="hourlyForecastContainer"></div>
 
                     <div class="forecast-title">📅 Prakiraan 7 Hari Kedepan</div>
-                    <div class="daily-list" id="dailyForecastContainer">
+                    <div class="daily-list" id="dailyForecastContainer"></div>
+                     
+                    <div id="ensoIodBox" style="display: block; margin-top: 16px;">
+                        <div class="info-box" style="border-left-color: #ff4a5a; background: rgba(255,255,255,0.01); padding: 16px;">
+                            <strong style="display: block; margin-bottom: 12px;">📈 Proyeksi Indeks Iklim Makro (3 Bulan Ke Depan)</strong>
+                            <div style="position: relative; width: 100%; height: 180px;">
+                                <canvas id="macroClimateChart"></canvas>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; text-align: center;">
+                                <span style="color:#ff4a5a;">■</span> ENSO Anomali (°C) | 
+                                <span style="color:#ffcc00;">■</span> IOD Anomali (°C)
+                            </div>
                         </div>
-                     
-                  <div id="ensoIodBox" style="display: block; margin-top: 16px;">
-    <div class="info-box" style="border-left-color: #ff4a5a; background: rgba(255,255,255,0.01); padding: 16px; margin-bottom: 16px;">
-        <strong style="display: block; margin-bottom: 12px;">📈 Proyeksi Indeks Iklim Makro (3 Bulan Ke Depan)</strong>
-        <div style="position: relative; width: 100%; height: 180px;">
-            <canvas id="macroClimateChart"></canvas>
-        </div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; text-align: center;">
-            <span style="color:#ff4a5a;">■</span> ENSO Anomali (°C) | 
-            <span style="color:#ffcc00;">■</span> IOD Anomali (°C)
-        </div>
-    </div>
-</div>
+                    </div>
 
-<div id="localSstBox" style="display: block;">
-    <div class="info-box" style="border-left-color: #38b6ff; background: rgba(255,255,255,0.01); padding: 16px;">
-        <strong style="display: block; margin-bottom: 12px;">🌊 Proyeksi Suhu Permukaan Laut Lokal (3 Bulan Ke Depan)</strong>
-        <div style="position: relative; width: 100%; height: 180px;">
-            <canvas id="localSstChart"></canvas>
-        </div>
-        <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; text-align: center;">
-            <span style="color:#00ff9d;">■</span> Sst Teluk Bone (°C) | 
-            <span style="color:#38b6ff;">■</span> Sst Selat Makassar (°C)
-        </div>
-    </div>
-</div>
+                    <div id="localSstBox" style="display: block; margin-top: 16px;">
+                        <div class="info-box" style="border-left-color: #38b6ff; background: rgba(255,255,255,0.01); padding: 16px;">
+                            <strong style="display: block; margin-bottom: 12px;">🌊 Proyeksi Suhu Permukaan Laut Lokal (3 Bulan Ke Depan)</strong>
+                            <div style="position: relative; width: 100%; height: 180px;">
+                                <canvas id="localSstChart"></canvas>
+                            </div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 10px; text-align: center;">
+                                <span style="color:#00ff9d;">■</span> Sst Teluk Bone (°C) | 
+                                <span style="color:#38b6ff;">■</span> Sst Selat Makassar (°C)
+                            </div>
+                        </div>
+                    </div>
                     
-                     
-                    <div class="info-box" style="border-left-color: var(--accent-green); padding: 16px;">
+                    <div class="info-box" style="border-left-color: var(--accent-green); padding: 16px; margin-top: 16px;">
                         <strong>📊 Real-Time Parameter Lahan (Satelit)</strong>
                         <table style="width: 100%; margin-top: 8px; border: none;">
                             <tr>
@@ -698,12 +697,9 @@
                         <strong>⚠️ Risiko Penyakit Tanaman (Blast)</strong><br>
                         <span id="riskResult" style="display: block; margin-top: 4px;"></span>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div style="margin-bottom: 80px;"></div>
+                </div> </div> </div> 
+                
+                <div style="margin-bottom: 80px;"></div>
 
     <footer class="fixed-footer">
         <div>© 2026 Dibuat oleh: <strong>King Mamank</strong> • PPL BPP Bola - Kab. Wajo - Sulsel</div>
