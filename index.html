@@ -1078,21 +1078,27 @@ function getFormatTanggal(selisihHari) {
 
         // Nominatim
         try {
-            const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`, {
-                headers: { 'User-Agent': 'SmartFarming-PPLWajo/1.0' }
-            });
-            if (geoRes.ok) {
-                const geoData = await geoRes.json(); 
-                const addr = geoData.address;
-                const desa = addr.village || addr.suburb || addr.hamlet || addr.neighborhood || addr.town || addr.municipality || "Pesisir/Luar Desa";
-                const kecamatan = addr.subdistrict || addr.city_district || addr.district || addr.county || "";
-                document.getElementById('alamatDesa').innerHTML = `<b>Desa ${desa}</b>, Kec. ${kecamatan}`;
-            } else { 
-                document.getElementById('alamatDesa').innerText = "Koordinat luar batas server alamat"; 
-            }
-        } catch (e) { 
-            document.getElementById('alamatDesa').innerText = "Satelit Cuaca Aktif"; 
-        }
+    const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`, {
+        headers: { 'User-Agent': 'SmartFarming-PPLWajo/1.0' }
+    });
+    if (geoRes.ok) {
+        const geoData = await geoRes.json(); 
+        const addr = geoData.address;
+        
+        // Mengambil Desa/Kelurahan
+        const desa = addr.village || addr.suburb || addr.hamlet || addr.neighborhood || addr.town || "Pesisir/Luar Desa";
+        
+        // Mengambil Kabupaten (biasanya tersimpan di county atau city)
+        const kabupaten = addr.county || addr.city || addr.municipality || "Wajo";
+        
+        // Menampilkan Desa dan Kabupaten
+        document.getElementById('alamatDesa').innerHTML = `<b>${desa}</b>, Kab. ${kabupaten}`;
+    } else { 
+        document.getElementById('alamatDesa').innerText = "Koordinat luar batas server alamat"; 
+    }
+} catch (e) { 
+    document.getElementById('alamatDesa').innerText = "Satelit Cuaca Aktif"; 
+}
 
         // API Calls
         const urlArchive = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat}&longitude=${lon}&start_date=${getFormatTanggal(30)}&end_date=${getFormatTanggal(1)}&daily=precipitation_sum&timezone=auto`;
