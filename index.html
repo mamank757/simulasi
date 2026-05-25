@@ -201,7 +201,7 @@
             box-shadow: none;
         }
         .btn-camera:active { background: rgba(255, 255, 255, 0.12); }
-          
+         
         .btn-biaya {
             background: linear-gradient(135deg, #651fff, var(--accent-biaya));
             color: white;
@@ -232,7 +232,7 @@
             background: #050811;
         }
         #preview { width: 100%; border-radius: 18px; display: none; }
-          
+         
         .laser-line {
             display: none; 
             position: absolute; 
@@ -256,7 +256,7 @@
             line-height: 1.5;
         }
         .info-box strong { color: #ffffff; display: inline-block; margin-bottom: 4px; font-weight: 600;}
-          
+         
         .leaf-card {
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid var(--card-border);
@@ -301,10 +301,28 @@
         .recommendation-box { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-top: 16px; }
         .vote-summary { font-size: 0.8rem; color: var(--accent-soil); margin-bottom: 10px; font-weight: 700; }
         .malai-counter-box { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 500; }
-          
+         
         .error { color: #ff5252; font-size: 12px; display: none; margin-top: -10px; margin-bottom: 10px; }
         .highlight { color: #81c784; font-weight: bold; }
         .big { font-size: 18px; font-weight: bold; }
+
+        /* AREA BINGKAI IFRAME BARU BERGAYA FUTURISTIK GLASSMORPHISM */
+        .iframe-container {
+            width: 100%;
+            height: 380px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid var(--card-border);
+            margin-top: 20px;
+            background: #0d1424;
+            display: none;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.6);
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
 
         footer.fixed-footer {
             position: fixed;
@@ -368,7 +386,10 @@
             </div>
             <button class="btn-main" id="btnHitungPupuk" onclick="hitungDosisPupuk()">Hitung Dosis</button>
             <button class="btn-main btn-whatsapp" onclick="kirimWhatsAppPupuk()">Kirim WhatsApp</button>
-            <div class="info-box" id="outputDosisPupuk" style="display:none; border-left-color: var(--accent-green);"></div>
+            
+            <div class="iframe-container" id="containerIframePupuk">
+                <iframe id="iframeHasilPupuk" src=""></iframe>
+            </div>
         </div>
 
         <div id="formParameterLahan" class="form-lahan" style="display: none;">
@@ -1100,7 +1121,7 @@
                     }
                     document.getElementById('resGejalaHama').innerHTML = hasilHama.gejala || "-";
                     let warnaKepaparan = hasilHama.tingkat_keparahan === "Sangat Tinggi" || hasilHama.tingkat_keparahan === "Tinggi" ? "var(--red-alert)" : "var(--accent-soil)";
-                    let keparahanText = html.tingkat_keparahan && hasilHama.tingkat_keparahan !== "-" ? `<span style="color: ${warnaKepaparan}; font-weight: 700;">[Status Ledakan: ${hasilHama.tingkat_keparahan}]</span><br>` : "";
+                    let keparahanText = hasilHama.tingkat_keparahan && hasilHama.tingkat_keparahan !== "-" ? `<span style="color: ${warnaKepaparan}; font-weight: 700;">[Status Ledakan: ${hasilHama.tingkat_keparahan}]</span><br>` : "";
                     document.getElementById('resPenyebabHama').innerHTML = keparahanText + (hasilHama.penyebab || "-");
                     document.getElementById('resSolusiHama').innerHTML = hasilHama.solusi || "-";
                     document.getElementById('resMerekHama').innerHTML = hasilHama.merek || "-";
@@ -1349,7 +1370,7 @@
             else if (labelLower.includes("peat") || labelLower.includes("black")) { dot = { x: 150, y: 140 }; }
 
             ctx.beginPath(); ctx.arc(dot.x, dot.y, 8, 0, Math.PI * 2); ctx.fillStyle = 'rgba(255, 74, 90, 0.3)'; ctx.fill();
-            ctx.beginPath(); ctx.arc(dot.x, dot.y, 4, 0, Math.PI * 2); ctx.shadowBlur = 8; ctx.shadowColor = "#ff4a5a"; ctx.fillStyle = '#ff4a5a'; ctx.fill();
+            ctx.beginPath(); ctx.arc(dot.x, dot.y, 4, 0, Math.PI * 2); ctx.shadowBlur = 8; ctx.shadowColor = "#ff4a5a"; ctx.fillStyle = '#ff4a5a'; fill();
         }
 
         function formatRupiah(el){
@@ -1417,7 +1438,7 @@
             else if(rc < 4) status = "✅ Layak";
             else status = "🔥 Sangat Menguntungkan";
 
-           let html = `
+           let htmlText = `
             <div style="font-size: 1.1rem; font-weight:800; color:var(--accent-biaya); margin-bottom:12px; text-align:center;">📊 Hasil Analisis Usaha Tani</div>
 
             🌾 <b>Benih:</b> ${totalBenih.toFixed(1)} kg<br>
@@ -1477,80 +1498,28 @@
 
             let out = document.getElementById("outputBiaya");
             out.style.display = "block";
-            out.innerHTML = html;
+            out.innerHTML = htmlText;
         }
 
-        async function hitungDosisPupuk() {
+        // --- FUNGSI BARU: MENEMBAK DATABASE LANGSUNG KE DALAM IFRAME DASHBOARD (GAYA APLIKASI UTAMA ANDA) ---
+        function hitungDosisPupuk() {
             const kec = document.getElementById('cariKecamatan').value.trim();
-            const luas = parseFloat(document.getElementById('luasLahanPupuk').value) || 0;
+            const luas = document.getElementById('luasLahanPupuk').value;
             const topo = document.getElementById('topografiLahan').value;
             const tgl = document.getElementById('tanggalTanam').value;
-            const output = document.getElementById('outputDosisPupuk');
-            const btn = document.getElementById('btnHitungPupuk');
+            
+            const containerBox = document.getElementById('containerIframePupuk');
+            const targetIframe = document.getElementById('iframeHasilPupuk');
 
             if (!kec) { alert("Masukkan nama kecamatan di Kabupaten Wajo!"); return; }
-            if (luas <= 0 || isNaN(luas)) { alert("Masukkan data luas lahan sawah (ha) terlebih dahulu!"); return; }
+            if (!luas || luas <= 0) { alert("Masukkan data luas lahan sawah (ha) terlebih dahulu!"); return; }
 
-            try {
-                btn.innerText = "⏳ MENYINGKRONKAN DATABASE...";
-                btn.disabled = true;
-
-                const queryParams = new URLSearchParams({
-                    action: "getDosis",
-                    kecamatan: kec,
-                    luasLahan: luas,
-                    topografi: topo,
-                    tanggalTanam: tgl
-                });
-
-                const respon = await fetch(`${URL_DATABASE_PUPUK}?${queryParams.toString()}`, {
-                    method: 'GET',
-                    mode: 'cors'
-                });
-
-                const dataServer = await respon.json();
-                output.style.display = "block";
-
-                if (dataServer && (dataServer.urea_per_ha || dataServer.urea) && (dataServer.npk_per_ha || dataServer.npk)) {
-                    const uPerHa = dataServer.urea_per_ha || dataServer.urea;
-                    const nPerHa = dataServer.npk_per_ha || dataServer.npk;
-                    
-                    const hasilUrea = luas * parseFloat(uPerHa);
-                    const hasilNPK = luas * parseFloat(nPerHa);
-                    
-                    output.innerHTML = `
-                        <strong>📊 Hasil Rekomendasi Alokasi E-RDKK Riil Server:</strong><br>
-                        📍 Wilayah Kecamatan: <b style="color:var(--accent-bwd);">${kec.toUpperCase()}</b><br>
-                        📐 Luas Hamparan Lahan: <b>${luas} Ha</b><br>
-                        <hr style="border:0; border-top:1px dashed rgba(255,255,255,0.1); margin:10px 0;">
-                        🧪 Alokasi Pupuk Urea Bersubsidi: <b style="color:var(--accent-green);">${hasilUrea.toFixed(0)} Kg</b> (± ${(hasilUrea/50).toFixed(1)} Sak)<br>
-                        🧪 Alokasi Pupuk NPK Phonska: <b style="color:var(--accent-green);">${hasilNPK.toFixed(0)} Kg</b> (± ${(hasilNPK/50).toFixed(1)} Sak)<br>
-                        <small style="color:var(--accent-soil); display:block; margin-top:6px;">*Sukses: Mengambil koefisien dosis asli daerah langsung dari Apps Script.</small>
-                    `;
-                } else {
-                    const fallbackUrea = luas * 175; const fallbackNPK = luas * 375;
-                    output.innerHTML = `
-                        <strong>⚠️ Format Respon Server Tidak Cocok / Kecamatan Kosong:</strong><br>
-                        Kecamatan <b>"${kec}"</b> tidak terdefinisi di database Apps Script Anda. Menggunakan dosis standar berimbang Kabupaten Wajo (Urea 175kg/Ha, NPK 375kg/Ha):<br><br>
-                        🧪 Alokasi Pupuk Urea: <b>${fallbackUrea.toFixed(0)} Kg</b> (± ${(fallbackUrea/50).toFixed(1)} Sak)<br>
-                        🧪 Alokasi Pupuk NPK Phonska: <b>${fallbackNPK.toFixed(0)} Kg</b> (± ${(fallbackNPK/50).toFixed(1)} Sak)
-                    `;
-                }
-            } catch (error) {
-                console.error(error);
-                const fallbackUrea = luas * 175; const fallbackNPK = luas * 375;
-                output.style.display = "block";
-                output.innerHTML = `
-                    <strong>📡 Koneksi REST API Database Dialihkan:</strong><br>
-                    <span style="color:var(--accent-soil)">Sistem menggunakan koefisien dosis rekomendasi berimbang Kabupaten Wajo</span> (Urea 175kg/Ha, NPK 375kg/Ha):<br><br>
-                    🧪 Alokasi Pupuk Urea: <b>${fallbackUrea.toFixed(0)} Kg</b> (± ${(fallbackUrea/50).toFixed(1)} Sak)<br>
-                    🧪 Alokasi Pupuk NPK Phonska: <b>${fallbackNPK.toFixed(0)} Kg</b> (± ${(fallbackNPK/50).toFixed(1)} Sak)<br>
-                    <small style="color:var(--red-alert); display:block; margin-top:5px;">💡 Tips PPL: Pastikan setelan Deploy Apps Script Anda diatur ke "Anyone" agar bisa diakses dari luar iframe.</small>
-                `;
-            } finally {
-                btn.innerText = "Hitung Dosis";
-                btn.disabled = false;
-            }
+            // Menggabungkan seluruh data inputan form sebagai parameter URL
+            const urlTujuan = `${URL_DATABASE_PUPUK}?kecamatan=${encodeURIComponent(kec)}&luas=${encodeURIComponent(luas)}&topografi=${encodeURIComponent(topo)}&tanggal=${encodeURIComponent(tgl)}`;
+            
+            // Set sumber dokumen Iframe dan munculkan kotaknya ke layar
+            targetIframe.src = urlTujuan;
+            containerBox.style.display = "block";
         }
 
         function kirimWhatsAppPupuk() {
