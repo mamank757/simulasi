@@ -642,6 +642,10 @@
         <canvas id="macroClimateChart"></canvas>
     </div>
 
+<div id="localWarningStatus" style="font-size: 0.85rem; margin-top: 10px; text-align: center; font-weight: 500; padding: 5px; border-radius: 6px; background: rgba(0,0,0,0.2);">
+    Menganalisis suhu laut lokal...
+</div>
+
     <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 15px; text-align: center; display: flex; justify-content: center; gap: 15px;">
         <span><span style="color:#ff4a5a;">■</span> ENSO (Pasifik)</span>
         <span><span style="color:#ffcc00;">■</span> IOD (Hindia)</span>
@@ -1388,6 +1392,26 @@ function getFormatTanggal(selisihHari) {
               ] 
             : ["28.7", "29.0", "28.8"]; // Fallback disesuaikan setelah koreksi
 
+// ... (setelah sstBoneTrend dan sstMksTrend dihitung)
+
+        // Logika Warning Lokal
+        const avgSstLokal = (parseFloat(sstBoneTrend[2]) + parseFloat(sstMksTrend[2])) / 2;
+        let statusLokal = "Suhu Laut Normal";
+        let warnaLokal = "#10b981"; // Hijau standar
+
+        if (avgSstLokal >= 30.0) {
+            statusLokal = "⚠️ PERINGATAN: Suhu Laut Lokal Tinggi!";
+            warnaLokal = "#f59e0b"; // Oranye/Amber
+        } else if (avgSstLokal >= 30.5) {
+            statusLokal = "🔥 BAHAYA: Marine Heatwave Lokal!";
+            warnaLokal = "#ef4444"; // Merah
+        }
+
+        const localWarningEl = document.getElementById('localWarningStatus');
+        if (localWarningEl) {
+            localWarningEl.innerHTML = `<span style="color:${warnaLokal}; font-weight:bold;">${statusLokal}</span>`;
+        }
+        
         renderSplitCharts(labelsMasaDepan, ensoAnomali, iodTrend, sstBoneTrend, sstMksTrend);    } catch (er) { 
         console.error("Gagal Render Iklim:", er);
         if (container) container.innerHTML = `<div class="info-box">⚠️ Gagal memuat data prediksi iklim.</div>`; 
