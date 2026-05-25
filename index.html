@@ -260,6 +260,7 @@
             border-left: 4px solid var(--accent-green); 
             font-size: 0.85rem;
             line-height: 1.5;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
         }
         .info-box strong { color: #ffffff; display: inline-block; margin-bottom: 4px; font-weight: 600;}
           
@@ -397,6 +398,26 @@
 #macroClimateChart {
     width: 100% !important;
     height: 100% !important;
+}
+/* Mengatur agar container input tetap memiliki background solid */
+#boxKalkulatorPupuk .form-input {
+    background: #161e31 !important; /* Warna sedikit lebih terang dari body */
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+}
+/* Styling agar background input saat daftar muncul tetap gelap dan teks terlihat */
+#kecInput {
+    background-color: #0d1424 !important;
+    color: #ffffff !important;
+    border: 1px solid var(--card-border) !important;
+    /* Memberikan sedikit padding agar teks tidak terlalu mepet kiri */
+    padding: 14px !important;
+}
+
+/* Trik untuk browser (terutama mobile) agar saat opsi muncul tidak terlalu transparan */
+datalist {
+    background-color: #161e31;
+    color: #ffffff;
 }
     </style>
 </head>
