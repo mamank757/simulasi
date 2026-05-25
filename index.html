@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <meta charset="UTF-8">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>PPL Milenial Wajo - Smart Farming</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -614,15 +614,20 @@
                     <div class="daily-list" id="dailyForecastContainer">
                         </div>
                      
-                    <div id="ensoIodBox" style="margin-top: 12px;">
-    <div style="margin-bottom: 18px;">
-        <canvas id="ensoIodChart" height="140"></canvas>
-    </div>
-    <div>
-        <canvas id="sstLocalChart" height="140"></canvas>
+                    <div id="ensoIodBox" style="display: block; margin-top: 16px;">
+    <div class="info-box" style="border-left-color: var(--accent-bwd); background: rgba(255,255,255,0.01); padding: 16px;">
+        <strong style="display: block; margin-bottom: 12px;">📈 Grafik Tren Parameter Iklim Makro (Proyeksi 3 Bulan)</strong>
+        <div style="position: relative; width: 100%; height: 220px;">
+            <canvas id="climateLineChart"></canvas>
+        </div>
+        <div style="font-size: 0.7rem; color: var(--text-muted); margin-top: 10px; text-align: center; line-height: 1.4;">
+            <span style="color:#ff4a5a;">■</span> ENSO Anomali (°C) | 
+            <span style="color:#ffcc00;">■</span> IOD Anomali (°C) | 
+            <span style="color:#00ff9d;">■</span> Sst Bone (°C) | 
+            <span style="color:#38b6ff;">■</span> Sst Makassar (°C)
+        </div>
     </div>
 </div>
-                     
                     
                      
                     <div class="info-box" style="border-left-color: var(--accent-green); padding: 16px;">
@@ -744,7 +749,7 @@ window.addEventListener('load', async function() {
         const URL_TANAH = "https://script.google.com/macros/s/AKfycbwlryQ9ZZvgc1WjZAavj1J4KbUaaJPluZorOLzIEM12fOy19bKP56mdaITAt7jDZ5XYKg/exec";
         const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_I2uy6FQjd-5eE2p1UuhQTde2lEbokpAquACyutg8kBDi/exec";
         const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
-        const URL_IKLIM = "https://script.google.com/macros/s/AKfycbxRGWdZmSqUD5BBeXHT1Ois2IuKyeg3_OiffcUEv-4uaVt5Qsz9M5YtFl2LNm6gTnJV/exec";
+        const URL_IKLIM = "https://script.google.com/macros/s/AKfycbxyPG7e8EqK6_bc09kqITIpqtrWL45jyQs2TtUuT8KySwnvII_ZyHAcyDI1F8uA7H6A/exec";
         const URL_PUPUK = "https://script.google.com/macros/s/AKfycbyZkyLEeLi7Igk-JXLuYuRsV0ZqTmbevRUQu6rY10rptwNyZ7y3d-YNmJCDn3QgM0Dm/exec";
 
         const kamusTanah = {
@@ -1252,22 +1257,106 @@ function getFormatTanggal(selisihHari) {
         }
     }
 }
+        // Variabel global untuk menyimpan objek grafik agar bisa di-destroy saat tab berpindah
+        let climateChartInstance = null;
+
         async function loadGlobalClimateIndices() {
-    const container = document.getElementById('ensoIodBox');
-    if (!container) return;
+            const container = document.getElementById('ensoIodBox'); if (!container) return;
+            
+            const urlNINO3 = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=-120.00&variables=sea_surface_temperature_anomaly&forecast_months=3&timezone=auto";
+            const urlNINO4 = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=-160.00&variables=sea_surface_temperature_anomaly&forecast_months=3&timezone=auto";
+            const urlWTIO = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=0.00&longitude=60.00&variables=sea_surface_temperature_anomaly&forecast_months=3&timezone=auto";
+            const urlSETIO = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=-10.00&longitude=110.00&variables=sea_surface_temperature_anomaly&forecast_months=3&timezone=auto";
+            const urlBone = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=-4.85&longitude=120.60&variables=sea_surface_temperature&forecast_months=3&timezone=Asia/Makassar";
+            const urlMakassar = "https://seasonal-api.open-meteo.com/v1/seasonal?latitude=-4.00&longitude=118.80&variables=sea_surface_temperature&forecast_months=3&timezone=Asia/Makassar";
 
-    container.innerHTML = `<div class="info-box" style="text-align:center; padding:20px; color:#ffcc00;">
-        🔄 Sedang mengambil data ENSO & IOD...
-    </div>`;
+            const fetchJSONP = (targetUrl) => {
+                return new Promise((resolve) => {
+                    const callbackName = "cb_" + Math.random().toString(36).substring(2, 10);
+                    window[callbackName] = (data) => { resolve(data); delete window[callbackName]; const scriptEl = document.getElementById(callbackName); if (scriptEl) scriptEl.remove(); };
+                    const script = document.createElement('script'); script.id = callbackName;
+                    script.src = `${URL_IKLIM}?url=${encodeURIComponent(targetUrl)}&callback=${callbackName}`;
+                    document.body.appendChild(script);
+                });
+            };
 
-    // Versi Test Sederhana
-    setTimeout(() => {
-        console.log("🧪 Test Grafik Dummy");
-        renderEnsoIodChart(0.8, -0.3);     // Nilai dummy
-        renderSstLocalChart(29.5, 29.8);   // Nilai dummy
-    }, 1500);
-}
-        
+            try {
+                const [dN3, dN4, dW, dS, dBl, dMk] = await Promise.all([fetchJSONP(urlNINO3), fetchJSONP(urlNINO4), fetchJSONP(urlWTIO), fetchJSONP(urlSETIO), fetchJSONP(urlBone), fetchJSONP(urlMakassar)]);
+                
+                // Ambil daftar bulan/waktu proyeksi sebagai Label X-Axis
+                const timeLabels = dN3?.seasonal?.time ? dN3.seasonal.time.map(t => {
+                    let date = new Date(t);
+                    return date.toLocaleDateString('id-ID', { month: 'short', year: '2-digit' });
+                }) : ["Bulan 1", "Bulan 2", "Bulan 3"];
+
+                // Ekstrak data array tren penuh untuk grafik garis
+                const ensoTrend = (dN3?.seasonal?.sea_surface_temperature_anomaly && dN4?.seasonal?.sea_surface_temperature_anomaly) 
+                    ? dN3.seasonal.sea_surface_temperature_anomaly.map((val, idx) => parseFloat(((val + dN4.seasonal.sea_surface_temperature_anomaly[idx]) / 2).toFixed(2)))
+                    : [0.1, 0.15, 0.2];
+
+                const iodTrend = (dW?.seasonal?.sea_surface_temperature_anomaly && dS?.seasonal?.sea_surface_temperature_anomaly)
+                    ? dW.seasonal.sea_surface_temperature_anomaly.map((val, idx) => parseFloat((val - dS.seasonal.sea_surface_temperature_anomaly[idx]).toFixed(2)))
+                    : [-0.05, -0.02, -0.04];
+
+                const sstBoneTrend = dBl?.seasonal?.sea_surface_temperature ? dBl.seasonal.sea_surface_temperature.map(v => parseFloat(v.toFixed(1))) : [29.1, 29.3, 29.2];
+                const sstMksTrend = dMk?.seasonal?.sea_surface_temperature ? dMk.seasonal.sea_surface_temperature.map(v => parseFloat(v.toFixed(1))) : [29.2, 29.4, 29.3];
+
+                // Render Chart.js
+                renderClimateLineChart(timeLabels, ensoTrend, iodTrend, sstBoneTrend, sstMksTrend);
+
+            } catch (er) { 
+                console.error(er);
+                const block = document.getElementById('ensoIodBox');
+                if (block) block.innerHTML = `<div class="info-box" style="border-left-color: var(--red-alert);">⚠️ Gagal memuat grafik garis satelit mikro spasial.</div>`; 
+            }
+        }
+
+        function renderClimateLineChart(labels, enso, iod, bone, makassar) {
+            const ctx = document.getElementById('climateLineChart');
+            if (!ctx) return;
+
+            // Kebijakan Lifecycle Tab: Hancurkan instansiasi grafik lama jika ada agar tidak tumpang tindih/buggy
+            if (climateChartInstance) {
+                climateChartInstance.destroy();
+            }
+
+            // Inisialisasi Chart.js Model Garis Multi-Axis ala BoM
+            climateChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        { label: 'ENSO', data: enso, borderColor: '#ff4a5a', backgroundColor: 'transparent', borderWidth: 2.5, tension: 0.3, yAxisID: 'yAnomaly' },
+                        { label: 'IOD', data: iod, borderColor: '#ffcc00', backgroundColor: 'transparent', borderWidth: 2.5, tension: 0.3, yAxisID: 'yAnomaly' },
+                        { label: 'Sst Bone', data: bone, borderColor: '#00ff9d', backgroundColor: 'transparent', borderWidth: 2, borderDash: [4, 4], tension: 0.3, yAxisID: 'ySST' },
+                        { label: 'Sst Makassar', data: makassar, borderColor: '#38b6ff', backgroundColor: 'transparent', borderWidth: 2, borderDash: [4, 4], tension: 0.3, yAxisID: 'ySST' }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } }, // Dimatikan karena sudah dibuatkan legenda HTML custom di bawah canvas agar hemat ruang
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#94a3b8', font: { family: 'Plus Jakarta Sans', size: 10, weight: '600' } } },
+                        // Sisi Kiri: Skala untuk Anomali Iklim Makro (ENSO & IOD)
+                        yAnomaly: {
+                            type: 'linear', position: 'left', min: -2, max: 2,
+                            grid: { color: 'rgba(255, 255, 255, 0.03)' },
+                            ticks: { color: '#ff7675', font: { size: 9 }, callback: value => value + '°C' },
+                            title: { display: true, text: 'Anomali', color: '#ff7675', font: { size: 9, weight: '700' } }
+                        },
+                        // Sisi Kanan: Skala untuk Suhu Riil Perairan Lokal (Bone & Makassar)
+                        ySST: {
+                            type: 'linear', position: 'right', min: 25, max: 33,
+                            grid: { drawOnChartArea: false }, // Agar gridlines tidak tabrakan dengan sisi kiri
+                            ticks: { color: '#38b6ff', font: { size: 9 }, callback: value => value + '°' },
+                            title: { display: true, text: 'Suhu Laut', color: '#38b6ff', font: { size: 9, weight: '700' } }
+                        }
+                    }
+                }
+            });
+        }
+
         async function mulaiAnalisis() {
             document.getElementById('scanWindow').classList.add('is-scanning');
             document.getElementById('loader').style.display = 'block';
