@@ -65,17 +65,21 @@
 
         .tab-container {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 💡 Ini yang mengunci bentuk 3 Kolom */
-    background: rgba(13, 20, 38, 0.8); 
+    grid-template-columns: repeat(3, 1fr);
+    background: rgba(13, 20, 38, 0.95); /* Sedikit lebih solid agar teks di bawah tidak mengganggu */
     padding: 3px; 
     border-radius: 16px;
     margin-bottom: 10px; 
     width: 100%; 
     max-width: 480px; 
     border: 1px solid var(--card-border); 
-    gap: 2px; /* Jarak antar kotak tombol */
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.3);
+    gap: 2px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5); /* Menambah bayangan agar terlihat 'melayang' */
     box-sizing: border-box;
+    
+    position: sticky;
+    top: 90px; /* Sesuaikan dengan tinggi area judul Anda */
+    z-index: 1000;
 }
         .tab-container::-webkit-scrollbar { display: none; }
          
@@ -419,17 +423,35 @@ datalist {
     background-color: #161e31;
     color: #ffffff;
 }
+.sticky-top {
+        position: sticky;
+        top: 0;
+        background-color: var(--bg-color); 
+        z-index: 1000;
+        padding-bottom: 10px; 
+        
+    }
+
+    .header { 
+        margin: 15px 0 10px 0; 
+    }
     </style>
 </head>
 <body>
 
+    <div class="sticky-top">
     <div class="header">
         <h1>SMART FARMING</h1>
         <p>Multi Analisis Tani Digital — developed by PPL MILENIAL WAJO</p>
     </div>
 
     <div class="tab-container">
+        </div>
+</div>
+
+   <div class="tab-container">
     <button class="tab-btn" id="tabCuaca" onclick="switchMode('cuaca')">PREDIKSI CUACA</button>
+    <button class="tab-btn" id="tabVarietas" onclick="switchMode('varietas')">VARIETAS PADI</button>
     <button class="tab-btn" id="tabPupuk" onclick="switchMode('pupuk')">DOSIS PUPUK</button> 
     <button class="tab-btn" id="tabBiaya" onclick="switchMode('biaya')">BIAYA TANI</button>
     <button class="tab-btn active" id="tabDaun" onclick="switchMode('daun')">PENYAKIT PADI</button>
@@ -472,6 +494,42 @@ datalist {
                 <input type="number" id="malaiPerRumpun" value="16" min="1">
             </div>
         </div>
+        <div id="boxVarietasPadi" style="display: none;">
+    <div class="form-group">
+        <label>🌧️ CURAH HUJAN WILAYAH</label>
+        <select id="input-hujan-var" class="form-select">
+            <option value="">-- Pilih Curah Hujan --</option>
+            <option value="rendah">Rendah (Kering)</option>
+            <option value="normal">Normal / Sedang</option>
+            <option value="tinggi">Tinggi (Basah)</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>⛰️ TIPE HAMBARAN LAHAN</label>
+        <select id="input-lahan-var" class="form-select">
+            <option value="">-- Pilih Tipe Lahan --</option>
+            <option value="irigasi">Lahan Irigasi Teknis</option>
+            <option value="tadah hujan">Lahan Tadah Hujan</option>
+            <option value="rawa">Lahan Rawa / Lebak</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>📅 TARGET UMUR PANEN (HARI)</label>
+        <input type="number" id="input-umur-var" class="form-input" min="70" max="150" placeholder="Contoh: 110">
+    </div>
+
+    <button class="btn-main" style="background: var(--accent-green); color: #000; margin-bottom: 12px;" onclick="analisisVarietasPadi()">
+        🚀 CARI REKOMENDASI VARIETAS
+    </button>
+
+    <div id="outputHasilVarietas" class="info-box space-y-4" style="display:none; border-left-color: var(--accent-green); background: rgba(0, 255, 157, 0.02); margin-top: 20px;"></div>
+    
+    <button id="btnCopyVarietas" class="btn-main" style="display: none; background: rgba(255, 255, 255, 0.06); color: #fff; border: 1px solid rgba(255,255,255,0.1);" onclick="copyHasilVarietas()">
+        📋 SALIN DATA REKOMENDASI
+    </button>
+</div>
 <div id="boxKalkulatorPupuk" style="display: none;">
     <div class="form-group">
         <label>📍 CARI KECAMATAN</label>
@@ -564,9 +622,13 @@ datalist {
         </div>
           
         <input type="file" id="fileInput" accept="image/*" hidden onchange="handleFile(event)">
-        <button id="btnCamera" class="btn-main btn-camera" onclick="document.getElementById('fileInput').click()">📸 AMBIL FOTO / GALERI</button>
+        <button id="btnCamera" class="btn-main btn-camera" onclick="bukaKamera()">📸 AMBIL FOTO / GALERI</button>
 
-        <div class="scan-window" id="scanWindow">
+        <div id="cameraWarning" style="display:none; color: var(--accent-soil); font-size: 0.75rem; text-align: center; margin: 10px 0; font-weight: 600; padding: 8px; border: 1px solid var(--accent-soil); border-radius: 8px;">
+    ⚠️ Ambil foto 30-50cm dari target/objek agar hasil akurat
+</div>
+
+<div class="scan-window" id="scanWindow">
             <div class="laser-line" id="laser"></div>
             <p id="msg" style="font-size: 0.8rem; opacity: 0.4; font-weight: 500;">Pratinjau foto sampel</p>
             <img id="preview" alt="Preview">
@@ -672,8 +734,8 @@ datalist {
             <canvas id="localSstChart"></canvas>
         </div>
         <div style="font-size: 0.75rem; color: #94a3b8; margin-top: 15px; text-align: center; display: flex; justify-content: center; gap: 15px;">
-            <span><span style="color:#00ff9d;">■</span> Bone (°C)</span>
-            <span><span style="color:#38b6ff;">■</span> Makassar (°C)</span>
+            <span><span style="color:#00ff9d;">■</span> Laut Teluk Bone (°C)</span>
+            <span><span style="color:#38b6ff;">■</span> Lait Selat Makassar (°C)</span>
         </div>
     </div>
 </div>
@@ -796,6 +858,7 @@ window.addEventListener('load', async function() {
         const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
         const URL_IKLIM = "https://script.google.com/macros/s/AKfycbxyPG7e8EqK6_bc09kqITIpqtrWL45jyQs2TtUuT8KySwnvII_ZyHAcyDI1F8uA7H6A/exec";
         const URL_PUPUK = "https://script.google.com/macros/s/AKfycbyZkyLEeLi7Igk-JXLuYuRsV0ZqTmbevRUQu6rY10rptwNyZ7y3d-YNmJCDn3QgM0Dm/exec";
+        const gasUrl = "https://script.google.com/macros/s/AKfycbyvjpL85ViqUv_bSviNRK3LhFbJGsxzPDBTxvKMG7i3slqtoGEBekC63RA43K76wODKGA/exec";
 
         const kamusTanah = {
             "alluvial": { "nama": "Tanah Alluvial", "penjelasan": "Tanah yang terbentuk dari endapan material sedimen (lumpur, pasir, kerikil) yang terbawa aliran sungai. Ditemukan di dataran rendah atau delta. Sangat subur dan kaya unsur hara.", "pH": "6.0 - 7.0", "organik": "Sedang", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Padi, Jagung, Sayuran", "saran": "Ideal untuk Padi. Jaga sirkulasi air agar mineral tetap terjaga." },
@@ -822,7 +885,21 @@ window.addEventListener('load', async function() {
         };
 
         const kamusWarna = { "yellow": "Kuning", "yellowish green": "Hijau Kekuningan", "light green": "Hijau Muda", "green": "Hijau", "dark green": "Hijau Tua" };
-         
+        
+        function bukaKamera() {
+    // 1. Tampilkan peringatan
+    const warning = document.getElementById('cameraWarning');
+    warning.style.display = 'block';
+    
+    // 2. Buka file input
+    document.getElementById('fileInput').click();
+
+    // 3. (Opsional) Sembunyikan pesan otomatis setelah 5 detik
+    setTimeout(() => {
+        warning.style.display = 'none';
+    }, 15000);
+}
+
         function dapatkanHariSiklusBulan() {
             const kranBulanMati = new Date("2026-01-18T17:00:00Z"); 
             const sekarang = new Date();
@@ -895,6 +972,7 @@ function getFormatTanggal(selisihHari) {
         }
 
         // 💡 Diperbarui untuk mendukung penamaan dan pewarnaan tab menu HAMA baru Anda
+        // 💡 Diperbarui untuk mendukung penamaan dan pewarnaan tab menu HAMA baru Anda
         function switchMode(mode) {
             currentMode = mode;
             let color = '#4fc3f7'; 
@@ -902,7 +980,7 @@ function getFormatTanggal(selisihHari) {
             let sub = '';
             const subEl = document.getElementById('tabSubtitleDisplay');
 
-            // 1. [DI SINI TEMPATNYA] Ambil elemen boxLokal dan sembunyikan di awal pengecekan
+            // 1. Ambil elemen boxLokal dan sembunyikan di awal pengecekan
             const boxLokal = document.getElementById('localSstBox');
             if (boxLokal) boxLokal.style.display = 'none';
 
@@ -912,6 +990,7 @@ function getFormatTanggal(selisihHari) {
             if (mode === 'tanah') { color = '#d19b08'; title = 'Analisis Jenis Tanah'; }
             if (mode === 'bwd') { color = '#00ff9d'; title = 'Analisis Warna Daun (BWD)'; }
             if (mode === 'malai') { color = '#ffcc00'; title = 'Estimasi Panen - Ambil 3 foto malai'; }
+            if (mode === 'varietas') { color = 'var(--accent-green)'; title = 'Rekomendasi Varietas Padi Ahli'; }
             if (mode === 'biaya') { color = '#b388ff'; title = '📱 Analisis Usaha Tani'; sub = 'Menghitung Kebutuhan, Keuntungan dan Perencanaan'; }
             if (mode === 'pupuk') { color = 'var(--accent-pupuk)'; title = '🧮 Kalkulator Pupuk E-RDKK'; sub = 'Rekomendasi Dosis Berdasarkan Wilayah Nasional'; }
 
@@ -933,6 +1012,9 @@ function getFormatTanggal(selisihHari) {
             document.getElementById('tabTanah').className = mode === 'tanah' ? 'tab-btn active tanah-mode' : 'tab-btn';
             document.getElementById('tabBWD').className = mode === 'bwd' ? 'tab-btn active bwd-mode' : 'tab-btn';
             document.getElementById('tabMalai').className = mode === 'malai' ? 'tab-btn active malai-mode' : 'tab-btn';
+            if(document.getElementById('tabVarietas')) {
+                document.getElementById('tabVarietas').className = mode === 'varietas' ? 'tab-btn active' : 'tab-btn';
+            }
 
             document.getElementById('modeTitle').innerText = title;
             document.getElementById('modeTitle').style.color = color;
@@ -948,31 +1030,34 @@ function getFormatTanggal(selisihHari) {
             document.getElementById('boxMalai').style.display = mode === 'malai' ? 'block' : 'none';
             document.getElementById('boxBiayaTani').style.display = mode === 'biaya' ? 'block' : 'none';
             document.getElementById('boxKalkulatorPupuk').style.display = mode === 'pupuk' ? 'block' : 'none';
-             
-            document.getElementById('formParameterLahan').style.display = mode === 'malai' ? 'block' : 'none';
 
-            // Manajemen Tombol Kamera Utama Dashboard
-            if (mode === 'cuaca' || mode === 'biaya' || mode === 'pupuk') {
+            // Box Kontainer Varietas
+            if(document.getElementById('boxVarietasPadi')) {
+                document.getElementById('boxVarietasPadi').style.display = mode === 'varietas' ? 'block' : 'none';
+            }
+
+            // ================= KOREKSI MANAJEMEN KAMERA DI SINI =================
+            if (mode === 'cuaca' || mode === 'biaya' || mode === 'pupuk' || mode === 'varietas') {
                 document.getElementById('btnCamera').style.display = 'none';
                 document.getElementById('scanWindow').style.display = 'none';
                 document.getElementById('btnAnalisis').style.display = 'none';
                 
-                document.getElementById('result').style.display = mode === 'cuaca' ? 'block' : 'none';
-                document.getElementById('resConf').style.display = mode === 'cuaca' ? 'none' : 'block';
+                document.getElementById('result').style.display = (mode === 'cuaca' || mode === 'varietas') ? 'block' : 'none';
+                document.getElementById('resConf').style.display = (mode === 'cuaca' || mode === 'varietas') ? 'none' : 'block';
                 
-                // 2. [DI SINI TEMPATNYA] Blok kondisi cuaca diaktifkan yang sudah disinkronkan dengan boxLokal
                 if (mode === 'cuaca') {
                     document.getElementById('gpsPrompt').style.display = isGpsSynced ? 'none' : 'block';
                     document.getElementById('weatherData').style.display = isGpsSynced ? 'block' : 'none';
                     
                     if (isGpsSynced) {
-                        if (boxLokal) boxLokal.style.display = 'block'; // Tampilkan lagi box lokalnya
+                        if (boxLokal) boxLokal.style.display = 'block';
                         setTimeout(() => { loadGlobalClimateIndices(); }, 100);
                     }
                 } else {
                     document.getElementById('gpsPrompt').style.display = 'none';
                 }
             } else {
+                // Menu yang butuh Kamera (Penyakit, Hama, Gulma, Tanah, BWD, Malai)
                 document.getElementById('btnCamera').style.display = 'block';
                 document.getElementById('scanWindow').style.display = 'flex';
                 document.getElementById('gpsPrompt').style.display = 'none';
@@ -2120,6 +2205,109 @@ function kirimHasilKeWhatsApp() {
         }
 
         switchMode('cuaca');
+        // Fungsi pembantu untuk menentukan pengelompokan umur tanaman padi
+function klasifikasiUmur(hari) {
+    if (hari < 90) return "Varietas Sangat Genjah (Ultra Early)";
+    if (hari >= 90 && hari <= 104) return "Varietas Genjah (Early)";
+    if (hari >= 105 && hari <= 124) return "Varietas Umur Sedang (Medium)";
+    return "Varietas Umur Dalam (Late)";
+}
+        // Fungsi Pembuat Paragraf/Poin Baru yang Aman di Dashboard
+function bagiTeksVarietas(teksAsli) {
+    if (!teksAsli) return '';
+    // Memisah teks berdasarkan baris baru
+    const barisTeks = teksAsli.trim().split(/\n+/);
+    let hasilHtml = '';
+    
+    barisTeks.forEach(baris => {
+        let teksBersih = baris.trim();
+        
+        // Membersihkan karakter bullet bawaan AI (seperti •-, -, *, •) agar tidak ganda
+        teksBersih = teksBersih.replace(/^[\s•\-\*]+/g, '');
+        
+        if (teksBersih) {
+            // Mengubah format **Teks Bold** bawaan AI menjadi tag strong HTML
+            teksBersih = teksBersih.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #ffffff; font-weight: 700;">$1</strong>');
+            
+            // Menyusun ke dalam struktur list yang rapi dengan jarak (margin) yang pas
+            hasilHtml += `
+                <div style="margin-bottom: 12px; line-height: 1.6; color: #cbd5e1; display: flex; align-items: start; gap: 8px; font-size: 0.825rem;">
+                    <span style="color: var(--accent-green); font-weight: bold;">•</span>
+                    <span>${teksBersih}</span>
+                </div>`;
+        }
+    });
+    return hasilHtml;
+}
+
+// Fungsi Ambil Data Varietas lewat API PPL
+async function analisisVarietasPadi() {
+    const umur = document.getElementById("input-umur-var").value;
+    const hujan = document.getElementById("input-hujan-var").value;
+    const lahan = document.getElementById("input-lahan-var").value;
+    const divOutput = document.getElementById("outputHasilVarietas");
+    const btnCopy = document.getElementById("btnCopyVarietas");
+
+    if (!umur || !hujan || !lahan) {
+        alert("⚠️ Mohon lengkapi semua parameter data lahan!");
+        return;
+    }
+
+    divOutput.style.display = "block";
+    btnCopy.style.display = "none";
+    divOutput.innerHTML = `<p class="animate-pulse text-center py-4 text-green-400">🤖 AI PPL sedang menganalisis kecocokan varietas...</p>`;
+
+    const kategori = klasifikasiUmur(parseInt(umur));
+    const prompt = `Anda adalah PPL Indonesia ahli agronomi. Berikan rekomendasi varietas padi berdasarkan data ini:
+Data: Umur target ${umur} hari (${kategori}), Curah hujan: ${hujan}, Tipe Lahan: ${lahan}.
+WAJIB JAWAB DALAM JSON MURNI TANPA MARKDOWN:
+{
+  "rekomendasi": ["Varietas 1", "Varietas 2"],
+  "alasan": "Berikan penjelasan dalam bentuk poin baris baru",
+  "tips": "Berikan tips pengelolaan air/pupuk dalam bentuk poin baris baru"
+}`;
+
+    try {
+        // Menggunakan pipa koneksi URL utama dashboard Anda (gasUrl)
+        const res = await fetch(`${gasUrl}?prompt=${encodeURIComponent(prompt)}`, { method: "POST" });
+        const data = await res.json();
+        let aiText = data.candidates[0].content.parts[0].text;
+        
+        aiText = aiText.replace(/```json|```/g, "").trim();
+        const json = JSON.parse(aiText);
+
+             // Render struktur ke dalam Style Dashboard Pintar dengan CSS yang diperbaiki
+                divOutput.innerHTML = `
+                    <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 10px;">
+                        <div style="background: rgba(13, 20, 38, 0.6); padding: 18px; border-radius: 16px; border: 1px solid rgba(0, 255, 157, 0.15);">
+                            <h4 style="color: var(--accent-green); margin: 0 0 12px 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.75px; font-weight: 800;">🌾 Varietas Rekomendasi</h4>
+                            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-top: 6px;">
+                                ${json.rekomendasi.map(v => `<span style="background: rgba(0, 255, 157, 0.08); color: #ffffff; border: 1px solid rgba(0, 255, 157, 0.3); padding: 6px 14px; border-radius: 10px; font-size: 0.8rem; font-weight: 700; box-shadow: 0 2px 8px rgba(0,255,157,0.05);">${v}</span>`).join('')}
+                            </div>
+                        </div>
+                        
+                        <div style="background: rgba(13, 20, 38, 0.6); padding: 18px; border-radius: 16px; border: 1px solid rgba(56, 182, 255, 0.15);">
+                            <h4 style="color: #38b6ff; margin: 0 0 12px 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.75px; font-weight: 800;">📊 Analisis Kesesuaian</h4>
+                            <div style="padding-top: 4px;">${bagiTeksVarietas(json.alasan)}</div>
+                        </div>
+                        
+                        <div style="background: rgba(13, 20, 38, 0.6); padding: 18px; border-radius: 16px; border: 1px solid rgba(255, 204, 0, 0.15);">
+                            <h4 style="color: var(--accent-soil); margin: 0 0 12px 0; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.75px; font-weight: 800;">💡 Tips Manajemen Lahan</h4>
+                            <div style="padding-top: 4px;">${bagiTeksVarietas(json.tips)}</div>
+                        </div>
+                    </div>`;
+        btnCopy.style.display = "block";
+    } catch (e) {
+        console.error(e);
+        divOutput.innerHTML = `<p class="text-red-400 text-center py-2">❌ Gagal terhubung ke AI. Periksa parameter GAS Anda.</p>`;
+    }
+}
+
+// Fungsi Copy khusus tab varietas
+function copyHasilVarietas() {
+    const text = document.getElementById("outputHasilVarietas").innerText;
+    navigator.clipboard.writeText(text).then(() => alert("📋 Rekomendasi varietas berhasil disalin!"));
+}
     </script>
 </body>
 </html>
