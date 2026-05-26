@@ -2249,7 +2249,7 @@ if (nilaiEnso > 0.5 && nilaiIod > 0.4) {
             divOutput.innerHTML = `<p style="text-align:center; padding:16px 0; color:var(--accent-green); font-weight:600;"> Sedang mencari 3 rekomendasi varietas terbaik...</p>`;
 
             const kategori = klasifikasiUmur(parseInt(umur));
-            const prompt = `Anda adalah PPL Indonesia ahli agronomi spesialis perberasan modern. Berikan rekomendasi varietas padi unggul BARU/MUTAKHIR berdasarkan data lapangan berikut: - Target Umur Panen: ${umur} hari (${kategori}) - Kondisi Curah Hujan Wilayah: Musim ${hujan} - Tipe Ekosistem Lahan: ${lahan} WAJIB JAWAB DALAM FORMAT JSON MURNI TANPA MARKDOWN. Kriteria Mutlak: Pada bagian "rekomendasi", isi array HARUS BERJUMLAH TEPAT 3 VARIETAS. Gunakan struktur JSON kaku berikut: { "rekomendasi": ["Nama Varietas Baru 1", "Nama Varietas Baru 2", "Nama Varietas Baru 3"], "alasan": "Poin alasan...", "tips": "Poin tips..." }`;
+            const prompt = `Anda adalah PPL Indonesia ahli agronomi spesialis perberasan modern. Berikan rekomendasi varietas padi unggul BARU/MUTAKHIR (prioritaskan varietas Inpari atau yang dianjurkan pemerintah) tapi tetap relevan berdasarkan data lapangan berikut: - Target Umur Panen: ${umur} hari (${kategori}) - Kondisi Curah Hujan Wilayah: Musim ${hujan} - Tipe Ekosistem Lahan: ${lahan} WAJIB JAWAB DALAM FORMAT JSON MURNI TANPA MARKDOWN. Kriteria Mutlak: Pada bagian "rekomendasi", isi array HARUS BERJUMLAH TEPAT 3 VARIETAS. Gunakan struktur JSON kaku berikut: { "rekomendasi": ["Nama Varietas Baru 1", "Nama Varietas Baru 2", "Nama Varietas Baru 3"], "alasan": "Poin alasan...", "tips": "Poin tips..." }`;
 
             try {
                 const res = await fetch(`${gasUrl}?prompt=${encodeURIComponent(prompt)}`, { method: "POST" });
