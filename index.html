@@ -371,7 +371,7 @@
             text-shadow: 0 0 8px currentColor;
         }
 
-        #macroClimateChart {
+        #macroClimateChart, #localSstChart {
             width: 100% !important;
             height: 100% !important;
         }
@@ -694,7 +694,7 @@
                             <span><span style="color:#ffcc00;">■</span> IOD (Hindia)</span>
                         </div>
 
-                        <div id="localSstBox" style="margin-top: 20px;">
+                        <div id="localSstBox" style="margin-top: 20px; display: none;">
                             <strong style="display: block; margin-bottom: 12px; text-align: center; font-size: 0.95rem; color: #fff;">🌊 Suhu Permukaan Laut Lokal</strong>
                             <div id="localWarningStatus" style="font-size: 0.85rem; margin-bottom: 15px; text-align: center; font-weight: 500; padding: 8px; border-radius: 8px; background: rgba(0,0,0,0.3);">
                                 Menganalisis suhu laut lokal...
@@ -787,7 +787,7 @@
         let hasilTeksWA = "";   
         let macroChartInstance = null;
         let localChartInstance = null;
-         
+          
         window.addEventListener('load', async function() {
             const inputKec = document.getElementById('kecInput');
             const list = document.getElementById('listKec');
@@ -819,7 +819,7 @@
                 if (inputKec) inputKec.placeholder = "⚠️ Gangguan server data wilayah";
             }
         });
-         
+          
         const URL_DAUN = "https://script.google.com/macros/s/AKfycby2arYHCsqKV3FZm14JB0W0LMGn1PfJ_26EoTAeVERAL0OsN0B0-4enXzap5KN9RMPsag/exec";
         const URL_HAMA = "https://script.google.com/macros/s/AKfycbyTGmbTGlnaJWuSgrhzHneqYHlzzybJtYssAT-C4kwemFGtGnn0AR27CcsvXQKBeqU9/exec"; 
         const URL_GULMA = "https://script.google.com/macros/s/AKfycbxGBDW3g9NmpHoijkvtRC5onwV02EBDLCuszLPLu1tY8NMv74fpnKVKwc4LWQ_GQ-SGZg/exec";
@@ -834,7 +834,7 @@
             "alluvial": { "nama": "Tanah Alluvial", "penjelasan": "Tanah yang terbentuk dari endapan material sedimen (lumpur, pasir, kerikil) yang terbawa aliran sungai. Ditemukan di dataran rendah atau delta. Sangat subur dan kaya unsur hara.", "pH": "6.0 - 7.0", "organik": "Sedang", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Padi, Jagung, Sayuran", "saran": "Ideal untuk Padi. Jaga sirkulasi air agar mineral tetap terjaga." },
             "black": { "nama": "Tanah Hitam", "penjelasan": "Tanah yang memiliki kandungan organik tinggi and mineral yang kaya, biasanya berwarna gelap hingga hitam pekat. Memiliki kemampuan menahan air yang baik dan sangat produktif.", "pH": "6.5 - 7.5", "organik": "Tinggi", "npk": "Tinggi", "subur": "Subur", "tanaman": "Kedelai, Kapas, Palawija", "saran": "Sangat bagus untuk Kedelai. Lakukan pengolahan tanah saat kondisi lembap agar struktur tetap remah." },
             "cinder": { "nama": "Tanah Vulkanik", "penjelasan": "Tanah yang berasal dari pelapukan material letusan gunung berapi. Teksturnya seringkali berpori, sangat kaya akan unsur hara alami, dan memiliki kemampuan menyimpan air yang luar biasa.", "pH": "5.0 - 7.0", "organik": "Tinggi", "npk": "Sangat Tinggi", "subur": "Sangat Subur", "tanaman": "Sayuran, Hortikultura, Kopi", "saran": "Terbaik untuk Sayuran/Horti. Use pupuk organik tambahan untuk menjaga kelembapan jangka panjang." },
-            "clay": { "nama": "Tanah Liat (Clay)", "penjelasan": "Tanah dengan partikel mineral sangat halus. Memiliki kemampuan menahan air yang sangat kuat namun sulit ditembus air (drainase lambat). Bersifat lengket saat basah dan keras saat kering.", "pH": "4.5 - 6.0", "organik": "Sedang", "npk": "Sedang", "subur": "Sedang", "tanaman": "Padi, Rumput Gajah", "saran": "Drainase wajib lancar agar akar tak busuk. Tambahkan bahan organik untuk memperbaiki struktur tanah." },
+            "clay": { "nama": "Tanah Liat (Clay)", "penjelasan": "Tanah dengan partikel mineral sangat halus. Memiliki kemampuan menahan air yang sangat kuat namun sulit ditembus air (drainase lambat). Bersifat lengket saat basah and keras saat kering.", "pH": "4.5 - 6.0", "organik": "Sedang", "npk": "Sedang", "subur": "Sedang", "tanaman": "Padi, Rumput Gajah", "saran": "Drainase wajib lancar agar akar tak busuk. Tambahkan bahan organik untuk memperbaiki struktur tanah." },
             "laterite": { "nama": "Tanah Laterit", "penjelasan": "Tanah tua yang telah mengalami pencucian hara secara intensif oleh curah hujan tinggi. Kaya akan oksida besi dan aluminium, sehingga teksturnya seringkali keras and kurang subur.", "pH": "4.0 - 5.5", "organik": "Rendah", "npk": "Rendah", "subur": "Kurang", "tanaman": "Karet, Kelapa Sawit", "saran": "Wajib tambah pupuk organik dosis tinggi & pengapuran (Dolomit) untuk menaikkan pH." },
             "loamy": { "nama": "Tanah Lempung", "penjelasan": "Kombinasi ideal antara pasir, debu, dan sedikit liat. Tanah ini memiliki drainase yang baik sekaligus mampu menyimpan nutrisi dengan efektif. Teksturnya sangat remah and mudah diolah.", "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Palawija, Buah-buahan", "saran": "Tanah prima untuk semua tanaman. Pertahankan kualitas dengan penggunaan pupuk organik konsisten." },
             "loam": { "nama": "Tanah Lempung", "penjelasan": "Tekstur tanah yang paling seimbang untuk pertanian. Mampu menjaga kelembapan tanpa tergenang, serta menyediakan ruang udara yang cukup bagi pernapasan akar tanaman.", "pH": "6.0 - 7.0", "organik": "Tinggi", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Sayuran, Buah-buahan", "saran": "Gunakan mulsa organik untuk menjaga kegemburan tanah 'emas' ini." },
@@ -1194,7 +1194,7 @@
 
                 const currentCape = hourly.cape ? hourly.cape[activeIndex] : 0;
                 const dpSpread = (cur.temperature_2m - cur.dew_point_2m).toFixed(1);
-                const cloudTemp = hourly.temperature_850hPa ? hourly.temperature_850hPa[activeIndex] : "-";
+                const cloudTemp = hourly.temperature_880hPa ? hourly.temperature_850hPa[activeIndex] : "-";
 
                 document.getElementById('dpSpread').innerText = `${dpSpread} °C`;
                 document.getElementById('suhuNow').innerText = `${cur.temperature_2m} °C`;
@@ -1431,6 +1431,104 @@
             return { labels, boneData, makassarData };
         }
 
+        // ==========================================
+        // PERBAIKAN LOGIKA RENDER & DIAGRAM CHART.JS
+        // ==========================================
+        function renderMacroChart(labels, ensoData, iodData) {
+            const ctx = document.getElementById('macroClimateChart').getContext('2d');
+            if (macroChartInstance) macroChartInstance.destroy();
+
+            macroChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'ENSO',
+                            data: ensoData,
+                            borderColor: '#ff4a5a',
+                            backgroundColor: 'rgba(255, 74, 90, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'IOD',
+                            data: iodData,
+                            borderColor: '#ffcc00',
+                            backgroundColor: 'rgba(255, 204, 0, 0.1)',
+                            borderWidth: 3,
+                            tension: 0.3,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        function renderLocalChart(labels, boneData, makassarData) {
+            const ctx = document.getElementById('localSstChart').getContext('2d');
+            if (localChartInstance) localChartInstance.destroy();
+
+            localChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Teluk Bone',
+                            data: boneData,
+                            borderColor: '#00ff9d',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 3
+                        },
+                        {
+                            label: 'Selat Makassar',
+                            data: makassarData,
+                            borderColor: '#38b6ff',
+                            borderWidth: 2,
+                            tension: 0.3,
+                            pointRadius: 3
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        function updateENSOIODStatus(enso, iod) {
+            const div = document.getElementById('ensoStatus');
+            if (div) {
+                div.innerHTML = `Pasifik: <span style="color:#ff4a5a;">${enso.status} (${enso.latestAnomaly > 0 ? '+' : ''}${enso.latestAnomaly})</span> | Hindia: <span style="color:#ffcc00;">${iod.status}</span>`;
+            }
+        }
+
+        function updateLocalWarning(sst) {
+            const div = document.getElementById('localWarningStatus');
+            if (div) {
+                const boneLatest = sst.boneData[sst.boneData.length - 1];
+                div.innerHTML = `Suhu Rata-rata Air Saat Ini: <span style="color:var(--accent-green); font-weight:700;">${boneLatest}°C</span>`;
+            }
+        }
+
         async function loadGlobalClimateIndices() {
             const statusDiv = document.getElementById('ensoStatus');
             if (statusDiv) statusDiv.innerText = "🛰️ Menghubungkan ke NOAA...";
@@ -1484,40 +1582,36 @@
             if (nilaiEnso > 0.5 && nilaiIod > 0.4) {
                 judulKesimpulan = "🚨 ANCAMAN KEKERINGAN EKSTREM (EL NINO + IOD POSITIF)";
                 warnaAksen = "var(--red-alert)";
-                teksAnalisis = `Satelit NOAA mendeteksi kolaborasi fase kering aktif: El Nino di Pasifik (+${nilaiEnso}°C) dan IOD Positif di Hindia (+${nilaiIod}°C). Ditambah pasokan uap air dari Teluk Bone (${sstBone}°C) dan Selat Makassar (${sstMakassar}°C) yang mendingin, pertumbuhan awan hujan di Kabupaten Wajo akan lumpuh total hingga akhir tahun.`;
-                rekomendasiPPL = "⚡ <b>TINDAKAN MITIGASI PPL:</b> Instuksikan petani di Kecamatan Bola untuk Tunda Musim Tanam jika pasokan air sekunder tidak ada. Alihkan komoditas lahan ke Palawija (Jagung/Kedelai) yang hemat air. Bersihkan sedimen pintu air gilir-giring.";
+                teksAnalisis = `Satelit NOAA mendeteksi kolaborasi fase kering aktif: El Nino di Pasifik (+${nilaiEnso}°C) dan IOD Positif di Hindia (+${nilaiIod}°C). Ditambah pasokan uap air dari wilayah perairan lokal (${sstBone}°C) dan (${sstMakassar}°C) yang mendingin, pertumbuhan awan hujan di daratan regional berpotensi mengalami penurunan signifikan secara masif.`;
+                rekomendasiPPL = "⚡ <b>TINDAKAN MITIGASI PPL:</b> Instruksikan bapak-bapak kelompok tani untuk menunda musim tanam jika pasokan air sekunder/irigasi tidak mencukupi. Alihkan komoditas lahan ke Palawija (Jagung/Kedelai) yang hemat air. Bersihkan saluran sedimen pintu air secara gotong royong.";
             } else if (nilaiEnso > 0.5 && nilaiIod <= 0.4) {
                 judulKesimpulan = "⚠️ KEMARAU DIBAWAH NORMAL / EL NINO MODERAT";
                 warnaAksen = "var(--accent-soil)";
                 if (sstBone >= 29.0) {
-                    teksAnalisis = `Pasifik berada dalam fase El Nino (+${nilaiEnso}°C), namun perairan Teluk Bone terpantau hangat (${sstBone}°C). Ini adalah tipikal <b>'El Nino Lembap'</b> untuk area Wajo. Masih ada potensi pasokan uap air konvektif yang membentuk hujan lokal berdurasi pendek namun intens di hamparan sawah bapak.`;
-                    rekomendasiPPL = "🌾 <b>TINDAKAN ADVIS PPL:</b> Musim tanam tetap dapat berjalan dengan varietas padi berumur genjah/pendek (seperti Inpari 32, Cakrabuana, atau M70D). Maksimalkan tangkapan air hujan di embung pembantu lahan.";
+                    teksAnalisis = `Pasifik berada dalam fase El Nino (+${nilaiEnso}°C), namun perairan lokal sekitar terpantau hangat (${sstBone}°C). Ini adalah tipikal <b>'El Nino Lembap'</b> untuk area Wajo. Masih ada potensi pasokan uap air konvektif yang membentuk hujan lokal berdurasi pendek namun intens di hamparan sawah.`;
+                    rekomendasiPPL = "🌾 <b>TINDAKAN ADVIS PPL:</b> Musim tanam tetap dapat berjalan dengan menggunakan varietas padi berumur genjah/pendek (seperti Inpari 32, Cakrabuana, atau M70D). Maksimalkan tangkapan air hujan di embung pembantu lahan.";
                 } else {
-                    teksAnalisis = `Fase El Nino aktif (+${nilaiEnso}°C) dibarengi dengan penurunan suhu laut lokal Teluk Bone (${sstBone}°C) dan Selat Makassar (${sstMakassar}°C). Udara di atas daratan Kecamatan Bola akan sangat kering dengan tingkat evaporasi tanah sawah yang tinggi.`;
-                    rekomendasiPPL = "🚜 <b>TINDAKAN ADVIS PPL:</b> Hindari metode tanam hambur langsung (Tabela Hambur) karena benih berisiko puso/kering sebelum berkecambah. Gunakan sistem Tapin (Tanam Pindah) untuk menghemat air di pesemaian.";
+                    teksAnalisis = `Fase El Nino aktif (+${nilaiEnso}°C) dibarengi dengan penurunan suhu laut perairan regional (${sstBone}°C) dan (${sstMakassar}°C). Udara di atas daratan pertanaman akan cenderung kering dengan tingkat evaporasi tanah sawah yang relatif tinggi.`;
+                    rekomendasiPPL = "🚜 <b>TINDAKAN ADVIS PPL:</b> Hindari metode tanam hambur benih langsung (Tabela Hambur) karena benih berisiko puso/kering sebelum berkecambah. Gunakan sistem Tapin (Tanam Pindah) untuk menghemat efisiensi air di pesemaian.";
                 }
             } else if (nilaiEnso < -0.5) {
                 judulKesimpulan = "🌧️ ANCAMAN BANJIR / KEMARAU BASAH (LA NINA)";
                 warnaAksen = "var(--accent-bwd)";
-                teksAnalisis = `Anomali Pasifik menunjukkan penguatan La Nina (-${Math.abs(nilaiEnso)}°C). Jika suhu laut Teluk Bone ikut menghangat (>29.5°C), intensitas curah hujan di Wajo akan melonjak tajam di atas rata-rata tahunan, memicu luapan air di area hilir pertanaman.`;
-                rekomendasiPPL = "🌊 <b>TINDAKAN ADVIS PPL:</b> Waspada banjir bandang lahan sawah. Perbaiki sistem drainase pembuangan (sanitasi total). Hindari pemupukan Urea dosis tinggi saat curah hujan ekstrem karena memicu rebah tanaman dan serangan jamur pelepah/blast.";
+                teksAnalisis = `Anomali Pasifik menunjukkan penguatan La Nina (-${Math.abs(nilaiEnso)}°C). Jika suhu laut perairan lokal ikut menghangat (>29.5°C), intensitas curah hujan di daratan regional akan melonjak tajam di atas rata-rata tahunan, memicu luapan air di area hilir pertanaman.`;
+                rekomendasiPPL = "🌊 <b>TINDAKAN ADVIS PPL:</b> Waspada banjir bandang di lahan sawah rendah. Perbaiki sistem drainase pembuangan secara total (sanitasi total). Hindari pemupukan Urea dosis tinggi saat curah hujan ekstrem karena memicu rebah tanaman dan serangan jamur pelepah/blast.";
             } else {
                 judulKesimpulan = "✅ KONDISI IKLIM NORMAL / IDEAL";
                 warnaAksen = "var(--accent-green)";
-                teksAnalisis = `Seluruh indikator makro (ENSO & IOD) serta mikro lokal perairan Sulawesi Selatan berada dalam batas ambang normal. Pola pembentukan cuaca dan curah hujan bulanan di Kecamatan Bola akan mengikuti kalender pranata mangsa/klimatologi standar.`;
-                rekomendasiPPL = "🌟 <b>TINDAKAN ADVIS PPL:</b> Lanjutkan pola budidaya padi sesuai rekomendasi rekomendasi pupuk E-RDKK setempat. Gunakan varietas unggul lokal yang berpotensi hasil tinggi.";
+                teksAnalisis = `Seluruh indikator makro (ENSO & IOD) serta mikro lokal perairan regional berada dalam batas ambang normal. Pola pembentukan cuaca dan curah hujan bulanan di daratan pertanaman akan mengikuti kalender klimatologi standar setempat.`;
+                rekomendasiPPL = "🌟 <b>TINDAKAN ADVIS PPL:</b> Lanjutkan pola budidaya padi sesuai rekomendasi kalender tanam setempat dan dosis pupuk berimbang. Gunakan varietas unggul bersertifikat yang berpotensi hasil tinggi.";
             }
 
             let terpaduBox = document.getElementById('iklimTerpaduBox');
             if (terpaduBox) {
                 terpaduBox.className = "info-box";
                 terpaduBox.style.marginTop = "25px";
-                terpaduBox.style.marginBottom = "10px";
-                terpaduBox.style.padding = "18px";
-                terpaduBox.style.background = "rgba(13, 20, 38, 0.85)";
-                terpaduBox.style.borderRadius = "20px";
-                terpaduBox.style.border = "1px solid rgba(255,255,255,0.05)";
-                terpaduBox.style.borderLeft = `5px solid ${warnaAksen}`;
+                terpaduBox.style.removeAttribute = "style";
+                terpaduBox.style.cssText = `margin-top: 25px; margin-bottom: 10px; padding: 18px; background: rgba(13, 20, 38, 0.85); border-radius: 20px; border: 1px solid rgba(255,255,255,0.05); border-left: 5px solid ${warnaAksen};`;
                 
                 terpaduBox.innerHTML = `
                     <div style="font-size: 0.85rem; font-weight: 800; color: ${warnaAksen}; letter-spacing: 0.75px; margin-bottom: 8px;">
@@ -1532,156 +1626,6 @@
             }
         }
 
-        function renderMacroChart(labels, ensoData, iodData) {
-            const canvas = document.getElementById('macroClimateChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            if (macroChartInstance) macroChartInstance.destroy();
-            
-            macroChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'ENSO Anomali (°C)',
-                            data: ensoData,
-                            borderColor: '#ff4a5a',
-                            backgroundColor: 'transparent',
-                            borderWidth: 3,
-                            tension: 0.2,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#ff4a5a'
-                        },
-                        {
-                            label: 'IOD Anomali (°C)',
-                            data: iodData,
-                            borderColor: '#ffcc00',
-                            backgroundColor: 'transparent',
-                            borderWidth: 3,
-                            tension: 0.2,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#ffcc00'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { labels: { color: '#94a3b8', font: { size: 10, weight: '600' } } }
-                    },
-                    scales: {
-                        x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.04)' } },
-                        y: { min: -2, max: 2, ticks: { color: '#94a3b8', callback: v => v + '°C' }, grid: { color: 'rgba(255,255,255,0.04)' } }
-                    }
-                }
-            });
-        }
-
-        function renderLocalChart(labels, boneData, makassarData) {
-            const canvas = document.getElementById('localSstChart');
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            if (localChartInstance) localChartInstance.destroy();
-            
-            localChartInstance = new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Teluk Bone (°C)',
-                            data: boneData,
-                            borderColor: '#00ff9d',
-                            backgroundColor: 'transparent',
-                            borderWidth: 3,
-                            tension: 0.2,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#00ff9d'
-                        },
-                        {
-                            label: 'Selat Makassar (°C)',
-                            data: makassarData,
-                            borderColor: '#38b6ff',
-                            backgroundColor: 'transparent',
-                            borderWidth: 3,
-                            tension: 0.2,
-                            pointRadius: 4,
-                            pointBackgroundColor: '#38b6ff'
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        x: { ticks: { color: '#94a3b8' }, grid: { color: 'rgba(255,255,255,0.04)' } },
-                        y: { min: 26, max: 32, ticks: { color: '#94a3b8', callback: v => v + '°C' }, grid: { color: 'rgba(255,255,255,0.04)' } }
-                    }
-                }
-            });
-        }
-
-        function updateENSOIODStatus(enso, iod) {
-            const statusDiv = document.getElementById('ensoStatus');
-            if (!statusDiv) return;
-            
-            const getWithColor = (status) => {
-                if (status.includes('El Nino') || status.includes('Positif')) return 'var(--red-alert)';
-                if (status.includes('La Nina') || status.includes('Negatif')) return '#38b6ff';
-                return 'var(--accent-green)';
-            };
-            
-            statusDiv.innerHTML = `
-                <div style="display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;">
-                    <div style="flex: 1; text-align: center; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 12px;">
-                        <div style="font-size: 0.7rem; opacity: 0.7;">ENSO (Pasifik)</div>
-                        <div style="font-size: 0.95rem; font-weight: 800; color: ${getWithColor(enso.status)};">${enso.status}</div>
-                        <small style="font-size:0.75rem;">Anomali: ${enso.latestAnomaly}°C</small>
-                    </div>
-                    <div style="flex: 1; text-align: center; padding: 8px; background: rgba(0,0,0,0.3); border-radius: 12px;">
-                        <div style="font-size: 0.7rem; opacity: 0.7;">IOD (Hindia)</div>
-                        <div style="font-size: 0.95rem; font-weight: 800; color: ${getWithColor(iod.status)};">${iod.status}</div>
-                        <small style="font-size:0.75rem;">Anomali: ${iod.latestAnomaly}°C</small>
-                    </div>
-                </div>
-            `;
-        }
-
-        function updateLocalWarning(sstLokal) {
-            const warningDiv = document.getElementById('localWarningStatus');
-            if (!warningDiv) return;
-            
-            const boneSST = sstLokal.boneData[sstLokal.boneData.length - 1];
-            const makassarSST = sstLokal.makassarData[sstLokal.makassarData.length - 1];
-            
-            let warningText = '';
-            let warna = 'var(--accent-green)';
-            
-            if (boneSST >= 30) {
-                warningText = '⚠️ PERINGATAN! Teluk Bone sangat hangat (>30°C) → Waspada Wereng & Hujan Lebat!';
-                warna = 'var(--red-alert)';
-            } else if (boneSST >= 29) {
-                warningText = '⚠️ WASPADA! Teluk Bone hangat (29-30°C) → Pantau Hama Wereng!';
-                warna = 'var(--accent-soil)';
-            } else if (boneSST <= 27) {
-                warningText = '⚠️ PERINGATAN! Teluk Bone dingin (<28°C) → Waspada Kekeringan!';
-                warna = 'var(--accent-bwd)';
-            } else {
-                warningText = '✅ Kondisi SST Normal (27-29°C) → Risiko iklim terkendali';
-                warna = 'var(--accent-green)';
-            }
-            
-            warningDiv.style.color = warna;
-            warningDiv.innerHTML = `${warningText}<br><small style="opacity:0.6; font-size:0.75rem;">SST Makassar: ${makassarSST}°C | Teluk Bone: ${boneSST}°C</small>`;
-        }
-
         function showSSTRekomendasi(boneSST) {
             if (!boneSST) return;
             
@@ -1689,16 +1633,16 @@
             let warna = '';
             
             if (boneSST >= 30) {
-                rekomendasi = '⚠️ PERINGATAN TINGGI! SST Teluk Bone sangat hangat (>30°C). Potensi curah hujan ekstrem naik mendadak di Wajo. Siklus wereng akan lebih cepat menetas. Segera koordinasikan gerakan pengamatan dini.';
+                rekomendasi = '⚠️ PERINGATAN TINGGI! Suhu permukaan laut terpantau sangat hangat (>30°C). Potensi curah hujan ekstrem dapat naik mendadak di daratan regional. Siklus perkembangan hama wereng berisiko menetas lebih cepat. Segera lakukan monitoring dini di hamparan sawah.';
                 warna = 'var(--red-alert)';
             } else if (boneSST >= 29) {
-                rekomendasi = '⚠️ WASPADA! SST Teluk Bone hangat (29-30°C). Kelembapan udara sawah akan tinggi, memicu bercak daun/blast. Batasi penggunaan Urea berlebih.';
+                rekomendasi = '⚠️ WASPADA! Suhu permukaan laut menghangat (29-30°C). Tingkat kelembapan udara di sekitar lahan akan meningkat, memicu risiko penyakit bercak daun atau blast. Batasi penggunaan pupuk Nitrogen (Urea) dosis tinggi.';
                 warna = 'var(--accent-soil)';
             } else if (boneSST <= 27) {
-                rekomendasi = '⚠️ PERINGATAN KEKERINGAN! SST Teluk Bone mendingin (<28°C). Pembentukan awan hujan menjauh. Optimalkan pintu air irigasi gilir-giring.';
+                rekomendasi = '⚠️ PERINGATAN KEKERINGAN! Suhu permukaan laut mendingin (<28°C). Pembentukan awan hujan berpotensi menjauh dari wilayah daratan. Optimalkan manajemen pintu air dan terapkan sistem irigasi gilir-giring.';
                 warna = 'var(--accent-bwd)';
             } else {
-                rekomendasi = '✅ Kondisi SST Teluk Bone ideal (27-29°C). Pasokan uap air ke daratan Wajo terpantau normal dan aman untuk budidaya.';
+                rekomendasi = '✅ Kondisi suhu permukaan laut terpantau ideal (27-29°C). Pasokan massa uap air ke daratan regional berada dalam batas normal dan aman untuk keberlanjutan budidaya tanaman.';
                 warna = 'var(--accent-green)';
             }
             
@@ -2229,10 +2173,10 @@
                 📈 <b>R/C Ratio:</b> <b style="color:var(--accent-soil); font-size:1.1rem;">${rc}</b><br>Kelayakan: <b>${status}</b><br><br>
                 <div style="border-top:1px dashed rgba(255,255,255,0.15); margin-top:10px; padding-top:12px;">
                     <div style="font-size: 0.9rem; font-weight:700; color:var(--accent-soil); margin-bottom:8px;">⚖️ Analisis Titik Impas (BEP)</div>
-                    📉 <b>BEP Produksi minimal:</b> <span style="color:var(--text-main); font-weight:700;">${Math.ceil(bepProduksi).toLocaleString("id-ID")} Kg</span><br>
-                    <small style="color:var(--text-muted); font-size:0.75rem; display:block; margin-bottom:6px;">(Lahan harus menghasilkan minimal angka di atas agar tidak rugi)</small>
-                    🏷️ <b>BEP Harga jual minimal:</b> <span style="color:var(--text-main); font-weight:700;">${rupiah(bepHarga)} / Kg</span><br>
-                    <small style="color:var(--text-muted); font-size:0.75rem; display:block;">(Gabah harus terjual minimal seharga di atas agar modal kembali)</small>
+                    <p>📉 <b>BEP Produksi minimal:</b> <span style="color:var(--text-main); font-weight:700;">${Math.ceil(bepProduksi).toLocaleString("id-ID")} Kg</span></p>
+                    <small style="color:var(--text-muted); font-size:0.75rem; display:block; margin-bottom:6px;">(Lahan bapak harus menghasilkan minimal angka di atas agar tidak rugi)</small>
+                    <p>🏷️ <b>BEP Harga jual minimal:</b> <span style="color:var(--text-main); font-weight:700;">${rupiah(bepHarga)} / Kg</span></p>
+                    <small style="color:var(--text-muted); font-size:0.75rem; display:block;">(Gabah harus terjual minimal seharga di atas agar modal bapak kembali)</small>
                 </div>`;
 
             let out = document.getElementById("outputBiaya");
