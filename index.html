@@ -41,21 +41,53 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        .sticky-top {
+            position: sticky;
+            top: 0;
+            background-color: var(--bg-color); 
+            z-index: 1000;
+            padding-bottom: 10px; 
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header { 
+            margin: 15px 0 10px 0; 
+            text-align: center;
+            width: 100%;
+            max-width: 480px;
+        }
+
+        .header h1 { 
+            margin: 0; 
+            font-size: 1.6rem; 
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ffffff; 
+            text-shadow: 0 0 20px rgba(255,255,255,0.1); 
+        }
+
+        .header p {
+            font-size: 0.7rem; 
+            color: var(--accent-green); 
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin: 6px 0 0 0;
+        }
+
         .tab-container {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             background: rgba(13, 20, 38, 0.95);
-            padding: 3px; 
+            padding: 4px; 
             border-radius: 16px;
-            margin-bottom: 10px; 
             width: 100%; 
             max-width: 480px; 
             border: 1px solid var(--card-border); 
-            gap: 2px;
+            gap: 4px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
-            position: sticky;
-            top: 90px;
-            z-index: 1000;
             box-sizing: border-box;
         }
          
@@ -66,7 +98,7 @@
             background: rgba(255, 255, 255, 0.02);
             color: var(--text-muted);
             cursor: pointer; 
-            font-weight: 500;
+            font-weight: 600;
             border-radius: 12px; 
             transition: all 0.2s ease; 
             font-size: 0.6rem;
@@ -101,6 +133,7 @@
             box-sizing: border-box;
             box-shadow: 0 20px 40px rgba(0,0,0,0.4);
             margin-bottom: 60px;
+            margin-top: 10px;
         }
          
         #modeTitle { 
@@ -409,38 +442,6 @@
             background-color: #161e31;
             color: #ffffff;
         }
-
-        .sticky-top {
-            position: sticky;
-            top: 0;
-            background-color: var(--bg-color); 
-            z-index: 1000;
-            padding-bottom: 10px; 
-        }
-
-        .header { 
-            margin: 15px 0 10px 0; 
-            text-align: center;
-            width: 100%;
-            max-width: 480px;
-        }
-
-        .header h1 { 
-            margin: 0; 
-            font-size: 1.75rem; 
-            font-weight: 800;
-            letter-spacing: 1px;
-            color: #ffffff; 
-            text-shadow: 0 0 20px rgba(255,255,255,0.1); 
-        }
-
-        .header p {
-            font-size: 0.7rem; 
-            color: var(--accent-green); 
-            letter-spacing: 1.5px;
-            font-weight: 700;
-            margin: 6px 0 0 0;
-        }
     </style>
 </head>
 <body>
@@ -450,19 +451,18 @@
             <h1>SMART FARMING - IOT</h1>
             <p>Internet of Things. Developed by PPL MILENIAL WAJO</p>
         </div>
-    </div>
-
-    <div class="tab-container">
-        <button class="tab-btn" id="tabCuaca" onclick="switchMode('cuaca')">CUACA & IKLIM</button>
-        <button class="tab-btn" id="tabVarietas" onclick="switchMode('varietas')">VARIETAS PADI</button>
-        <button class="tab-btn" id="tabPupuk" onclick="switchMode('pupuk')">DOSIS PUPUK</button> 
-        <button class="tab-btn" id="tabBiaya" onclick="switchMode('biaya')">BIAYA USAHA TANI</button>
-        <button class="tab-btn" id="tabMalai" onclick="switchMode('malai')">HASIL PANEN</button>
-        <button class="tab-btn" id="tabDaun" onclick="switchMode('daun')">PENYAKIT PADI</button>
-        <button class="tab-btn" id="tabHama" onclick="switchMode('hama')">HAMA UTAMA PADI</button>
-        <button class="tab-btn" id="tabGulma" onclick="switchMode('gulma')">JENIS GULMA</button>
-        <button class="tab-btn" id="tabTanah" onclick="switchMode('tanah')">TEKSTUR TANAH</button>
-        <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">UJI BWD UREA</button>
+        <div class="tab-container">
+            <button class="tab-btn" id="tabCuaca" onclick="switchMode('cuaca')">CUACA</button>
+            <button class="tab-btn" id="tabVarietas" onclick="switchMode('varietas')">VARIETAS</button>
+            <button class="tab-btn" id="tabPupuk" onclick="switchMode('pupuk')">DOSIS</button> 
+            <button class="tab-btn" id="tabBiaya" onclick="switchMode('biaya')">BIAYA</button>
+            <button class="tab-btn" id="tabMalai" onclick="switchMode('malai')">PANEN</button>
+            <button class="tab-btn" id="tabDaun" onclick="switchMode('daun')">PENYAKIT</button>
+            <button class="tab-btn" id="tabHama" onclick="switchMode('hama')">HAMA</button>
+            <button class="tab-btn" id="tabGulma" onclick="switchMode('gulma')">GULMA</button>
+            <button class="tab-btn" id="tabTanah" onclick="switchMode('tanah')">TANAH</button>
+            <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">UJI BWD</button>
+        </div>
     </div>
 
     <div class="card">
@@ -670,7 +670,7 @@
                     <video id="videoElement" autoplay playsinline muted style="width: 100%; height: 300px; object-fit: cover;"></video>
                     <div id="focusBox" style="position: absolute; top: 25%; left: 25%; width: 50%; height: 50%; border: 3px solid var(--accent-green); border-radius: 12px; box-shadow: 0 0 0 999px rgba(0,0,0,0.5);"></div>
                 </div>
-                <button class="btn-main" id="btnCapture" style="margin-top: 20px; background: var(--accent-green);">📸 AMBIL & ANALISIS</button>
+                <button class="btn-main" id="btnCapture" style="margin-top: 20px; background: var(--accent-green);">📸 AMBIL & ANALISIS DAUN</button>
                 <canvas id="hiddenCanvas" style="display:none;"></canvas>
                 <div id="outputBWD" style="margin-top: 20px; text-align: left;"></div>
             </div>
@@ -779,7 +779,7 @@
                                 <td class="row-val"><span id="dpSpread">-</span></td>
                             </tr>
                             <tr>
-                                <td style="border: none; padding: 8px 0;">⚡ Energi Badai (CAPE)</td>
+                                <td style="border: none; padding: 8px 0;">... Energi Badai (CAPE)</td>
                                 <td class="row-val"><span id="capeVal">-</span></td>
                             </tr>
                             <tr>
@@ -820,6 +820,15 @@
         let hasilTeksWAVarietas = "";
         let macroChartInstance = null;
         let localChartInstance = null;
+
+        const URL_DAUN = "https://script.google.com/macros/s/AKfycby2arYHCsqKV3FZm14JB0W0LMGn1PfJ_26EoTAeVERAL0OsN0B0-4enXzap5KN9RMPsag/exec";
+        const URL_HAMA = "https://script.google.com/macros/s/AKfycbyTGmbTGlnaJWuSgrhzHneqYHlzzybJtYssAT-C4kwemFGtGnn0AR27CcsvXQKBeqU9/exec"; 
+        const URL_GULMA = "https://script.google.com/macros/s/AKfycbxGBDW3g9NmpHoijkvtRC5onwV02EBDLCuszLPLu1tY8NMv74fpnKVKwc4LWQ_GQ-SGZg/exec";
+        const URL_TANAH = "https://script.google.com/macros/s/AKfycbwlryQ9ZZvgc1WjZAavj1J4KbUaaJPluZorOLzIEM12fOy19bKP56mdaITAt7jDZ5XYKg/exec";
+        const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
+        const URL_IKLIM = "https://script.google.com/macros/s/AKfycbzBNq1X9NtTnPD2bHMnz20_6t06RiaQxjoAy-9iQ_x94N5WRUj-aNyW1tk0VVkRThZr/exec";
+        const URL_PUPUK = "https://script.google.com/macros/s/AKfycbyZkyLEeLi7Igk-JXLuYuRsV0ZqTmbevRUQu6rY10rptwNyZ7y3d-YNmJCDn3QgM0Dm/exec";
+        const gasUrl = "https://script.google.com/macros/s/AKfycbw1e0FboS3FgWXEYrulCbYzoyQC0aWopU-DRIhlVJTF_C5jQoJRviDfRX_NCTis5wCiWg/exec";
           
         window.addEventListener('load', async function() {
             const inputKec = document.getElementById('kecInput');
@@ -852,15 +861,6 @@
                 if (inputKec) inputKec.placeholder = "⚠️ Gangguan server data wilayah";
             }
         });
-          
-        const URL_DAUN = "https://script.google.com/macros/s/AKfycby2arYHCsqKV3FZm14JB0W0LMGn1PfJ_26EoTAeVERAL0OsN0B0-4enXzap5KN9RMPsag/exec";
-        const URL_HAMA = "https://script.google.com/macros/s/AKfycbyTGmbTGlnaJWuSgrhzHneqYHlzzybJtYssAT-C4kwemFGtGnn0AR27CcsvXQKBeqU9/exec"; 
-        const URL_GULMA = "https://script.google.com/macros/s/AKfycbxGBDW3g9NmpHoijkvtRC5onwV02EBDLCuszLPLu1tY8NMv74fpnKVKwc4LWQ_GQ-SGZg/exec";
-        const URL_TANAH = "https://script.google.com/macros/s/AKfycbwlryQ9ZZvgc1WjZAavj1J4KbUaaJPluZorOLzIEM12fOy19bKP56mdaITAt7jDZ5XYKg/exec";
-        const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
-        const URL_IKLIM = "https://script.google.com/macros/s/AKfycbzBNq1X9NtTnPD2bHMnz20_6t06RiaQxjoAy-9iQ_x94N5WRUj-aNyW1tk0VVkRThZr/exec";
-        const URL_PUPUK = "https://script.google.com/macros/s/AKfycbyZkyLEeLi7Igk-JXLuYuRsV0ZqTmbevRUQu6rY10rptwNyZ7y3d-YNmJCDn3QgM0Dm/exec";
-        const gasUrl = "https://script.google.com/macros/s/AKfycbw1e0FboS3FgWXEYrulCbYzoyQC0aWopU-DRIhlVJTF_C5jQoJRviDfRX_NCTis5wCiWg/exec";
 
         const kamusTanah = {
             "alluvial": { "nama": "Tanah Alluvial", "penjelasan": "Tanah yang terbentuk dari endapan material sedimen (lumpur, pasir, kerikil) yang terbawa aliran sungai. Ditemukan di dataran rendah atau delta. Sangat subur dan kaya unsur hara.", "pH": "6.0 - 7.0", "organik": "Sedang", "npk": "Tinggi", "subur": "Sangat Subur", "tanaman": "Padi, Jagung, Sayuran", "saran": "Ideal untuk Padi. Jaga sirkulasi air agar mineral tetap terjaga." },
@@ -984,7 +984,6 @@
             if (mode === 'biaya') { color = '#b388ff'; title = '📱 Analisis Usaha Tani'; sub = 'Menghitung Kebutuhan, Keuntungan dan Perencanaan'; }
             if (mode === 'pupuk') { color = 'var(--accent-pupuk)'; title = '🧮 Kalkulator Pupuk E-RDKK'; sub = 'Rekomendasi Dosis Berdasarkan Wilayah Nasional'; }
 
-            // PERBAIKAN LOGIKA ISOLASI KAMERA LIVE UNTUK BWD
             if (mode === 'bwd') { 
                 color = '#00ff9d'; 
                 title = 'Uji BWD Urea'; 
@@ -1036,7 +1035,6 @@
                 document.getElementById('boxVarietasPadi').style.display = mode === 'varietas' ? 'block' : 'none';
             }
 
-            // PERBAIKAN STRUKTUR IF-ELSE AGAR TAB BWD TIDAK TERTABRAK PARAMETER KAMERA STATIS
             if (mode === 'cuaca' || mode === 'biaya' || mode === 'pupuk' || mode === 'varietas') {
                 document.getElementById('btnCamera').style.display = 'none';
                 document.getElementById('scanWindow').style.display = 'none';
@@ -1367,50 +1365,49 @@
         }
 
         async function startBWDCamera() {
-    const video = document.getElementById('videoElement');
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-            video: { facingMode: 'environment' } 
+            const video = document.getElementById('videoElement');
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                video.srcObject = stream;
+                video.onloadedmetadata = () => {
+                    video.play().catch(e => console.error("Gagal play video:", e));
+                };
+            } catch (err) {
+                console.error(err);
+                alert("Akses kamera ditolak atau tidak didukung di perangkat ini!");
+            }
+        }
+
+        document.getElementById('btnCapture').addEventListener('click', () => {
+            const video = document.getElementById('videoElement');
+            const canvas = document.getElementById('hiddenCanvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+
+            // Ubah bagian ini agar area tangkapan menjadi jauh lebih sempit dan fokus
+const frame = ctx.getImageData(canvas.width*0.4, canvas.height*0.4, canvas.width*0.2, canvas.height*0.2);
+            analisisWarnaDaun(frame);
         });
-        video.srcObject = stream;
-        video.onloadedmetadata = () => {
-            video.play().catch(e => console.error("Gagal play video:", e));
-        };
-    } catch (err) {
-        console.error(err);
-        alert("Akses kamera ditolak atau tidak didukung di perangkat ini!");
-    }
-}
-
-       document.getElementById('btnCapture').addEventListener('click', () => {
-    const video = document.getElementById('videoElement');
-    const canvas = document.getElementById('hiddenCanvas');
-    const ctx = canvas.getContext('2d');
-
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0);
-
-    // Mengambil 50% area tengah sensor video untuk dianalisis warna RGB-nya
-    const frame = ctx.getImageData(canvas.width*0.25, canvas.height*0.25, canvas.width*0.5, canvas.height*0.5);
-    analisisWarnaDaun(frame); // <--- Langsung dieksekusi di HTML browser tanpa internet
-});
 
         async function mulaiAnalisis() {
-    document.getElementById('scanWindow').classList.add('is-scanning');
-    document.getElementById('loader').style.display = 'block';
-    try {
-        // Objek BWD telah dihapus dari daftar jalur request ini
-        const urls = { daun: URL_DAUN, hama: URL_HAMA, gulma: URL_GULMA, tanah: URL_TANAH, malai: URL_MALAI };
+            document.getElementById('scanWindow').classList.add('is-scanning');
+            document.getElementById('loader').style.display = 'block';
+            try {
+                const urls = { daun: URL_DAUN, hama: URL_HAMA, gulma: URL_GULMA, tanah: URL_TANAH, malai: URL_MALAI };
                 const res = await fetch(urls[currentMode], { method: 'POST', body: JSON.stringify({ image: base64Image }) });
-        const data = await res.json(); 
-        tampilkanHasil(data);
-    } catch (e) { 
-        alert("Gagal koneksi server!"); 
-    }
-    document.getElementById('scanWindow').classList.remove('is-scanning');
-    document.getElementById('loader').style.display = 'none';
-}
+                const data = await res.json(); 
+                tampilkanHasil(data);
+            } catch (e) { 
+                alert("Gagal koneksi server!"); 
+            }
+            document.getElementById('scanWindow').classList.remove('is-scanning');
+            document.getElementById('loader').style.display = 'none';
+        }
         
         const BWD_STANDAR = [
             { skala: 1, r: 0.46, g: 0.43, b: 0.11 }, 
@@ -1445,7 +1442,6 @@
             for (let i = 0; i < data.length; i += 4) {
                 let r = data[i], g = data[i+1], b = data[i+2];
                 
-                // OPTIMASI SENSOR: Filter hijau diperketat untuk menghindari kesalahan deteksi tanah/tangan
                 if (g > (r + 15) && g > b && g > 60) {
                     let total = r + g + b;
                     rSum += (r / total); 
@@ -2047,11 +2043,11 @@
                 }
             } 
             else if (currentMode === 'bwd') {
-                const bwdContainer = document.getElementById('boxBWD');
+                const bwdContainer = document.getElementById('outputBWD');
                 let listTempHTML = '';
                 const colors = out.leafColors || out.leaf_colors || []; const dets = Array.isArray(out.detections) ? out.detections : (out.detections?.predictions || []);
                 if (colors.length === 0) { 
-                    bwdContainer.innerHTML = `<div class="info-box" style="border-left-color: var(--red-alert);">=Daun tidak terdeteksi. Silakan coba lagi.</div>`; 
+                    bwdContainer.innerHTML = `<div class="info-box" style="border-left-color: var(--red-alert);">Daun tidak terdeteksi. Silakan coba lagi.</div>`; 
                     document.getElementById('resConf').innerText = `Tingkat Keyakinan: 0%`; 
                     return; 
                 }
@@ -2209,7 +2205,7 @@
 
         function kirimHasilKeWhatsApp() {
             if(!hasilTeksWA){ 
-                alert("Silakan isi data dan klik tombol HITUNG DOSIS terlebih dahulu!"); 
+                alert("Silakan isi data and klik tombol HITUNG DOSIS terlebih dahulu!"); 
                 return; 
             }
             window.open("https://wa.me/?text=" + encodeURIComponent(hasilTeksWA));
@@ -2332,32 +2328,6 @@
         }
 
         switchMode('cuaca');
-
-        function klasifikasiUmur(hari) {
-            if (hari < 90) return "Varietas Sangat Genjah (Ultra Early)";
-            if (hari >= 90 && hari <= 104) return "Varietas Genjah (Early)";
-            if (hari >= 105 && hari <= 124) return "Varietas Umur Sedang (Medium)";
-            return "Varietas Umur Dalam (Late)";
-        }
-
-        function bagiTeksVarietas(teksAsli) {
-            if (!teksAsli) return '';
-            const barisTeks = teksAsli.trim().split(/\n+/);
-            let hasilHtml = '';
-            
-            barisTeks.forEach(baris => {
-                let teksBersih = baris.trim().replace(/^[\s•\-\*]+/g, '');
-                if (teksBersih) {
-                    teksBersih = teksBersih.replace(/\*\*(.*?)\*\*/g, '<strong style="color: #ffffff; font-weight: 700;">$1</strong>');
-                    hasilHtml += `
-                        <div style="margin-bottom: 12px; line-height: 1.6; color: #cbd5e1; display: flex; align-items: start; gap: 8px; font-size: 0.825rem;">
-                            <span style="color: var(--accent-green); font-weight: bold;">•</span>
-                            <span>${teksBersih}</span>
-                        </div>`;
-                }
-            });
-            return hasilHtml;
-        }
 
         async function analisisVarietasPadi() {
             const divOutput = document.getElementById("outputHasilVarietas");
