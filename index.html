@@ -1459,7 +1459,7 @@ const frame = ctx.getImageData(canvas.width * 0.42, canvas.height * 0.25, canvas
             const ratioR = rSum / count;
             const ratioG = gSum / count;
             const ratioB = bSum / count;
-
+alert(`Rasio Kamera -> R: ${ratioR.toFixed(2)}, G: ${ratioG.toFixed(2)}, B: ${ratioB.toFixed(2)}`);
             const skala = cariSkalaTerdekatViaRasio(ratioR, ratioG, ratioB);
             
             const colorToClass = { 1: "skala-1", 2: "skala-2", 3: "skala-3", 4: "skala-4", 5: "skala-5" };
