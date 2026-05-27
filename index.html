@@ -1236,7 +1236,7 @@
 
                 const currentCape = hourly.cape ? hourly.cape[activeIndex] : 0;
                 const dpSpread = (cur.temperature_2m - cur.dew_point_2m).toFixed(1);
-                const cloudTemp = hourly.temperature_880hPa ? hourly.temperature_850hPa[activeIndex] : "-";
+                const cloudTemp = hourly.temperature_850hPa ? hourly.temperature_850hPa[activeIndex] : "-";
 
                 document.getElementById('dpSpread').innerText = `${dpSpread} °C`;
                 document.getElementById('suhuNow').innerText = `${cur.temperature_2m} °C`;
@@ -1401,7 +1401,7 @@
     document.getElementById('loader').style.display = 'block';
     try {
         // Objek BWD telah dihapus dari daftar jalur request ini
-        const urls = { daun: URL_DAUN, hama: URL_HAMA, gulma: URL_GULMA, tanah: URL_TANAH, bwd: URL_BWD, malai: URL_MALAI };
+        const urls = { daun: URL_DAUN, hama: URL_HAMA, gulma: URL_GULMA, tanah: URL_TANAH, malai: URL_MALAI };
                 const res = await fetch(urls[currentMode], { method: 'POST', body: JSON.stringify({ image: base64Image }) });
         const data = await res.json(); 
         tampilkanHasil(data);
