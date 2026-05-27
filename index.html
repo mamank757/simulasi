@@ -1410,12 +1410,12 @@ const frame = ctx.getImageData(canvas.width * 0.42, canvas.height * 0.25, canvas
         }
         
         const BWD_STANDAR = [
-            { skala: 1, r: 0.46, g: 0.43, b: 0.11 }, 
-            { skala: 2, r: 0.41, g: 0.44, b: 0.15 }, 
-            { skala: 3, r: 0.36, g: 0.46, b: 0.18 }, 
-            { skala: 4, r: 0.31, g: 0.49, b: 0.20 }, 
-            { skala: 5, r: 0.24, g: 0.54, b: 0.22 }  
-        ];
+    { skala: 1, r: 0.46, g: 0.41, b: 0.13 }, 
+    { skala: 2, r: 0.41, g: 0.43, b: 0.16 }, 
+    { skala: 3, r: 0.36, g: 0.45, b: 0.19 }, 
+    { skala: 4, r: 0.31, g: 0.47, b: 0.22 }, // Diturunkan dari 0.49 ke 0.47
+    { skala: 5, r: 0.26, g: 0.49, b: 0.25 }  // Diturunkan dari 0.54 ke 0.49
+];
 
         function cariSkalaTerdekatViaRasio(r, g, b) {
             let minJarak = Infinity;
