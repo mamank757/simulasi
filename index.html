@@ -1413,8 +1413,10 @@
             const ratioR = rSum / count;
             const ratioG = gSum / count;
             const ratioB = bSum / count;
-            
-            // Rasio sudah dihapus dari alert agar tidak muncul di layar
+
+            // Memunculkan notifikasi tanpa detail rasio
+            alert("WARNA DAUN TERDETEKSI\n\nAnalisis berhasil dilakukan. Silakan lihat hasil skala BWD di bawah.");
+
             const skala = cariSkalaTerdekatViaRasio(ratioR, ratioG, ratioB);
             
             const colorToClass = { 1: "skala-1", 2: "skala-2", 3: "skala-3", 4: "skala-4", 5: "skala-5" };
