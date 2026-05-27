@@ -76,41 +76,41 @@
             opacity: 0.8;
         }
 
-        /* 🌟 PERBAIKAN: Navigasi Tab Turun Nyaman Menjadi 2 Baris Presisi */
+        /* 🌟 PERBAIKAN: Navigasi Tab Menjadi Grid 5x2 */
         .tab-container {
-            display: flex;
-            flex-wrap: wrap;
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* 5 kolom sama rata */
+            gap: 6px; /* Jarak antar tombol */
             background: #111c2e;
-            padding: 2px; 
+            padding: 6px; 
             border-radius: 14px;
             width: 100%; 
             max-width: 480px; 
             box-sizing: border-box;
-            gap: 2px;
             margin-top: 5px;
         }
          
         .tab-btn {
-            padding: 5px 16px;
+            padding: 10px 2px; /* Dikecilkan padding horisontal agar tulisan pas */
             border: none; 
-            background: transparent;
+            background: #1b273a; /* Warna latar tombol lebih gelap agar kontras */
             color: #708099;
             cursor: pointer; 
-            font-weight: 600;
-            border-radius: 10px; 
+            font-weight: 700;
+            border-radius: 8px; 
             transition: all 0.2s ease; 
-            font-size: 0.75rem;
-            white-space: nowrap;
-            flex-grow: 1;
-            flex-shrink: 0;
+            font-size: 10px; /* Diperkecil agar kata panjang seperti "PENYAKIT" tidak patah */
             text-align: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
          
-        /* Efek Aktif Tab Biru Solid Sesuai Tombol "Per Jam" Anda */
+        /* Efek Aktif */
         .tab-btn.active { 
             background: #3b82f6 !important; 
             color: #ffffff !important; 
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+            box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3);
         }
          
         /* Kotak Utama dengan Efek Sisi Sangat Halus */
@@ -377,14 +377,14 @@
         <div class="tab-container">
             <button class="tab-btn" id="tabCuaca" onclick="switchMode('cuaca')">CUACA</button>
             <button class="tab-btn" id="tabVarietas" onclick="switchMode('varietas')">VARIETAS</button>
-            <button class="tab-btn" id="tabPupuk" onclick="switchMode('pupuk')">DOSIS</button> 
-            <button class="tab-btn" id="tabBiaya" onclick="switchMode('biaya')">BIAYA</button>
-            <button class="tab-btn" id="tabMalai" onclick="switchMode('malai')">PANEN</button>
+            <button class="tab-btn" id="tabPupuk" onclick="switchMode('pupuk')">DOSIS PUPUK</button> 
+            <button class="tab-btn" id="tabBiaya" onclick="switchMode('biaya')">BIAYA TANI</button>
+            <button class="tab-btn" id="tabMalai" onclick="switchMode('malai')">HASIL PANEN</button>
             <button class="tab-btn" id="tabDaun" onclick="switchMode('daun')">PENYAKIT</button>
             <button class="tab-btn" id="tabHama" onclick="switchMode('hama')">HAMA</button>
             <button class="tab-btn" id="tabGulma" onclick="switchMode('gulma')">GULMA</button>
-            <button class="tab-btn" id="tabTanah" onclick="switchMode('tanah')">TANAH</button>
-            <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">UJI BWD</button>
+            <button class="tab-btn" id="tabTanah" onclick="switchMode('tanah')">FISIK TANAH</button>
+            <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">UJI BWD UREA</button>
         </div>
     </div>
 
