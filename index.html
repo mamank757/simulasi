@@ -522,17 +522,17 @@
                 <input type="number" id="input-umur-var" class="form-input" min="70" max="150" placeholder="Contoh: 110">
             </div>
             <button class="btn-main" style="background: var(--accent-green); color: #000; margin-bottom: 12px;" onclick="analisisVarietasPadi()">
-                🚀 CARI REKOMENDASI VARIETAS
-            </button>
+    🚀 CARI REKOMENDASI VARIETAS
+</button>
 
-            <button id="btnKirimWAVarietas" class="btn-main" style="display: none; background: #25D366; color: #fff; margin-top: 0; margin-bottom: 12px;" onclick="kirimVarietasKeWhatsApp()">
-                💬 KIRIM/SIMPAN HASIL KE WA
-            </button>
+<button id="btnKirimWAVarietas" class="btn-main" style="display: none; background: #25D366; color: #fff; margin-top: 0; margin-bottom: 12px;" onclick="kirimVarietasKeWhatsApp()">
+    💬 KIRIM/SIMPAN HASIL KE WA
+</button>
 
-            <div id="outputHasilVarietas" class="info-box" style="display:none; border-left-color: var(--accent-green); background: rgba(0, 255, 157, 0.02); margin-top: 20px;"></div>
-            <button id="btnCopyVarietas" class="btn-main" style="display: none; background: rgba(255, 255, 255, 0.06); color: #fff; border: 1px solid rgba(255,255,255,0.1);" onclick="copyHasilVarietas()">
-                📋 SALIN DATA REKOMENDASI
-            </button>
+<div id="outputHasilVarietas" class="info-box" style="display:none; border-left-color: var(--accent-green); background: rgba(0, 255, 157, 0.02); margin-top: 20px;"></div>
+<button id="btnCopyVarietas" class="btn-main" style="display: none; background: rgba(255, 255, 255, 0.06); color: #fff; border: 1px solid rgba(255,255,255,0.1);" onclick="copyHasilVarietas()">
+    📋 SALIN DATA REKOMENDASI
+</button>
         </div>
 
         <div id="boxKalkulatorPupuk" style="display: none;">
@@ -666,14 +666,19 @@
             </div>
 
             <div id="boxBWD" style="display: none; text-align: center;">
-                <div id="cameraContainer" style="position: relative; width: 100%; max-width: 300px; margin: 0 auto; overflow: hidden; border-radius: 20px; background: #000;">
-                    <video id="videoElement" autoplay playsinline style="width: 100%; height: 300px; object-fit: cover;"></video>
-                    <div id="focusBox" style="position: absolute; top: 25%; left: 25%; width: 50%; height: 50%; border: 3px solid var(--accent-green); border-radius: 12px; box-shadow: 0 0 0 999px rgba(0,0,0,0.5);"></div>
-                </div>
-                <button class="btn-main" id="btnCapture" style="margin-top: 20px; background: var(--accent-green);">📸 AMBIL & ANALISIS</button>
-                <canvas id="hiddenCanvas" style="display:none;"></canvas>
-                <div id="outputBWD" style="margin-top: 20px; text-align: left;"></div>
-            </div>
+    
+    <div id="cameraContainer" style="position: relative; width: 100%; max-width: 300px; margin: 0 auto; overflow: hidden; border-radius: 20px; background: #000;">
+        <video id="videoElement" autoplay playsinline muted style="width: 100%; height: 300px; object-fit: cover;"></video>
+        <div id="focusBox" style="position: absolute; top: 25%; left: 25%; width: 50%; height: 50%; border: 3px solid var(--accent-green); border-radius: 12px; box-shadow: 0 0 0 999px rgba(0,0,0,0.5);"></div>
+    </div>
+
+    <button class="btn-main" id="btnCapture" style="margin-top: 20px; background: var(--accent-green);">📸 AMBIL & ANALISIS</button>
+    
+    <canvas id="hiddenCanvas" style="display:none;"></canvas>
+
+    <div id="outputBWD" style="margin-top: 20px; text-align: left;">
+        </div>
+</div>
 
             <div id="boxMalai" style="display:none;">
                 <div id="listMalai"></div>
@@ -857,6 +862,7 @@
         const URL_HAMA = "https://script.google.com/macros/s/AKfycbyTGmbTGlnaJWuSgrhzHneqYHlzzybJtYssAT-C4kwemFGtGnn0AR27CcsvXQKBeqU9/exec"; 
         const URL_GULMA = "https://script.google.com/macros/s/AKfycbxGBDW3g9NmpHoijkvtRC5onwV02EBDLCuszLPLu1tY8NMv74fpnKVKwc4LWQ_GQ-SGZg/exec";
         const URL_TANAH = "https://script.google.com/macros/s/AKfycbwlryQ9ZZvgc1WjZAavj1J4KbUaaJPluZorOLzIEM12fOy19bKP56mdaITAt7jDZ5XYKg/exec";
+        const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_I2uy6FQjd-5eE2p1UuhQTde2lEbokpAquACyutg8kBDi/exec";
         const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
         const URL_IKLIM = "https://script.google.com/macros/s/AKfycbzBNq1X9NtTnPD2bHMnz20_6t06RiaQxjoAy-9iQ_x94N5WRUj-aNyW1tk0VVkRThZr/exec";
         const URL_PUPUK = "https://script.google.com/macros/s/AKfycbyZkyLEeLi7Igk-JXLuYuRsV0ZqTmbevRUQu6rY10rptwNyZ7y3d-YNmJCDn3QgM0Dm/exec";
@@ -932,7 +938,7 @@
 
         function hitungRisikoHamaPBP(suhu, kelembapan) {
             const hariBulan = dapatkanHariSiklusBulan(); let skorHama = 0; let analisisTeks = ""; let tindakanPPL = ""; let warnaStatus = "var(--accent-green)";
-            if (hariBulan >= 26 || hariBulan <= 3) { skorHama += 45; analisisTeks = "Diprediksi sedang puncak penerbangan ngengat dewasa untuk kawin and peletakan telur massal di pesemaian/lahan."; tindakanPPL = "Pasang lampu perangkap (light trap) di pematang sawah malam ini untuk menangkap kaper sebelum bertelur. Semprot agens hayati Beauveria bassiana."; } else if (hariBulan >= 12 && hariBulan <= 17) { skorHama += 40; analisisTeks = "Diprediksi sedang puncak penetasan telur menjadi larva (ulat kecil). Ulat mulai merayap mencari batang padi."; tindakanPPL = "Kondisi kritis! Lakukan pengamatan intensif pada rumpun padi. Jika ditemukan kelompok telur atau gejala Sundep > 5%, segera aplikasikan insektisida sistemik."; } else { militaryHama = 15; analisisTeks = "Diprediksi aktivitas ngengat sedang. Larva yang berada di dalam batang sedang berganti kulit (instar)."; tindakanPPL = "Lakukan pemupukan berimbang (jangan over Urea) and jaga air sawah agar tidak terlalu menggenang tinggi."; }
+            if (hariBulan >= 26 || hariBulan <= 3) { skorHama += 45; analisisTeks = "Diprediksi sedang puncak penerbangan ngengat dewasa untuk kawin and peletakan telur massal di pesemaian/lahan."; tindakanPPL = "Pasang lampu perangkap (light trap) di pematang sawah malam ini untuk menangkap kaper sebelum bertelur. Semprot agens hayati Beauveria bassiana."; } else if (hariBulan >= 12 && hariBulan <= 17) { skorHama += 40; analisisTeks = "Diprediksi sedang puncak penetasan telur menjadi larva (ulat kecil). Ulat mulai merayap mencari batang padi."; tindakanPPL = "Kondisi kritis! Lakukan pengamatan intensif pada rumpun padi. Jika ditemukan kelompok telur atau gejala Sundep > 5%, segera aplikasikan insektisida sistemik."; } else { skorHama += 15; analisisTeks = "Diprediksi aktivitas ngengat sedang. Larva yang berada di dalam batang sedang berganti kulit (instar)."; tindakanPPL = "Lakukan pemupukan berimbang (jangan over Urea) and jaga air sawah agar tidak terlalu menggenang tinggi."; }
             if (kelembapan >= 80) skorHama += 25; if (suhu >= 24 && suhu <= 29) skorHama += 30;
             let tingkatRisiko = "RENDAH"; if (skorHama >= 75) { tingkatRisiko = "BAHAYA / TINGGI"; warnaStatus = "var(--red-alert)"; } else if (skorHama >= 45) { tingkatRisiko = "WASPADA / SEDANG"; warnaStatus = "var(--accent-soil)"; }
             return { skor: skorHama, level: tingkatRisiko, warna: warnaStatus, detail: analisisTeks, saran: tindakanPPL };
@@ -979,7 +985,19 @@
             if (mode === 'hama') { color = 'var(--accent-hama)'; title = 'Pendeteksi & Solusi Hama Padi'; } 
             if (mode === 'gulma') { color = '#0ea5e9'; title = 'Identifikasi & Solusi Gulma'; }
             if (mode === 'tanah') { color = '#d19b08'; title = 'Analisis Jenis Tanah'; }
-            if (mode === 'bwd') { color = '#00ff9d'; title = 'Analisis Warna Daun (BWD)'; }
+            // Pemicu otomatis untuk menyalakan kamera khusus saat masuk tab BWD
+if (mode === 'bwd') {
+    document.getElementById('btnCamera').style.display = 'none';
+    document.getElementById('scanWindow').style.display = 'none';
+    document.getElementById('btnAnalisis').style.display = 'none';
+    
+    // PERBAIKAN: result harus block agar boxBWD di dalamnya tidak ikut hilang
+    document.getElementById('result').style.display = 'block'; 
+    document.getElementById('resConf').style.display = 'none'; // Sembunyikan tulisan akurasi 0% awal
+    document.getElementById('resLabel').innerText = "Arahkan Kamera ke Daun Padi";
+    
+    startBWDCamera();
+}
             if (mode === 'malai') { color = '#ffcc00'; title = 'Estimasi Panen - Ambil 3 foto malai'; }
             if (mode === 'varietas') { color = 'var(--accent-green)'; title = 'Rekomendasi Varietas Padi Ahli'; }
             if (mode === 'biaya') { color = '#b388ff'; title = '📱 Analisis Usaha Tani'; sub = 'Menghitung Kebutuhan, Keuntungan dan Perencanaan'; }
@@ -1024,47 +1042,29 @@
                 document.getElementById('boxVarietasPadi').style.display = mode === 'varietas' ? 'block' : 'none';
             }
 
-            // Pemicu otomatis untuk menyalakan kamera khusus saat masuk tab BWD
-            if (mode === 'bwd') {
+            if (mode === 'cuaca' || mode === 'biaya' || mode === 'pupuk' || mode === 'varietas') {
                 document.getElementById('btnCamera').style.display = 'none';
                 document.getElementById('scanWindow').style.display = 'none';
                 document.getElementById('btnAnalisis').style.display = 'none';
-                document.getElementById('result').style.display = 'none';
-                startBWDCamera();
-            } else {
-                // Matikan kamera jika pindah ke tab lain (Biar hemat baterai)
-                const video = document.getElementById('videoElement');
-                if (video && video.srcObject) {
-                    const stream = video.srcObject;
-                    const tracks = stream.getTracks();
-                    tracks.forEach(track => track.stop());
-                    video.srcObject = null;
-                }
-
-                if (mode === 'cuaca' || mode === 'biaya' || mode === 'pupuk' || mode === 'varietas') {
-                    document.getElementById('btnCamera').style.display = 'none';
-                    document.getElementById('scanWindow').style.display = 'none';
-                    document.getElementById('btnAnalisis').style.display = 'none';
-                    document.getElementById('result').style.display = (mode === 'cuaca' || mode === 'varietas') ? 'block' : 'none';
-                    document.getElementById('resConf').style.display = (mode === 'cuaca' || mode === 'varietas') ? 'none' : 'block';
-                    
-                    if (mode === 'cuaca') {
-                        document.getElementById('gpsPrompt').style.display = isGpsSynced ? 'none' : 'block';
-                        document.getElementById('weatherData').style.display = isGpsSynced ? 'block' : 'none';
-                        if (isGpsSynced) {
-                            if (boxLokal) boxLokal.style.display = 'block';
-                            setTimeout(() => { loadGlobalClimateIndices(); }, 100);
-                        }
-                    } else {
-                        document.getElementById('gpsPrompt').style.display = 'none';
+                document.getElementById('result').style.display = (mode === 'cuaca' || mode === 'varietas') ? 'block' : 'none';
+                document.getElementById('resConf').style.display = (mode === 'cuaca' || mode === 'varietas') ? 'none' : 'block';
+                
+                if (mode === 'cuaca') {
+                    document.getElementById('gpsPrompt').style.display = isGpsSynced ? 'none' : 'block';
+                    document.getElementById('weatherData').style.display = isGpsSynced ? 'block' : 'none';
+                    if (isGpsSynced) {
+                        if (boxLokal) boxLokal.style.display = 'block';
+                        setTimeout(() => { loadGlobalClimateIndices(); }, 100);
                     }
                 } else {
-                    document.getElementById('btnCamera').style.display = 'block';
-                    document.getElementById('scanWindow').style.display = 'flex';
                     document.getElementById('gpsPrompt').style.display = 'none';
-                    document.getElementById('result').style.display = 'none';
-                    document.getElementById('btnAnalisis').style.display = base64Image !== "" ? 'block' : 'none';
                 }
+            } else {
+                document.getElementById('btnCamera').style.display = 'block';
+                document.getElementById('scanWindow').style.display = 'flex';
+                document.getElementById('gpsPrompt').style.display = 'none';
+                document.getElementById('result').style.display = 'none';
+                document.getElementById('btnAnalisis').style.display = base64Image !== "" ? 'block' : 'none';
             }
         }
 
@@ -1241,7 +1241,7 @@
 
                 const currentCape = hourly.cape ? hourly.cape[activeIndex] : 0;
                 const dpSpread = (cur.temperature_2m - cur.dew_point_2m).toFixed(1);
-                const cloudTemp = hourly.temperature_850hPa ? hourly.temperature_850hPa[activeIndex] : "-";
+                const cloudTemp = hourly.temperature_880hPa ? hourly.temperature_850hPa[activeIndex] : "-";
 
                 document.getElementById('dpSpread').innerText = `${dpSpread} °C`;
                 document.getElementById('suhuNow').innerText = `${cur.temperature_2m} °C`;
@@ -1371,33 +1371,41 @@
             }
         }
 
-        // 1. Inisialisasi Kamera Khusus BWD
-        async function startBWDCamera() {
-            const video = document.getElementById('videoElement');
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-                video.srcObject = stream;
-            } catch (err) {
-                alert("Akses kamera ditolak!");
-            }
-        }
-
-        // 2. Proses Ambil Gambar dan Potong Area Kotak Fokus BWD
-        document.getElementById('btnCapture').addEventListener('click', () => {
-            const video = document.getElementById('videoElement');
-            const canvas = document.getElementById('hiddenCanvas');
-            const ctx = canvas.getContext('2d');
-
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0);
-
-            // Ambil data piksel murni di area kotak tengah (50% area fokus)
-            const frame = ctx.getImageData(canvas.width * 0.25, canvas.height * 0.25, canvas.width * 0.5, canvas.height * 0.5);
-            
-            // Eksekusi kalkulasi warna murni matematika lokal bapak
-            analisisWarnaDaun(frame);
+// 1. Inisialisasi Kamera
+async function startBWDCamera() {
+    const video = document.getElementById('videoElement');
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: { facingMode: 'environment' } 
         });
+        video.srcObject = stream;
+        // Tambahkan play() untuk memastikan frame berjalan setelah diizinkan
+        video.onloadedmetadata = () => {
+            video.play().catch(e => console.error("Gagal play video:", e));
+        };
+    } catch (err) {
+        console.error(err);
+        alert("Akses kamera ditolak atau tidak didukung di perangkat ini!");
+    }
+}
+
+// 2. Proses Ambil Gambar dan Hitung
+document.getElementById('btnCapture').addEventListener('click', () => {
+    const video = document.getElementById('videoElement');
+    const canvas = document.getElementById('hiddenCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Sesuaikan ukuran canvas dengan ukuran video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+
+    // Ambil data piksel di area kotak tengah (50% area)
+    const frame = ctx.getImageData(canvas.width*0.25, canvas.height*0.25, canvas.width*0.5, canvas.height*0.5);
+    
+    // Kirim ke fungsi analisis (yang akan kita buat di tahap selanjutnya)
+    analisisWarnaDaun(frame);
+});
 
         async function mulaiAnalisis() {
             document.getElementById('scanWindow').classList.add('is-scanning');
@@ -1412,95 +1420,94 @@
         }
         
         // ========================================================
-        // DATABASE KALIBRASI BWD FISIK IRRI (Rasio Matematika)
-        // ========================================================
-        const BWD_STANDAR = [
-            { skala: 1, r: 0.46, g: 0.43, b: 0.11 }, // Di bawah warna 2 (Defisiensi Berat)
-            { skala: 2, r: 0.41, g: 0.44, b: 0.15 }, // Batas Panel 2 (Hijau Kekuningan)
-            { skala: 3, r: 0.36, g: 0.46, b: 0.18 }, // Batas Panel 3 (Hijau Muda)
-            { skala: 4, r: 0.31, g: 0.49, b: 0.20 }, // Batas Panel 4 (Hijau Normal)
-            { skala: 5, r: 0.24, g: 0.54, b: 0.22 }  // Batas Panel 5 / Lebih Tua (Hijau Tua)
-        ];
+// REFRESH DATA KALIBRASI BWD FISIK IRRI (Taruh Di Sini!)
+// ========================================================
+const BWD_STANDAR = [
+    { skala: 1, r: 0.46, g: 0.43, b: 0.11 }, // Lebih kuning/terang dari Skala 2
+    { skala: 2, r: 0.41, g: 0.44, b: 0.15 }, // Batas Panel 2 (Hijau Kekuningan)
+    { skala: 3, r: 0.36, g: 0.46, b: 0.18 }, // Batas Panel 3 (Hijau Muda)
+    { skala: 4, r: 0.31, g: 0.49, b: 0.20 }, // Batas Panel 4 (Hijau Normal)
+    { skala: 5, r: 0.24, g: 0.54, b: 0.22 }  // Batas Panel 5 (Hijau Tua)
+];
 
-        // Fungsi pencari skala terdekat berdasarkan kalkulasi jarak Euclidean rasio warna
-        function cariSkalaTerdekatViaRasio(r, g, b) {
-            let minJarak = Infinity;
-            let skalaTerbaik = 3; // Default ke skala cukup jika tidak terhitung
-            
-            BWD_STANDAR.forEach(std => {
-                let jarak = Math.sqrt(
-                    Math.pow(r - std.r, 2) + 
-                    Math.pow(g - std.g, 2) + 
-                    Math.pow(b - std.b, 2)
-                );
-                if (jarak < minJarak) {
-                    minJarak = jarak;
-                    skalaTerbaik = std.skala;
-                }
-            });
-            return skalaTerbaik;
+// Fungsi pencari skala terdekat berdasarkan kalkulasi jarak Euclidean rasio warna
+function cariSkalaTerdekatViaRasio(r, g, b) {
+    let minJarak = Infinity;
+    let skalaTerbaik = 3; // Default ke skala cukup jika tidak terhitung
+    
+    BWD_STANDAR.forEach(std => {
+        let jarak = Math.sqrt(
+            Math.pow(r - std.r, 2) + 
+            Math.pow(g - std.g, 2) + 
+            Math.pow(b - std.b, 2)
+        );
+        if (jarak < minJarak) {
+            minJarak = jarak;
+            skalaTerbaik = std.skala;
         }
+    });
+    return skalaTerbaik;
+}
 
-        // Algoritma Analisis Warna Daun Mandiri via Rasio RGB Frame Live
-        function analisisWarnaDaun(imageData) {
-            const data = imageData.data;
-            let rSum = 0, gSum = 0, bSum = 0, count = 0;
+// Algoritma Analisis Warna Daun (Deteksi Gradasi) yang sudah ada di HTML Anda
+function analisisWarnaDaun(imageData) {
+    const data = imageData.data;
+    let rSum = 0, gSum = 0, bSum = 0, count = 0;
 
-            for (let i = 0; i < data.length; i += 4) {
-                let r = data[i], g = data[i+1], b = data[i+2];
-                
-                // Filter spektrum warna hijau daun padi sehat
-                if (g > r && g > b && g > 40) {
-                    let total = r + g + b;
-                    rSum += (r / total); 
-                    gSum += (g / total); 
-                    bSum += (b / total);
-                    count++;
-                }
-            }
-
-            if (count === 0) {
-                document.getElementById('outputBWD').innerHTML = "⚠️ Daun tidak terdeteksi. Pastikan daun memenuhi kotak fokus!";
-                return;
-            }
-
-            // Mendapatkan rata-rata rasio spektrum lapangan
-            const ratioR = rSum / count;
-            const ratioG = gSum / count;
-            const ratioB = bSum / count;
-
-            // Mencocokan koordinat Euclidean rasio dengan data kalibrasi fisik IRRI
-            const skala = cariSkalaTerdekatViaRasio(ratioR, ratioG, ratioB);
-            
-            // Konfigurasi style badge futuristik neon dashboard bapak
-            const colorToClass = { 1: "skala-1", 2: "skala-2", 3: "skala-3", 4: "skala-4", 5: "skala-5" };
-            const styleClass = colorToClass[skala] || "skala-3";
-            const kamusWarnaLokal = { 1: "Kuning (Kritis N)", 2: "Hijau Kekuningan", 3: "Hijau Muda", 4: "Hijau (Optimal)", 5: "Hijau Tua" };
-
-            document.getElementById('outputBWD').innerHTML = `
-                <div class="leaf-card" style="margin-top: 15px;">
-                    <div class="badge ${styleClass}">BWD SKALA ${skala}</div>
-                    <div style="margin-top: 10px; font-size: 0.85rem;">
-                        <span>Warna Rata-rata Daun: <b>${kamusWarnaLokal[skala]}</b></span>
-                    </div>
-                    <div class="info-box" style="border-left-color: var(--accent-green); background: rgba(0,0,0,0.2); margin-top: 10px;">
-                        <strong>📋 Rekomendasi Tindakan Lapangan:</strong><br>
-                        ${getSaranPupukBWD(skala)}
-                    </div>
-                </div>
-            `;
+    for (let i = 0; i < data.length; i += 4) {
+        let r = data[i], g = data[i+1], b = data[i+2];
+        
+        // Filter Hijau yang lebih ketat
+        if (g > r && g > b && g > 40) {
+            let total = r + g + b;
+            rSum += (r / total); 
+            gSum += (g / total); 
+            bSum += (b / total);
+            count++;
         }
+    }
 
-        function getSaranPupukBWD(skala) {
-            const saran = {
-                1: "Skala 1: Kekurangan Nitrogen Berat. Segera berikan pupuk Urea 150 kg/ha.",
-                2: "Skala 2: Kekurangan Nitrogen. Tambahkan Urea 100 kg/ha.",
-                3: "Skala 3: Kondisi Cukup. Berikan Urea 50 kg/ha untuk pemeliharaan.",
-                4: "Skala 4: Kondisi Optimal. Tidak perlu tambahan Nitrogen.",
-                5: "Skala 5: Nitrogen Berlebih. Hentikan pemupukan Urea."
-            };
-            return saran[skala] || "Hasil tidak valid.";
-        }
+    if (count === 0) {
+        document.getElementById('outputBWD').innerHTML = "⚠️ Daun tidak terdeteksi. Pastikan daun memenuhi kotak fokus!";
+        return;
+    }
+
+    // Mendapatkan rata-rata rasio lapangan
+    const ratioR = rSum / count;
+    const ratioG = gSum / count;
+    const ratioB = bSum / count;
+
+    // Memanggil fungsi pencocokan rasio dengan data kalibrasi baru
+    const skala = cariSkalaTerdekatViaRasio(ratioR, ratioG, ratioB);
+    
+    // Konfigurasi style badge dan cetak output ke dashboard
+    const colorToClass = { 1: "skala-1", 2: "skala-2", 3: "skala-3", 4: "skala-4", 5: "skala-5" };
+    const styleClass = colorToClass[skala] || "skala-3";
+    const kamusWarnaLokal = { 1: "Kuning (Kritis N)", 2: "Hijau Kekuningan", 3: "Hijau Muda", 4: "Hijau (Optimal)", 5: "Hijau Tua" };
+
+    document.getElementById('outputBWD').innerHTML = `
+        <div class="leaf-card" style="margin-top: 15px;">
+            <div class="badge ${styleClass}">BWD SKALA ${skala}</div>
+            <div style="margin-top: 10px; font-size: 0.85rem;">
+                <span>Warna Rata-rata Daun: <b>${kamusWarnaLokal[skala]}</b></span>
+            </div>
+            <div class="info-box" style="border-left-color: var(--accent-green); background: rgba(0,0,0,0.2); margin-top: 10px;">
+                <strong>📋 Rekomendasi Tindakan Lapangan:</strong><br>
+                ${getSaranPupukBWD(skala)}
+            </div>
+        </div>
+    `;
+}
+function getSaranPupukBWD(skala) {
+    const saran = {
+        1: "Skala 1: Kekurangan Nitrogen Berat. Segera berikan pupuk Urea 150 kg/ha.",
+        2: "Skala 2: Kekurangan Nitrogen. Tambahkan Urea 100 kg/ha.",
+        3: "Skala 3: Kondisi Cukup. Berikan Urea 50 kg/ha untuk pemeliharaan.",
+        4: "Skala 4: Kondisi Optimal. Tidak perlu tambahan Nitrogen.",
+        5: "Skala 5: Nitrogen Berlebih. Hentikan pemupukan Urea."
+    };
+    return saran[skala] || "Hasil tidak valid.";
+}
 
         function analyzeDiseaseRisk(cur, dpSpread) {
             const spreadNum = parseFloat(dpSpread); const result = blastRisk(cur.temperature_2m, cur.relative_humidity_2m, cur.rain, spreadNum);
@@ -2003,7 +2010,7 @@
                             <div class="info-box" style="border-left-color: ${boxColor};">
                                 <strong>📊 Karakteristik Daun:</strong><br>${gulma.detail.karakteristik}
                             </div>
-                            <div class="info-box" style="border-left-color: var(--text-muted); font-size: 0.8rem;">
+                            <div class="info-box" style="border-left-color: var(--text-muted);">
                                 <strong>📖 Deskripsi:</strong><br>${gulma.detail.deskripsi}
                             </div>
                             <div class="info-box" style="border-left-color: #b388ff;">
@@ -2054,12 +2061,11 @@
                 }
             } 
             else if (currentMode === 'bwd') {
-                // Skrip BWD dengan Fallback API Server Jika Dibutuhkan Petani
                 const bwdContainer = document.getElementById('boxBWD');
                 let listTempHTML = '';
                 const colors = out.leafColors || out.leaf_colors || []; const dets = Array.isArray(out.detections) ? out.detections : (out.detections?.predictions || []);
                 if (colors.length === 0) { 
-                    bwdContainer.innerHTML = `<div class="info-box" style="border-left-color: var(--red-alert);">=Daun tidak terdeteksi. Gunakan tombol live capture di atas agar akurat.</div>`; 
+                    bwdContainer.innerHTML = `<div class="info-box" style="border-left-color: var(--red-alert);">=Daun tidak terdeteksi. Silakan coba lagi.</div>`; 
                     document.getElementById('resConf').innerText = `Tingkat Keyakinan: 0%`; 
                     return; 
                 }
@@ -2127,7 +2133,7 @@
                         📊 <b>Rata-rata Cacah Bulir AI:</b> ${rataBulir.toFixed(1)} bulir per malai.<br>
                         ⚙️ <b>Sistem Lahan:</b> ${namaMetode} (${rumpunPerMeter} rumpun/m²) | ${malaiPerRumpunInput} malai/rumpun.<br>
                         🌾 <b>Karakteristik:</b> ${namaVarietas} (Bobot G1000: ${berat1000Butir}g | Faktor Bernas: ${(persenBernas*100)}%)<br>
-                        <div style="margin-top:8px; font-size:0.75rem; opacity:0.6; border-top:1px solid rgba(255,255,255,0.1); padding-top:5px;">⚠️ <i>Sudah dipotong faktor luasan pematang (-15%) & susut tercecer panen (-10%).</i></div>
+                        <div style="margin-top:8px; font-size:0.75rem; opacity:0.6; border-top:1px dashed rgba(255,255,255,0.1); padding-top:5px;">⚠️ <i>Sudah dipotong faktor luasan pematang (-15%) & susut tercecer panen (-10%).</i></div>
                         <h3 style="color:var(--accent-green); margin:12px 0 0 0; font-size:1.25rem;">🌾 Estimasi Riil Lahan: ${hasilRiilTonPerHa.toFixed(2)} Ton/Ha</h3>`;
                     hasilSampelBulir = []; 
                 } else {
@@ -2367,108 +2373,136 @@
             return hasilHtml;
         }
 
+        // ==========================================
+        // SCRIPT REKOMENDASI VARIETAS ASLI DATABASE 
+        // ==========================================
         async function analisisVarietasPadi() {
-            const divOutput = document.getElementById("outputHasilVarietas");
-            const btnWA = document.getElementById("btnKirimWAVarietas");
-            const btnCopy = document.getElementById("btnCopyVarietas");
+    const divOutput = document.getElementById("outputHasilVarietas");
+    const btnWA = document.getElementById("btnKirimWAVarietas");
+    const btnCopy = document.getElementById("btnCopyVarietas");
+    
+    // 1. Mengambil Nilai Input dari Form Elemen HTML
+    const targetUmur = parseInt(document.getElementById("input-umur-var").value);
+    const curahHujan = document.getElementById("input-hujan-var").value; // contoh: "tinggi", "sedang", "rendah"
+    const tipeLahan = document.getElementById("input-lahan-var").value;   // contoh: "irigasi", "tadah hujan", "gogo"
+
+    // Validasi awal jika input umur belum diisi
+    if (!targetUmur) {
+        alert("⚠️ Mohon isi Target Umur Panen!");
+        return;
+    }
+
+    // Reset tampilan output & sembunyikan tombol aksi selama proses loading
+    divOutput.style.display = "block";
+    divOutput.innerHTML = "🔍 Mengambil data & menganalisis kesesuaian lahan...";
+    if (btnWA) btnWA.style.display = "none";
+    if (btnCopy) btnCopy.style.display = "none";
+
+    try {
+        // 2. Ambil Data Real-time dari Google Sheets API bapak
+        const URL_DB = "https://script.google.com/macros/s/AKfycbyZkUpdSU4mDLF53yaZHCbxW32V-gTGE9q_LorGMYrcul1cA3CEbOot-Ld-1e3flQn6vQ/exec";
+        const response = await fetch(URL_DB);
+        const data = await response.json();
+
+        // 3. JANTUNG LOGIKA: Penyaringan MULTI-VARIABEL (Umur + Lahan + Iklim)
+        const hasil = data.filter(item => {
+            // Konversi semua ke huruf kecil (lowercase) agar pencocokan teks tidak error akibat beda spasi/huruf kapital
+            const inputLahan = tipeLahan.toLowerCase();
+            const inputHujan = curahHujan.toLowerCase();
+            const umurVarietas = parseInt(item.umur);
+
+            // Syarat Lapis 1: Rentang Umur masuk batas toleransi (Target ± 5 Hari)
+            const cocokUmur = umurVarietas >= (targetUmur - 7) && umurVarietas <= (targetUmur + 7);
+
+            // Syarat Lapis 2: Kesesuaian Tipe Lahan (Memeriksa apakah spesifikasi di database mengandung kata kunci input)
+            // *Jika di database kosong, set lolos sebagai antisipasi, atau gunakan .includes()
+            const cocokLahan = item.lahan ? item.lahan.toLowerCase().includes(inputLahan) : true;
+
+            // Syarat Lapis 3: Kesesuaian Curah Hujan/Iklim
+            const cocokHujan = item.curahHujanDb ? item.curahHujanDb.toLowerCase().includes(inputHujan) : true;
+
+            // Varietas lolos seleksi HANYA JIKA memenuhi ketiga syarat di atas secara bersamaan
+            return cocokUmur && cocokLahan && cocokHujan;
+        });
+
+        // 4. PEMPROSESAN OUTPUT DAN FORMATTING DATA
+        if (hasil.length > 0) {
+            let html = `<h4 style="color:var(--accent-green); margin-bottom:15px;">🌱 Hasil Rekomendasi Varietas Cocok:</h4>`;
             
-            const targetUmur = parseInt(document.getElementById("input-umur-var").value);
-            const curahHujan = document.getElementById("input-hujan-var").value;
-            const tipeLahan = document.getElementById("input-lahan-var").value;
+            // Inisialisasi Header Teks Cetak Tebal untuk dikirim ke WhatsApp bapak
+            hasilTeksWAVarietas = `*SMART FARMING - PPL BPP BOLA*\n` +
+                                  `*REKOMENDASI VARIETAS PADI SPEADSHEET*\n` +
+                                  `----------------------------------------\n` +
+                                  `⛰️ Tipe Lahan: ${tipeLahan.toUpperCase()}\n` +
+                                  `🌧️ Curah Hujan: ${curahHujan.toUpperCase()}\n` +
+                                  `⏱️ Target Umur: ${targetUmur} Hari (Batas Toleransi: ${targetUmur - 5}-${targetUmur + 5} hari)\n` +
+                                  `----------------------------------------\n\n` +
+                                  `*Daftar Varietas yang Direkomendasikan:*\n\n`;
 
-            if (!targetUmur) {
-                alert("⚠️ Mohon isi Target Umur Panen!");
-                return;
-            }
+            // Looping menyusun data visual HTML dashboard dan format pesan WhatsApp
+            hasil.forEach((v, index) => {
+                // Tampilan Kartu Elemen di Aplikasi (Aksen Neon/Gelap)
+                html += `
+                <div class="leaf-card" style="border-left: 4px solid var(--accent-green); background: rgba(0, 0, 0, 0.4); padding: 15px; margin-bottom: 15px; border-radius: 10px;">
+                    <strong style="color: var(--accent-green); font-size: 1.2rem;">${index + 1}. ${v.nama}</strong><br>
+                    <small style="color: #ccc;">⏱️ Umur: <b>${v.umur} HST</b> | 📊 Potensi: <b>${v.potensi} Ton/Ha</b></small>
+                    <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 8px 0;">
+                    <small style="display: block; margin-bottom: 4px; color: #e0e0e0;">🛡️ <b>Tahan:</b> ${v.tahanHama || '-'} | ${v.tahanPenyakit || '-'}</small>
+                    <small style="display: block; margin-bottom: 4px; color: #ff5555;">⚠️ <b>Rentan:</b> ${v.rentanHama || '-'} | ${v.rentanPenyakit || '-'}</small>
+                    <small style="display: block; color: #00bfff;">🌍 <b>Adaptasi (m):</b> ${v.adaptasi || '-'}</small>
+                    <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1);">
+                        <small style="color: #fbbf24; font-style: italic;">📝 <b>Catatan:</b> ${v.catatan || '-'}</small>
+                    </div>
+                </div>`;
 
-            divOutput.style.display = "block";
-            divOutput.innerHTML = "🔍 Mengambil data & menganalisis kesesuaian lahan...";
+                // Tampilan Susunan Teks saat disalin atau dikirim ke WhatsApp
+                hasilTeksWAVarietas += `${index + 1}. *${v.nama.toUpperCase()}*\n` +
+                                       `   • Umur Panen: ${v.umur} Hari\n` +
+                                       `   • Potensi Hasil: ${v.potensi} Ton/Ha\n` +
+                                       `   • Ketahanan: ${v.tahanHama || '-'} | ${v.tahanPenyakit || '-'}\n` +
+                                       `   • Kerentanan: ${v.rentanHama || '-'} | ${v.rentanPenyakit || '-'}\n` +
+                                       `   • Rekomendasi Lahan: ${v.adaptasi || '-'}\n` +
+                                       `   • Catatan Tambahan: ${v.catatan || '-'}\n\n`; // <--- CATATAN MASUK WA
+            });
+
+            // Footer teks penutup WhatsApp
+            hasilTeksWAVarietas += `_Diproduksi Otomatis oleh Sistem Aplikasi Penyuluh Milenial Wajo_`;
+
+            // Tampilkan ke layar dashboard bapak
+            divOutput.innerHTML = html;
+            
+            // Munculkan tombol aksi cetak WA dan Salin karena data tersedia
+            if (btnWA) btnWA.style.display = "block";
+            if (btnCopy) btnCopy.style.display = "block";
+
+        } else {
+            // Kondisi jika setelah disaring 3 lapis tidak ditemukan data yang klop
+            divOutput.innerHTML = `
+                <div style="text-align:center; padding:20px; color:#ff5555;">
+                    ❌ Tidak ditemukan varietas yang cocok di database untuk kondisi lahan <b>${tipeLahan}</b> dengan curah hujan <b>${curahHujan}</b> pada kisaran umur tersebut.
+                </div>`;
+            hasilTeksWAVarietas = "";
             if (btnWA) btnWA.style.display = "none";
             if (btnCopy) btnCopy.style.display = "none";
-
-            try {
-                const URL_DB = "https://script.google.com/macros/s/AKfycbyZkUpdSU4mDLF53yaZHCbxW32V-gTGE9q_LorGMYrcul1cA3CEbOot-Ld-1e3flQn6vQ/exec";
-                const response = await fetch(URL_DB);
-                const data = await response.json();
-
-                const hasil = data.filter(item => {
-                    const inputLahan = tipeLahan.toLowerCase();
-                    const inputHujan = curahHujan.toLowerCase();
-                    const umurVarietas = parseInt(item.umur);
-
-                    const cocokUmur = umurVarietas >= (targetUmur - 7) && umurVarietas <= (targetUmur + 7);
-                    const cocokLahan = item.lahan ? item.lahan.toLowerCase().includes(inputLahan) : true;
-                    const cocokHujan = item.curahHujanDb ? item.curahHujanDb.toLowerCase().includes(inputHujan) : true;
-
-                    return cocokUmur && cocokLahan && cocokHujan;
-                });
-
-                if (hasil.length > 0) {
-                    let html = `<h4 style="color:var(--accent-green); margin-bottom:15px;">🌱 Hasil Rekomendasi Varietas Cocok:</h4>`;
-                    
-                    hasilTeksWAVarietas = `*SMART FARMING - PPL BPP BOLA*\n` +
-                                          `*REKOMENDASI VARIETAS PADI SPEADSHEET*\n` +
-                                          `----------------------------------------\n` +
-                                          `⛰️ Tipe Lahan: ${tipeLahan.toUpperCase()}\n` +
-                                          `🌧️ Curah Hujan: ${curahHujan.toUpperCase()}\n` +
-                                          `⏱️ Target Umur: ${targetUmur} Hari (Batas Toleransi: ${targetUmur - 5}-${targetUmur + 5} hari)\n` +
-                                          `----------------------------------------\n\n` +
-                                          `*Daftar Varietas yang Direkomendasikan:*\n\n`;
-
-                    hasil.forEach((v, index) => {
-                        html += `
-                        <div class="leaf-card" style="border-left: 4px solid var(--accent-green); background: rgba(0, 0, 0, 0.4); padding: 15px; margin-bottom: 15px; border-radius: 10px;">
-                            <strong style="color: var(--accent-green); font-size: 1.2rem;">${index + 1}. ${v.nama}</strong><br>
-                            <small style="color: #ccc;">⏱️ Umur: <b>${v.umur} HST</b> | 📊 Potensi: <b>${v.potensi} Ton/Ha</b></small>
-                            <hr style="border: 0; border-top: 1px solid rgba(255,255,255,0.1); margin: 8px 0;">
-                            <small style="display: block; margin-bottom: 4px; color: #e0e0e0;">🛡️ <b>Tahan:</b> ${v.tahanHama || '-'} | ${v.tahanPenyakit || '-'}</small>
-                            <small style="display: block; margin-bottom: 4px; color: #ff5555;">⚠️ <b>Rentan:</b> ${v.rentanHama || '-'} | ${v.rentanPenyakit || '-'}</small>
-                            <small style="display: block; color: #00bfff;">🌍 <b>Adaptasi (m):</b> ${v.adaptasi || '-'}</small>
-                            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed rgba(255,255,255,0.1);">
-                                <small style="color: #fbbf24; font-style: italic;">📝 <b>Catatan:</b> ${v.catatan || '-'}</small>
-                            </div>
-                        </div>`;
-
-                        hasilTeksWAVarietas += `${index + 1}. *${v.nama.toUpperCase()}*\n` +
-                                               `   • Umur Panen: ${v.umur} Hari\n` +
-                                               `   • Potensi Hasil: ${v.potensi} Ton/Ha\n` +
-                                               `   • Ketahanan: ${v.tahanHama || '-'} | ${v.tahanPenyakit || '-'}\n` +
-                                               `   • Kerentanan: ${v.rentanHama || '-'} | ${v.rentanPenyakit || '-'}\n` +
-                                               `   • Rekomendasi Lahan: ${v.adaptasi || '-'}\n` +
-                                               `   • Catatan Tambahan: ${v.catatan || '-'}\n\n`;
-                    });
-
-                    hasilTeksWAVarietas += `_Diproduksi Otomatis oleh Sistem Aplikasi Penyuluh Milenial Wajo_`;
-
-                    divOutput.innerHTML = html;
-                    if (btnWA) btnWA.style.display = "block";
-                    if (btnCopy) btnCopy.style.display = "block";
-
-                } else {
-                    divOutput.innerHTML = `
-                        <div style="text-align:center; padding:20px; color:#ff5555;">
-                            ❌ Tidak ditemukan varietas yang cocok di database untuk kondisi lahan <b>${tipeLahan}</b> dengan curah hujan <b>${curahHujan}</b> pada kisaran umur tersebut.
-                        </div>`;
-                    hasilTeksWAVarietas = "";
-                    if (btnWA) btnWA.style.display = "none";
-                    if (btnCopy) btnCopy.style.display = "none";
-                }
-
-            } catch (e) {
-                divOutput.innerHTML = `<div style="color:#ff5555;">❌ Gagal memuat database varietas: ${e.message}</div>`;
-                hasilTeksWAVarietas = "";
-                if (btnWA) btnWA.style.display = "none";
-                if (btnCopy) btnCopy.style.display = "none";
-            }
         }
 
-        function kirimVarietasKeWhatsApp() {
-            if (!hasilTeksWAVarietas) { 
-                alert("Silakan klik tombol CARI REKOMENDASI VARIETAS terlebih dahulu!"); 
-                return; 
-            }
-            window.open("https://wa.me/?text=" + encodeURIComponent(hasilTeksWAVarietas));
-        }
+    } catch (e) {
+        // Penanganan error jika koneksi ke Google Apps Script/Spreadsheet terputus atau gagal
+        divOutput.innerHTML = `<div style="color:#ff5555;">❌ Gagal memuat database varietas: ${e.message}</div>`;
+        hasilTeksWAVarietas = "";
+        if (btnWA) btnWA.style.display = "none";
+        if (btnCopy) btnCopy.style.display = "none";
+    }
+}
+
+// ➕ FUNGSI BARU UNTUK REDIRECT KE WHATSAPP BAPAK
+function kirimVarietasKeWhatsApp() {
+    if (!hasilTeksWAVarietas) { 
+        alert("Silakan klik tombol CARI REKOMENDASI VARIETAS terlebih dahulu!"); 
+        return; 
+    }
+    window.open("https://wa.me/?text=" + encodeURIComponent(hasilTeksWAVarietas));
+}
 
         function copyHasilVarietas() {
             const text = document.getElementById("outputHasilVarietas").innerText;
