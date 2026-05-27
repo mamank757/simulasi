@@ -1414,8 +1414,7 @@
             const ratioG = gSum / count;
             const ratioB = bSum / count;
             
-           alert(`WARNA DAUN TERDETEKSI\n\nRasio Kamera -> R: ${ratioR.toFixed(2)}, G: ${ratioG.toFixed(2)}, B: ${ratioB.toFixed(2)}\n\nLIHAT HASILNYA DI BAWAH`);
-
+            // Rasio sudah dihapus dari alert agar tidak muncul di layar
             const skala = cariSkalaTerdekatViaRasio(ratioR, ratioG, ratioB);
             
             const colorToClass = { 1: "skala-1", 2: "skala-2", 3: "skala-3", 4: "skala-4", 5: "skala-5" };
