@@ -9,27 +9,26 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #060913;
-            --card-bg: rgba(22, 30, 49, 0.7);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --accent-green: #00ff9d;
-            --accent-soil: #ffcc00;
-            --accent-bwd: #38b6ff;
-            --accent-malai: #ff5e7e;
-            --accent-biaya: #b388ff;
-            --accent-gulma: #e0f2fe;
-            --accent-hama: #ff7675; 
-            --accent-pupuk: #22c55e;
-            --text-main: #f1f5f9;
-            --text-muted: #94a3b8;
-            --red-alert: #ff4a5a;
+            /* Palette Warna Gelap Sesuai Gambar Baru */
+            --bg-color: #0b1528;
+            --card-bg: #1b273a;
+            --card-border: transparent;
+            --accent-green: #3b82f6; /* Mengikuti aksen biru utama di gambar */
+            --accent-soil: #f59e0b;
+            --accent-bwd: #10b981;
+            --accent-malai: #f43f5e;
+            --accent-biaya: #8b5cf6;
+            --accent-gulma: #38b6ff;
+            --accent-hama: #ef4444; 
+            --accent-pupuk: #10b981;
+            --text-main: #ffffff;
+            --text-muted: #64748b;
+            --red-alert: #ef4444;
         }
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg-color);
-            background-image: radial-gradient(circle at top right, rgba(0, 255, 157, 0.05), transparent 40%),
-                              radial-gradient(circle at bottom left, rgba(56, 182, 255, 0.05), transparent 40%);
             color: var(--text-main);
             margin: 0; 
             padding: 16px;
@@ -46,7 +45,7 @@
             top: 0;
             background-color: var(--bg-color); 
             z-index: 1000;
-            padding-bottom: 10px; 
+            padding-bottom: 16px; 
             width: 100%;
             display: flex;
             flex-direction: column;
@@ -54,7 +53,7 @@
         }
 
         .header { 
-            margin: 15px 0 10px 0; 
+            margin: 20px 0 15px 0; 
             text-align: center;
             width: 100%;
             max-width: 480px;
@@ -62,100 +61,92 @@
 
         .header h1 { 
             margin: 0; 
-            font-size: 1.6rem; 
-            font-weight: 800;
-            letter-spacing: 1px;
+            font-size: 1.5rem; 
+            font-weight: 700;
+            letter-spacing: 0.5px;
             color: #ffffff; 
-            text-shadow: 0 0 20px rgba(255,255,255,0.1); 
         }
 
         .header p {
-            font-size: 0.7rem; 
-            color: var(--accent-green); 
-            letter-spacing: 1.5px;
-            font-weight: 700;
+            font-size: 0.75rem; 
+            color: #3b82f6; 
+            letter-spacing: 1px;
+            font-weight: 600;
             margin: 6px 0 0 0;
+            opacity: 0.8;
         }
 
+        /* 🌟 PERBAIKAN: Navigasi Tab Turun Nyaman Menjadi 2 Baris Presisi */
         .tab-container {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            background: rgba(13, 20, 38, 0.95);
-            padding: 4px; 
-            border-radius: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            background: #111c2e;
+            padding: 6px; 
+            border-radius: 14px;
             width: 100%; 
             max-width: 480px; 
-            border: 1px solid var(--card-border); 
-            gap: 4px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
             box-sizing: border-box;
+            gap: 6px;
+            margin-top: 5px;
         }
          
         .tab-btn {
-            width: 100%;
-            padding: 10px 2px;
+            padding: 10px 14px;
             border: none; 
-            background: rgba(255, 255, 255, 0.02);
-            color: var(--text-muted);
+            background: transparent;
+            color: #708099;
             cursor: pointer; 
             font-weight: 600;
-            border-radius: 12px; 
+            border-radius: 10px; 
             transition: all 0.2s ease; 
-            font-size: 0.6rem;
-            letter-spacing: 0.3px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            flex-grow: 1;
+            flex-shrink: 0;
             text-align: center;
-            box-sizing: border-box;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
          
-        .tab-btn.active { background: #38b6ff; color: #000000; }
-        .tab-btn.active.daun-mode { background: #ff4a5a; color: #ffffff; }
-        .tab-btn.active.hama-mode { background: var(--accent-hama); color: #ffffff; }
-        .tab-btn.active.gulma-mode { background: #0ea5e9; color: #ffffff; }
-        .tab-btn.active.soil-mode { background: #d19b08; color: #ffffff; }
-        .tab-btn.active.tanah-mode { background: #d19b08; color: #ffffff; }
-        .tab-btn.active.bwd-mode { background: #00ff9d; color: #000000; }
-        .tab-btn.active.malai-mode { background: #ffcc00; color: #000000; }
-        .tab-btn.active.biaya-mode { background: var(--accent-biaya); color: #000000; }
-        .tab-btn.active.pupuk-mode { background: var(--accent-pupuk); color: #000000; }
+        /* Efek Aktif Tab Biru Solid Sesuai Tombol "Per Jam" Anda */
+        .tab-btn.active { 
+            background: #3b82f6 !important; 
+            color: #ffffff !important; 
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
          
+        /* Kotak Utama dengan Efek Sisi Sangat Halus */
         .card {
             background: var(--card-bg); 
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--card-border); 
             padding: 24px;
-            border-radius: 24px; 
+            border-radius: 28px; 
             max-width: 480px; 
             width: 100%; 
             box-sizing: border-box;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            margin-bottom: 60px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            margin-bottom: 80px;
             margin-top: 10px;
         }
          
         #modeTitle { 
             margin-top: 0; 
-            margin-bottom: 20px;
+            margin-bottom: 24px;
             color: var(--text-main); 
-            font-size: 1.2rem;
-            font-weight: 700;
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-align: center;
         }
 
         .tab-subtitle {
             text-align: center;
             color: var(--text-muted);
-            font-size: 11px;
+            font-size: 12px;
             margin-top: -15px;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
         }
 
+        /* Sub-Grid Komponen di Dalam Lahan / Fitur */
         .form-lahan {
-            background: rgba(0, 0, 0, 0.2);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
+            background: rgba(0, 0, 0, 0.15);
+            border-radius: 18px;
             padding: 16px;
             margin-bottom: 20px;
         }
@@ -166,176 +157,139 @@
         .form-group label, label.form-label {
             display: block;
             font-size: 0.75rem;
-            color: var(--text-muted);
+            color: #8da2be;
             margin-bottom: 8px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            font-weight: 600;
         }
 
         .form-group select, .form-group input, input.form-input, select.form-select {
             width: 100%;
-            background: #0d1424;
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
+            background: #111c2e;
+            border: 1px solid rgba(255,255,255,0.02);
+            border-radius: 14px;
             padding: 14px;
             color: #fff;
             font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 0.85rem;
             font-weight: 500;
             box-sizing: border-box;
-            transition: border-color 0.3s;
+            transition: all 0.3s;
             margin-bottom: 12px;
         }
 
         .form-group select:focus, .form-group input:focus, input.form-input:focus, select.form-select:focus {
-            border-color: var(--accent-green);
+            background: #152238;
             outline: none;
         }
 
+        /* Desain Tombol Aksi */
         .btn-main {
-            background: var(--accent-green); 
-            color: #040814; 
+            background: #3b82f6; 
+            color: #ffffff; 
             border: none; 
             padding: 16px;
-            border-radius: 14px; 
-            font-weight: 700; 
+            border-radius: 16px; 
+            font-weight: 600; 
             font-size: 0.9rem;
             width: 100%; 
             cursor: pointer; 
-            letter-spacing: 0.5px;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0, 255, 157, 0.2);
             margin-top: 5px;
         }
-
-        .btn-main:active { transform: scale(0.98); opacity: 0.9; }
+        .btn-main:active { transform: scale(0.99); opacity: 0.9; }
         
         .btn-camera { 
-            background: rgba(255, 255, 255, 0.06); 
+            background: #233147; 
             color: #ffffff; 
-            border: 1px solid rgba(255,255,255,0.1);
             margin-bottom: 16px; 
-            box-shadow: none;
         }
+        .btn-camera:active { background: #2a3b55; }
 
-        .btn-camera:active { background: rgba(255, 255, 255, 0.12); }
-          
-        .btn-biaya {
-            background: linear-gradient(135deg, #651fff, var(--accent-biaya));
-            color: white;
-            box-shadow: 0 4px 12px rgba(179, 136, 255, 0.2);
-        }
-
-        .btn-live {
-            background: var(--accent-bwd) !important;
-            color: #000000 !important;
-            animation: pulse-blue 2s infinite;
-        }
-
-        @keyframes pulse-blue {
-            0% { box-shadow: 0 0 0 0 rgba(56, 182, 255, 0.5); }
-            70% { box-shadow: 0 0 0 12px rgba(56, 182, 255, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(56, 182, 255, 0); }
-        }
-
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        .btn-live:disabled { cursor: not-allowed; }
-
+        /* Jendela Pratinjau Kamera */
         .scan-window {
             position: relative; 
-            border: 2px dashed rgba(255,255,255,0.15); 
-            border-radius: 20px; 
-            margin: 16px 0; 
+            border-radius: 24px; 
+            margin: 20px 0; 
             overflow: hidden; 
-            min-height: 200px; 
+            min-height: 220px; 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            background: #050811;
+            background: #111c2e;
         }
 
-        #preview { width: 100%; border-radius: 18px; display: none; }
+        #preview { width: 100%; border-radius: 24px; display: none; }
           
         .laser-line {
             display: none; 
             position: absolute; 
             width: 100%; 
-            height: 3px;
-            background: var(--accent-green); 
-            box-shadow: 0 0 20px 3px var(--accent-green);
+            height: 2px;
+            background: #3b82f6; 
+            box-shadow: 0 0 15px #3b82f6;
             z-index: 5; 
-            animation: scanAnim 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+            animation: scanAnim 3s linear infinite;
         }
-
         @keyframes scanAnim { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
         .is-scanning .laser-line { display: block; }
 
+        /* Info Box Sub-Informasi (Mirip Desain Cuaca Grid) */
         .info-box {
-            background: rgba(255, 255, 255, 0.03); 
+            background: #111c2e; 
             padding: 16px; 
-            border-radius: 16px;
+            border-radius: 18px;
             margin-top: 12px; 
-            border-left: 4px solid var(--accent-green); 
             font-size: 0.85rem;
-            line-height: 1.5;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            line-height: 1.6;
+            border-left: 4px solid #3b82f6;
         }
-
         .info-box strong { color: #ffffff; display: inline-block; margin-bottom: 4px; font-weight: 600;}
           
         .leaf-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--card-border);
-            border-left: 4px solid var(--accent-green);
-            border-radius: 14px;
-            padding: 14px;
+            background: #111c2e;
+            border-radius: 18px;
+            padding: 16px;
             margin-bottom: 12px;
         }
 
         .sub-header-biaya {
-            color: var(--accent-biaya);
-            font-size: 14px;
-            font-weight: 700;
-            margin: 18px 0 10px 0;
-            border-left: 3px solid var(--accent-biaya);
-            padding-left: 8px;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 20px 0 12px 0;
+            opacity: 0.9;
         }
 
+        /* Badge Skala BWD */
         .badge {
-            background: transparent !important;
-            border: 1.5px solid #fff;
-            text-transform: uppercase;
-            font-size: 0.65rem;
+            font-size: 0.7rem;
             font-weight: 700;
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 8px;
             display: inline-block;
             margin-bottom: 10px;
             letter-spacing: 0.5px;
         }
+        .skala-1 { background: #ef4444; color: #fff; }
+        .skala-2 { background: #f59e0b; color: #fff; }
+        .skala-3 { background: #10b981; color: #fff; }
+        .skala-4 { background: #047857; color: #fff; }
+        .skala-5 { background: #064e3b; color: #fff; }
 
-        .skala-1 { border-color: var(--accent-soil) !important; color: var(--accent-soil) !important; }
-        .skala-2 { border-color: #adff2f !important; color: #adff2f !important; }
-        .skala-3 { border-color: var(--accent-green) !important; color: var(--accent-green) !important; }
-        .skala-4 { border-color: #139e5d !important; color: #139e5d !important; }
-        .skala-5 { border-color: #186b44 !important; color: #186b44 !important; }
-
+        /* Desain Tabel Usaha Tani */
         table { width: 100%; font-size: 0.85rem; border-collapse: collapse; margin: 12px 0;}
-        td { padding: 12px 0; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); }
-        .row-val { font-weight: 700; text-align: right; color: var(--accent-soil); }
+        td { padding: 14px 0; border-bottom: 1px solid rgba(255,255,255,0.03); color: #cbd5e1; }
+        td:first-child { color: #8da2be; }
+        .row-val { font-weight: 600; text-align: right; color: #ffffff; }
 
-        #loader { text-align: center; margin-top: 16px; font-size: 0.8rem; font-weight: 600; color: var(--accent-green); letter-spacing: 1px; }
-        .recommendation-box { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--card-border); border-radius: 16px; padding: 16px; margin-top: 16px; }
-        .vote-summary { font-size: 0.8rem; color: var(--accent-soil); margin-bottom: 10px; font-weight: 700; }
-        .malai-counter-box { background: rgba(0, 0, 0, 0.2); border: 1px solid var(--card-border); border-radius: 12px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 500; }
+        #loader { text-align: center; margin-top: 16px; font-size: 0.8rem; font-weight: 600; color: #3b82f6; letter-spacing: 1px; }
+        .recommendation-box { background: rgba(0,0,0,0.1); border-radius: 18px; padding: 16px; margin-top: 16px; }
+        .vote-summary { font-size: 0.8rem; color: #fbbf24; margin-bottom: 10px; font-weight: 600; }
+        .malai-counter-box { background: #111c2e; border-radius: 14px; padding: 14px; margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.85rem; }
           
-        .error { color: #ff5252; font-size: 12px; display: none; margin-top: -10px; margin-bottom: 10px; }
-        .highlight { color: #81c784; font-weight: bold; }
-        .big { font-size: 18px; font-weight: bold; }
+        .error { color: #ef4444; font-size: 12px; display: none; margin-top: -10px; margin-bottom: 10px; }
+        .highlight { color: #10b981; font-weight: bold; }
+        .big { font-size: 20px; font-weight: 700; }
 
         footer.fixed-footer {
             position: fixed;
@@ -343,104 +297,73 @@
             left: 0;
             width: 100%;
             text-align: center;
-            padding: 8px 0;
+            padding: 12px 0;
             font-size: 0.75rem;
-            color: var(--text-muted);
-            background: #090e1a;
-            border-top: 1px solid #1e293b;
+            color: #64748b;
+            background: #0b1528;
+            border-top: 1px solid rgba(255,255,255,0.03);
             z-index: 100;
         }
+        footer.fixed-footer strong { color: #ffffff; }
 
-        footer.fixed-footer strong { color: var(--text-main); }
-
+        /* Grid Cuaca Per Jam Sesuai Desain Gambar */
         .forecast-title {
             font-size: 0.9rem;
-            font-weight: 700;
+            font-weight: 600;
             color: var(--text-main);
-            margin: 20px 0 10px 0;
-            letter-spacing: 0.5px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
+            margin: 24px 0 12px 0;
         }
         
         .hourly-scroll {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             overflow-x: auto;
             padding-bottom: 8px;
             margin-bottom: 15px;
             scrollbar-width: none;
         }
-
         .hourly-scroll::-webkit-scrollbar { display: none; }
         
         .hourly-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--card-border);
-            border-radius: 14px;
-            padding: 12px;
-            min-width: 75px;
+            background: #1b273a;
+            border-radius: 18px;
+            padding: 16px 12px;
+            min-width: 80px;
             text-align: center;
             flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
         }
+        .hourly-card .time { font-size: 0.75rem; color: #8da2be; font-weight: 500; }
+        .hourly-card .icon { font-size: 1.5rem; margin: 8px 0; }
+        .hourly-card .temp { font-size: 0.95rem; font-weight: 600; color: #ffffff; }
 
-        .hourly-card .time { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; }
-        .hourly-card .icon { font-size: 1.5rem; margin: 6px 0; }
-        .hourly-card .temp { font-size: 0.85rem; font-weight: 700; color: var(--accent-bwd); }
-
+        /* Struktur Prakiraan Harian */
         .daily-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid var(--card-border);
-            border-radius: 16px;
-            padding: 12px;
+            gap: 10px;
+            background: rgba(0,0,0,0.1);
+            border-radius: 20px;
+            padding: 14px;
         }
 
         .daily-item {
             display: grid;
             grid-template-columns: 2fr 1fr 2fr;
             align-items: center;
-            padding: 8px 4px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            font-size: 0.8rem;
-        }
-
-        .daily-item:last-child { border-bottom: none; }
-        .daily-item .day { font-weight: 600; color: var(--text-main); }
-        .daily-item .icon { font-size: 1.25rem; text-align: center; }
-        .daily-item .temp-range { text-align: right; font-weight: 700; color: var(--accent-soil); }
-    
-        #ensoStatus span {
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            padding: 10px 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
             font-size: 0.85rem;
-            text-shadow: 0 0 8px currentColor;
         }
-
-        #macroClimateChart, #localSstChart {
-            width: 100% !important;
-            height: 100% !important;
-        }
-
-        #boxKalkulatorPupuk .form-input {
-            background: #161e31 !important;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 12px;
-        }
+        .daily-item:last-child { border-bottom: none; }
+        .daily-item .day { font-weight: 500; color: #ffffff; }
+        .daily-item .icon { font-size: 1.3rem; text-align: center; }
+        .daily-item .temp-range { text-align: right; font-weight: 600; color: #ffffff; }
 
         #kecInput {
-            background-color: #0d1424 !important;
+            background-color: #111c2e !important;
             color: #ffffff !important;
-            border: 1px solid var(--card-border) !important;
             padding: 14px !important;
-        }
-
-        datalist {
-            background-color: #161e31;
-            color: #ffffff;
         }
     </style>
 </head>
@@ -789,7 +712,7 @@
                         </table>
                     </div>
 
-                    <div class="info-box" style="border-left-color: var(--accent-bwd); padding: 6px; margin-top: 16px; overflow: hidden;">
+                    <div class="info-box" style="border-left-color: var(--accent-green); padding: 6px; margin-top: 16px; overflow: hidden;">
                         <strong style="margin-left: 10px; margin-top: 10px;">🛰️ Analisis Satelit Mikro Spasial Lahan</strong>
                         <div style="position: relative; width: 100%; height: 400px; margin-top: 10px; border-radius: 16px; overflow: hidden; border: 1px solid var(--card-border);">
                             <iframe id="radarMap" width="100%" height="100%" frameborder="0" style="border:0; background: #060913;" allowfullscreen></iframe>
@@ -813,22 +736,22 @@
 
     <script>
         // 1. Fungsi bawaan untuk membuka & menutup modal
-function tutupCustomAlert() {
-    document.getElementById('customAlertModal').style.display = 'none';
-}
+        function tutupCustomAlert() {
+            document.getElementById('customAlertModal').style.display = 'none';
+        }
 
-// 2. OTOMATISASI GLOBAL: Mengubah fungsi alert bawaan browser
-window.alert = function(pesan) {
-    // Deteksi ikon otomatis biar lebih keren sesuai isi pesan
-    const ikon = document.getElementById('customAlertIcon');
-    if (pesan.includes("Rasio Kamera")) ikon.innerText = "📸";
-    else if (pesan.includes("Gagal") || pesan.includes("Error") || pesan.includes("!") ) ikon.innerText = "⚠️";
-    else ikon.innerText = "📢";
+        // 2. OTOMATISASI GLOBAL: Mengubah fungsi alert bawaan browser
+        window.alert = function(pesan) {
+            // Deteksi ikon otomatis biar lebih keren sesuai isi pesan
+            const ikon = document.getElementById('customAlertIcon');
+            if (pesan.includes("Rasio Kamera")) ikon.innerText = "📸";
+            else if (pesan.includes("Gagal") || pesan.includes("Error") || pesan.includes("!") ) ikon.innerText = "⚠️";
+            else ikon.innerText = "📢";
 
-    // Masukkan teks pesan dan munculkan modal
-    document.getElementById('customAlertMessage').innerText = pesan;
-    document.getElementById('customAlertModal').style.display = 'flex';
-};
+            // Masukkan teks pesan dan munculkan modal
+            document.getElementById('customAlertMessage').innerText = pesan;
+            document.getElementById('customAlertModal').style.display = 'flex';
+        };
         
         let currentMode = 'cuaca', base64Image = "";
         let hasilSampelBulir = []; 
@@ -1407,8 +1330,8 @@ window.alert = function(pesan) {
             canvas.height = video.videoHeight;
             ctx.drawImage(video, 0, 0);
 
-           // Nilai diselaraskan dengan masker visual (X: 42%, Y: 25%, Lebar: 16%, Tinggi: 50%)
-const frame = ctx.getImageData(canvas.width * 0.42, canvas.height * 0.25, canvas.width * 0.16, canvas.height * 0.50);
+            // Nilai diselaraskan dengan masker visual (X: 42%, Y: 25%, Lebar: 16%, Tinggi: 50%)
+            const frame = ctx.getImageData(canvas.width * 0.42, canvas.height * 0.25, canvas.width * 0.16, canvas.height * 0.50);
             analisisWarnaDaun(frame);
         });
 
@@ -1428,12 +1351,12 @@ const frame = ctx.getImageData(canvas.width * 0.42, canvas.height * 0.25, canvas
         }
         
         const BWD_STANDAR = [
-    { skala: 1, r: 0.42, g: 0.40, b: 0.18 }, // Dibuat lebih dominan kuning kusam
-    { skala: 2, r: 0.38, g: 0.45, b: 0.18 }, // Kalibrasi baru: Menaikkan R ke 0.45 & Menurunkan G ke 0.36
-    { skala: 3, r: 0.36, g: 0.44, b: 0.20 }, // Tetap (Sudah Oke)
-    { skala: 4, r: 0.35, g: 0.43, b: 0.22 }, // Tetap (Sudah Oke)
-    { skala: 5, r: 0.34, g: 0.43, b: 0.23 }  // Tetap (Sudah Oke)
-];
+            { skala: 1, r: 0.42, g: 0.40, b: 0.18 }, 
+            { skala: 2, r: 0.38, g: 0.45, b: 0.18 }, 
+            { skala: 3, r: 0.36, g: 0.44, b: 0.20 }, 
+            { skala: 4, r: 0.35, g: 0.43, b: 0.22 }, 
+            { skala: 5, r: 0.34, g: 0.43, b: 0.23 }  
+        ];
 
         function cariSkalaTerdekatViaRasio(r, g, b) {
             let minJarak = Infinity;
@@ -2410,12 +2333,12 @@ const frame = ctx.getImageData(canvas.width * 0.42, canvas.height * 0.25, canvas
                         </div>`;
 
                         hasilTeksWAVarietas += `${index + 1}. *${v.nama.toUpperCase()}*\n` +
-                                               `   • Umur Panen: ${v.umur} Hari\n` +
-                                               `   • Potensi Hasil: ${v.potensi} Ton/Ha\n` +
-                                               `   • Ketahanan: ${v.tahanHama || '-'} | ${v.tahanPenyakit || '-'}\n` +
-                                               `   • Kerentanan: ${v.rentanHama || '-'} | ${v.rentanPenyakit || '-'}\n` +
-                                               `   • Rekomendasi Lahan: ${v.adaptasi || '-'}\n` +
-                                               `   • Catatan Tambahan: ${v.catatan || '-'}\n\n`; 
+                                               `    • Umur Panen: ${v.umur} Hari\n` +
+                                               `    • Potensi Hasil: ${v.potensi} Ton/Ha\n` +
+                                               `    • Ketahanan: ${v.tahanHama || '-'} | ${v.tahanPenyakit || '-'}\n` +
+                                               `    • Kerentanan: ${v.rentanHama || '-'} | ${v.rentanPenyakit || '-'}\n` +
+                                               `    • Rekomendasi Lahan: ${v.adaptasi || '-'}\n` +
+                                               `    • Catatan Tambahan: ${v.catatan || '-'}\n\n`; 
                     });
 
                     hasilTeksWAVarietas += `_Diproduksi Otomatis oleh Sistem Aplikasi Penyuluh Milenial Wajo_`;
@@ -2457,12 +2380,12 @@ const frame = ctx.getImageData(canvas.width * 0.42, canvas.height * 0.25, canvas
         }
     </script>
     <div id="customAlertModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(4, 8, 20, 0.8); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
-    <div style="background: var(--card-bg); border: 1px solid var(--accent-green); padding: 24px; border-radius: 20px; max-width: 320px; width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0, 255, 157, 0.2);">
-        <div id="customAlertIcon" style="font-size: 2rem; margin-bottom: 12px;">📢</div>
-        <div style="font-size: 0.75rem; color: var(--accent-green); font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase;">NOTIFIKASI SISTEM</div>
-        <p id="customAlertMessage" style="font-size: 0.9rem; color: var(--text-main); margin: 0 0 20px 0; line-height: 1.5; font-weight: 500; text-align: center;"></p>
-        <button onclick="tutupCustomAlert()" style="background: var(--accent-green); color: #060913; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; width: 100%; cursor: pointer;">OKE</button>
+        <div style="background: var(--card-bg); border: 1px solid var(--accent-green); padding: 24px; border-radius: 20px; max-width: 320px; width: 85%; text-align: center; box-shadow: 0 10px 30px rgba(0, 255, 157, 0.2);">
+            <div id="customAlertIcon" style="font-size: 2rem; margin-bottom: 12px;">📢</div>
+            <div style="font-size: 0.75rem; color: var(--accent-green); font-weight: 700; letter-spacing: 1px; margin-bottom: 8px; text-transform: uppercase;">NOTIFIKASI SISTEM</div>
+            <p id="customAlertMessage" style="font-size: 0.9rem; color: var(--text-main); margin: 0 0 20px 0; line-height: 1.5; font-weight: 500; text-align: center;"></p>
+            <button onclick="tutupCustomAlert()" style="background: var(--accent-green); color: #060913; border: none; padding: 12px; border-radius: 12px; font-weight: 700; font-size: 0.85rem; width: 100%; cursor: pointer;">OKE</button>
+        </div>
     </div>
-</div>
 </body>
 </html>
