@@ -668,7 +668,7 @@
             <div id="boxBWD" style="display: none; text-align: center;">
                 <div id="cameraContainer" style="position: relative; width: 100%; max-width: 300px; margin: 0 auto; overflow: hidden; border-radius: 20px; background: #000;">
                     <video id="videoElement" autoplay playsinline muted style="width: 100%; height: 300px; object-fit: cover;"></video>
-                    <div id="focusBox" style="position: absolute; top: 35%; left: 35%; width: 30%; height: 30%; border: 3px solid var(--accent-green); border-radius: 12px; box-shadow: 0 0 0 999px rgba(0,0,0,0.5);"></div>
+                    <div id="focusBox" style="position: absolute; top: 25%; left: 42%; width: 16%; height: 50%; border: 3px solid var(--accent-green); border-radius: 8px; box-shadow: 0 0 0 999px rgba(0,0,0,0.5);"></div>
                 </div>
                 <button class="btn-main" id="btnCapture" style="margin-top: 20px; background: var(--accent-green);">📸 AMBIL & ANALISIS DAUN</button>
                 <canvas id="hiddenCanvas" style="display:none;"></canvas>
@@ -1389,8 +1389,8 @@
             canvas.height = video.videoHeight;
             ctx.drawImage(video, 0, 0);
 
-            // Disamakan dengan skala pratinjau kotak hijau (0.35 untuk posisi tengah, 0.3 untuk luas area)
-const frame = ctx.getImageData(canvas.width * 0.35, canvas.height * 0.35, canvas.width * 0.3, canvas.height * 0.3);
+           // Nilai diselaraskan dengan masker visual (X: 42%, Y: 25%, Lebar: 16%, Tinggi: 50%)
+const frame = ctx.getImageData(canvas.width * 0.42, canvas.height * 0.25, canvas.width * 0.16, canvas.height * 0.50);
             analisisWarnaDaun(frame);
         });
 
