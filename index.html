@@ -1410,11 +1410,11 @@ const frame = ctx.getImageData(canvas.width * 0.42, canvas.height * 0.25, canvas
         }
         
         const BWD_STANDAR = [
-    { skala: 1, r: 0.46, g: 0.35, b: 0.19 }, 
-    { skala: 2, r: 0.42, g: 0.38, b: 0.20 }, // Perubahan: Nilai G diturunkan agar lebih sensitif ke arah kuning/hijau muda
-    { skala: 3, r: 0.38, g: 0.41, b: 0.21 }, 
-    { skala: 4, r: 0.36, g: 0.42, b: 0.22 }, 
-    { skala: 5, r: 0.34, g: 0.43, b: 0.23 }  // Tetap mengunci data riil kamera Anda kemarin
+    { skala: 1, r: 0.49, g: 0.33, b: 0.18 }, // Dibuat lebih dominan kuning kusam
+    { skala: 2, r: 0.45, g: 0.36, b: 0.19 }, // Kalibrasi baru: Menaikkan R ke 0.45 & Menurunkan G ke 0.36
+    { skala: 3, r: 0.38, g: 0.41, b: 0.21 }, // Tetap (Sudah Oke)
+    { skala: 4, r: 0.36, g: 0.42, b: 0.22 }, // Tetap (Sudah Oke)
+    { skala: 5, r: 0.34, g: 0.43, b: 0.23 }  // Tetap (Sudah Oke)
 ];
 
         function cariSkalaTerdekatViaRasio(r, g, b) {
