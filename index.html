@@ -809,7 +809,7 @@
         const URL_IKLIM = "https://script.google.com/macros/s/AKfycbx2l8qiuAQ0vf_eeqx36VJSeDkjC61mrdoyE8fuLU8YGK_nOCBDyTwjp4MxYIRL3SkA/exec";
         const URL_PUPUK = "https://script.google.com/macros/s/AKfycbyZkyLEeLi7Igk-JXLuYuRsV0ZqTmbevRUQu6rY10rptwNyZ7y3d-YNmJCDn3QgM0Dm/exec";
         const URL_POLA_HUJAN = "https://script.google.com/macros/s/AKfycbyc3eEBcxqr_YqRKJ6lPnS4nAzz9TVrKQwKcgBJAg3KSulTdrYKeVvQbUjDVSIjYVLI/exec";
-        const URL_ZOM_LOKAL = "https://script.google.com/macros/s/AKfycbyCwk9R9y6A7oX-d14DqypIWN2KgGSsh8weo0_z6XkisYFzS0D1uvRcDDU6aAoWEBo_wA/exec";
+        const URL_ZOM_LOKAL = "https://script.google.com/macros/s/AKfycbw4oqbO59e789P9KU2mucMf2jmoFEiUow_-GDqWw2lp26EwWturqzId4m87PlTHFx292g/exec";
         const gasUrl = "https://script.google.com/macros/s/AKfycbw1e0FboS3FgWXEYrulCbYzoyQC0aWopU-DRIhlVJTF_C5jQoJRviDfRX_NCTis5wCiWg/exec";
           
         window.addEventListener('load', async function() {
@@ -2570,7 +2570,7 @@ async function prosesAnalisisKalender() {
 
         // Batas maksimal area Sulsel (Jika jarak > 150 km, otomatis beralih ke Makro)
         if (kabTerpilih && jarakTerdekat <= 150) {
-            namaZona = `ZOM KAB. ${kabTerpilih.kabupaten_kota.toUpperCase()} (Jarak: ${jarakTerdekat.toFixed(1)} km)`;
+            namaZona = `ZOM ${kabTerpilih.kabupaten_kota.toUpperCase()} (Jarak dari titik ZOM: ${jarakTerdekat.toFixed(1)} km)`;
             baselineData = [
                 parseFloat(kabTerpilih.jan), parseFloat(kabTerpilih.feb), parseFloat(kabTerpilih.mar),
                 parseFloat(kabTerpilih.apr), parseFloat(kabTerpilih.mei), parseFloat(kabTerpilih.jun),
@@ -2613,7 +2613,7 @@ async function prosesAnalisisKalender() {
             }
             
             // Baseline indeks digabung dengan distorsi ENSO & IOD (diboboti agar tidak ekstrem)
-            const wetnessScore = baselineBulanIni - (ensoVal * 0.5) - (iodVal * 0.5);
+            const wetnessScore = baselineBulanIni - (ensoVal * 0.2) - (iodVal * 0.1);
             
             let statusCuaca = "";
             if (wetnessScore <= -1.0) statusCuaca = "Sangat Kering (Ekstrem)";
