@@ -2550,10 +2550,12 @@ async function prosesAnalisisKalender() {
         let namaZona = "";
 
         // 3. LOGIKA HYBRID: Cek ZOM Lokal (Sulsel) dengan Haversine
+        // 3. LOGIKA HYBRID: Cek ZOM Lokal (Sulsel) dengan Haversine
         let jarakTerdekat = Infinity;
         let kabTerpilih = null;
 
-        if (dataZom && dataZom.status === "success" && dataZom.data) {
+        // KITA HILANGKAN SYARAT 'status === "success"' JAGA-JAGA JIKA JSON-NYA BERBEDA
+        if (dataZom && dataZom.data) {
             dataZom.data.forEach(kab => {
                 let jarak = hitungJarakHaversine(lokasi.lat, lokasi.lon, parseFloat(kab.lat), parseFloat(kab.lon));
                 if (jarak < jarakTerdekat) {
@@ -2561,6 +2563,9 @@ async function prosesAnalisisKalender() {
                     kabTerpilih = kab;
                 }
             });
+        } else {
+            // Memunculkan peringatan jika data dari Google Sheet kosong/gagal ditarik
+            console.warn("Data ZOM Lokal kosong atau format JSON tidak sesuai.");
         }
 
         // Batas maksimal area Sulsel (Jika jarak > 150 km, otomatis beralih ke Makro)
@@ -2573,13 +2578,14 @@ async function prosesAnalisisKalender() {
                 parseFloat(kabTerpilih.okt), parseFloat(kabTerpilih.nov), parseFloat(kabTerpilih.des)
             ];
         } else {
-            // FALLBACK KEMBALI KE POLA MAKRO JIKA DI LUAR SULSEL ATAU API ERROR
+            // JIKA TETAP MASUK KESINI, KITA BERI PENANDA AGAR KAMU TAHU
             let polaTerpilih = dbPola.find(p => p.pola.toLowerCase().includes("monsunal")); // Default
             if (lokasi.lon > 125) { polaTerpilih = dbPola.find(p => p.pola.toLowerCase().includes("lokal")); } 
             else if (lokasi.lat > -2 && lokasi.lon < 118) { polaTerpilih = dbPola.find(p => p.pola.toLowerCase().includes("ekuatorial")); } 
             else if (lokasi.lon >= 118 && lokasi.lon <= 125 && lokasi.lat > -2) { polaTerpilih = dbPola.find(p => p.pola.toLowerCase().includes("peralihan")); }
             
-            namaZona = `POLA MAKRO: ${polaTerpilih.pola.toUpperCase()}`;
+            // Tambahkan tulisan [FALLBACK] agar mudah dibedakan saat testing
+            namaZona = `[FALLBACK] POLA MAKRO: ${polaTerpilih.pola.toUpperCase()}`;
             baselineData = polaTerpilih.baseline;
         }
 
