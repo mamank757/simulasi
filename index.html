@@ -661,14 +661,18 @@
             </div>
 
             <div id="boxBWD" style="display: none; text-align: center;">
-                <div id="cameraContainer" style="position: relative; width: 100%; max-width: 300px; margin: 0 auto; overflow: hidden; border-radius: 20px; background: #000;">
-                    <video id="videoElement" autoplay playsinline muted style="width: 100%; height: 300px; object-fit: cover;"></video>
-                    <div id="focusBox" style="position: absolute; top: 25%; left: 42%; width: 16%; height: 50%; border: 3px solid var(--accent-green); border-radius: 8px; box-shadow: 0 0 0 999px rgba(0,0,0,0.5);"></div>
-                </div>
-                <button class="btn-main" id="btnCapture" style="margin-top: 20px; background: var(--accent-green);">📸 AMBIL & ANALISIS DAUN</button>
-                <canvas id="hiddenCanvas" style="display:none;"></canvas>
-                <div id="outputBWD" style="margin-top: 20px; text-align: left;"></div>
-            </div>
+    <div id="cameraContainer" style="position: relative; width: 100%; max-width: 300px; margin: 0 auto; overflow: hidden; border-radius: 20px; background: #000;">
+        <video id="videoElement" autoplay playsinline muted style="width: 100%; height: 300px; object-fit: cover;"></video>
+        
+        <img id="bwdPreviewImage" style="display: none; width: 100%; height: 300px; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 10;">
+        
+        <div id="focusBox" style="position: absolute; top: 25%; left: 42%; width: 16%; height: 50%; border: 3px solid var(--accent-green); border-radius: 8px; box-shadow: 0 0 0 999px rgba(0,0,0,0.5); z-index: 15;"></div>
+    </div>
+    
+    <button class="btn-main" id="btnCapture" style="margin-top: 20px; background: var(--accent-green);">AMBIL DAN ANALISIS DAUN</button>
+    <canvas id="hiddenCanvas" style="display:none;"></canvas>
+    <div id="outputBWD" style="margin-top: 20px; text-align: left;"></div>
+</div>
 
             <div id="boxMalai" style="display:none;">
                 <div id="listMalai"></div>
@@ -1139,6 +1143,18 @@ const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_
         document.getElementById('result').style.display = 'block'; 
         document.getElementById('resConf').style.display = 'none';
         document.getElementById('resLabel').innerText = "Arahkan Kamera ke Daun Padi";
+        
+        // --- KODE BARU: RESET UI BWD KEMBALI KE KAMERA LIVE ---
+        const previewImg = document.getElementById('bwdPreviewImage');
+        if(previewImg) previewImg.style.display = 'none';
+        
+        const focusBox = document.getElementById('focusBox');
+        if(focusBox) focusBox.style.display = 'block';
+        
+        const outBWD = document.getElementById('outputBWD');
+        if(outBWD) outBWD.innerHTML = '';
+        // --- AKHIR KODE BARU ---
+
         startBWDCamera();
     }
 
@@ -1565,8 +1581,8 @@ const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_
     const ctx = canvas.getContext('2d');
     const btn = document.getElementById('btnCapture');
 
-    // Pastikan video sedang berjalan
-    if (!video.videoWidth) {
+    // Pastikan video sedang berjalan dan kamera aktif
+    if (!video.videoWidth || !currentStream) {
         alert("Kamera belum siap, mohon tunggu sebentar.");
         return;
     }
@@ -1579,31 +1595,42 @@ const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_
     // Resize gambar agar pengiriman ke server lebih ringan dan cepat
     const exportCanvas = document.createElement('canvas');
     const exportCtx = exportCanvas.getContext('2d');
-    const targetWidth = 800; // Resolusi aman untuk Roboflow
+    const targetWidth = 800; // Resolusi aman untuk AI Roboflow
     exportCanvas.width = targetWidth;
     exportCanvas.height = (video.videoHeight * targetWidth) / video.videoWidth;
     
-    // Tambahkan filter brightness & contrast sedikit (seperti fitur daun sebelumnya) agar AI lebih akurat
+    // Tambahkan filter brightness & contrast sedikit agar AI lebih akurat membaca warna
     exportCtx.filter = 'brightness(1.05) contrast(1.1)';
     exportCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
 
     // Ubah gambar menjadi format base64
     const base64Img = exportCanvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 
+    // --- TAMPILKAN PREVIEW FOTO ---
+    const previewImg = document.getElementById('bwdPreviewImage');
+    if (previewImg) {
+        previewImg.src = canvas.toDataURL('image/jpeg'); 
+        previewImg.style.display = 'block';
+    }
+    
+    // Sembunyikan kotak fokus hijau agar tidak menimpa hasil jepretan di layar
+    const focusBox = document.getElementById('focusBox');
+    if (focusBox) focusBox.style.display = 'none';
+
     // Ubah status tombol UI menjadi loading
     const originalText = btn.innerText;
-    btn.innerHTML = "⏳ MENGANALISIS AI...";
+    btn.innerHTML = "MENGANALISIS AI..."; 
     btn.disabled = true;
     btn.style.opacity = "0.7";
     
     const outputDiv = document.getElementById('outputBWD');
     outputDiv.innerHTML = `
         <div style="text-align: center; color: var(--accent-bwd); font-size: 0.85rem; margin-top: 15px;">
-            <div class="animasi-loading-kalender" style="color:var(--accent-bwd);">📡 Menganalisis tingkat Nitrogen daun...</div>
+            <div class="animasi-loading-kalender" style="color:var(--accent-bwd);">Menganalisis tingkat Nitrogen daun...</div>
         </div>`;
 
     try {
-        // Kirim HTTP POST ke Web App Google Apps Script
+        // Kirim HTTP POST ke Web App Google Apps Script BWD
         const res = await fetch(URL_BWD, {
             method: 'POST',
             body: JSON.stringify({ image: base64Img })
@@ -1611,7 +1638,7 @@ const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_
         
         const data = await res.json();
         
-        // Hentikan kamera (freeze frame) untuk menghemat baterai HP user
+        // Hentikan kamera perangkat untuk menghemat baterai HP
         stopCamera();
         
         // Teruskan data ke fungsi global penampil hasil AI
@@ -1620,7 +1647,12 @@ const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_
 
     } catch (err) {
         console.error(err);
-        outputDiv.innerHTML = `<div class="error" style="display:block; text-align:center;">❌ Gagal memproses gambar. Periksa koneksi internet atau URL Apps Script.</div>`;
+        outputDiv.innerHTML = `<div class="error" style="display:block; text-align:center;">Gagal memproses gambar. Periksa koneksi internet atau URL Apps Script.</div>`;
+        
+        // Jika terjadi error (misal sinyal putus), kembalikan UI ke mode kamera live
+        if (previewImg) previewImg.style.display = 'none';
+        if (focusBox) focusBox.style.display = 'block';
+        
     } finally {
         // Kembalikan tombol ke kondisi semula
         btn.innerText = originalText;
