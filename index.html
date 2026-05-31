@@ -849,6 +849,8 @@
         const URL_TANAH = "https://script.google.com/macros/s/AKfycbwlryQ9ZZvgc1WjZAavj1J4KbUaaJPluZorOLzIEM12fOy19bKP56mdaITAt7jDZ5XYKg/exec";
         const URL_MALAI = "https://script.google.com/macros/s/AKfycbzVPK1I_81gFU07Q_tNsWxUK1SZ_1tmwNlASp8P5_IR5hApq3XZb8koYufA46fIOacd/exec";
         const URL_IKLIM = "https://script.google.com/macros/s/AKfycbx2l8qiuAQ0vf_eeqx36VJSeDkjC61mrdoyE8fuLU8YGK_nOCBDyTwjp4MxYIRL3SkA/exec";
+        // Tambahkan baris ini di bawah URL_PUPUK / URL_IKLIM
+const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_I2uy6FQjd-5eE2p1UuhQTde2lEbokpAquACyutg8kBDi/exec";
         const URL_PUPUK = "https://script.google.com/macros/s/AKfycbyZkyLEeLi7Igk-JXLuYuRsV0ZqTmbevRUQu6rY10rptwNyZ7y3d-YNmJCDn3QgM0Dm/exec";
         const URL_POLA_HUJAN = "https://script.google.com/macros/s/AKfycbyc3eEBcxqr_YqRKJ6lPnS4nAzz9TVrKQwKcgBJAg3KSulTdrYKeVvQbUjDVSIjYVLI/exec";
         const URL_ZOM_LOKAL = "https://script.google.com/macros/s/AKfycbw4oqbO59e789P9KU2mucMf2jmoFEiUow_-GDqWw2lp26EwWturqzId4m87PlTHFx292g/exec";
@@ -1557,20 +1559,75 @@
             }
         }
 
-        document.getElementById('btnCapture').addEventListener('click', () => {
-            const video = document.getElementById('videoElement');
-            const canvas = document.getElementById('hiddenCanvas');
-            const ctx = canvas.getContext('2d');
+        document.getElementById('btnCapture').addEventListener('click', async () => {
+    const video = document.getElementById('videoElement');
+    const canvas = document.getElementById('hiddenCanvas');
+    const ctx = canvas.getContext('2d');
+    const btn = document.getElementById('btnCapture');
 
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0);
+    // Pastikan video sedang berjalan
+    if (!video.videoWidth) {
+        alert("Kamera belum siap, mohon tunggu sebentar.");
+        return;
+    }
 
-            // Nilai diselaraskan dengan masker visual (X: 42%, Y: 25%, Lebar: 16%, Tinggi: 50%)
-            const frame = ctx.getImageData(canvas.width * 0.42, canvas.height * 0.25, canvas.width * 0.16, canvas.height * 0.50);
-            analisisWarnaDaun(frame);
+    // Ambil ukuran asli frame video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+
+    // Resize gambar agar pengiriman ke server lebih ringan dan cepat
+    const exportCanvas = document.createElement('canvas');
+    const exportCtx = exportCanvas.getContext('2d');
+    const targetWidth = 800; // Resolusi aman untuk Roboflow
+    exportCanvas.width = targetWidth;
+    exportCanvas.height = (video.videoHeight * targetWidth) / video.videoWidth;
+    
+    // Tambahkan filter brightness & contrast sedikit (seperti fitur daun sebelumnya) agar AI lebih akurat
+    exportCtx.filter = 'brightness(1.05) contrast(1.1)';
+    exportCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+
+    // Ubah gambar menjadi format base64
+    const base64Img = exportCanvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+
+    // Ubah status tombol UI menjadi loading
+    const originalText = btn.innerText;
+    btn.innerHTML = "⏳ MENGANALISIS AI...";
+    btn.disabled = true;
+    btn.style.opacity = "0.7";
+    
+    const outputDiv = document.getElementById('outputBWD');
+    outputDiv.innerHTML = `
+        <div style="text-align: center; color: var(--accent-bwd); font-size: 0.85rem; margin-top: 15px;">
+            <div class="animasi-loading-kalender" style="color:var(--accent-bwd);">📡 Menganalisis tingkat Nitrogen daun...</div>
+        </div>`;
+
+    try {
+        // Kirim HTTP POST ke Web App Google Apps Script
+        const res = await fetch(URL_BWD, {
+            method: 'POST',
+            body: JSON.stringify({ image: base64Img })
         });
+        
+        const data = await res.json();
+        
+        // Hentikan kamera (freeze frame) untuk menghemat baterai HP user
+        stopCamera();
+        
+        // Teruskan data ke fungsi global penampil hasil AI
+        currentMode = 'bwd';
+        tampilkanHasil(data);
 
+    } catch (err) {
+        console.error(err);
+        outputDiv.innerHTML = `<div class="error" style="display:block; text-align:center;">❌ Gagal memproses gambar. Periksa koneksi internet atau URL Apps Script.</div>`;
+    } finally {
+        // Kembalikan tombol ke kondisi semula
+        btn.innerText = originalText;
+        btn.disabled = false;
+        btn.style.opacity = "1";
+    }
+});
         async function mulaiAnalisis() {
             document.getElementById('scanWindow').classList.add('is-scanning');
             document.getElementById('loader').style.display = 'block';
