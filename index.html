@@ -933,6 +933,18 @@ const URL_BWD = "https://script.google.com/macros/s/AKfycbwGAPTPnLJyg-OtcbFt1aG_
             }
         }
 
+// Fungsi untuk menghaluskan fluktuasi (Moving Average)
+function getMovingAverage(data, windowSize = 3) {
+    let result = [];
+    for (let i = 0; i < data.length; i++) {
+        let sum = 0, count = 0;
+        for (let j = i - windowSize + 1; j <= i; j++) {
+            if (j >= 0) { sum += data[j]; count++; }
+        }
+        result.push(parseFloat((sum / count).toFixed(2)));
+    }
+    return result;
+}
         function dapatkanHariSiklusBulan() {
             const kranBulanMati = new Date("2026-01-18T17:00:00Z"); 
             const sekarang = new Date();
@@ -2106,6 +2118,9 @@ async function getLocalSSTTimeseries() {
                     getLocalSSTTimeseries()
                 ]);
                 
+                const ensoSmooth = getMovingAverage(enso.anomalies, 2);
+const iodSmooth = getMovingAverage(iod.anomalies, 2);
+
                 renderMacroChart(enso.labels, enso.anomalies, iod.anomalies);
                 renderLocalChart(sstLokal.labels, sstLokal.boneData, sstLokal.makassarData);
                 
