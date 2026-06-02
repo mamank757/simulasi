@@ -1676,11 +1676,14 @@ function initMap() {
 
     // Layer Satelit (lebih jelas untuk batas lahan)
     const satLayer = L.tileLayer(
-    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-    { 
-        maxZoom: 22,        // ← ubah dari 19 ke 22
-        maxNativeZoom: 19,  // ← tambahkan ini
-        opacity: 0.85 
+    'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
+    //                              ^
+    //                        y = hybrid (satelit + label)
+    //                        s = satelit saja
+    {
+        maxZoom: 22,
+        maxNativeZoom: 21,
+        opacity: 0.9
     }
 );
 
