@@ -445,8 +445,7 @@
     <button class="tab-btn" id="tabUkur" onclick="switchMode('ukur')">UKUR LUAS LAHAN</button>
     <button class="tab-btn" id="tabChat1" onclick="toggleChatbox(1)">KONSUL ASISTEN 1</button>
     <button class="tab-btn" id="tabChat2" onclick="toggleChatbox(2)">KONSUL ASISTEN 2</button>
-    <button class="tab-btn" id="tabChat3" onclick="toggleChatbox(3)">KONSUL ASISTEN 3</button>
-    <button class="tab-btn" id="tabChat4" onclick="toggleChatbox(4)">KONSUL ASISTEN 4</button>
+    <button class="tab-btn" id="tabChat4" onclick="toggleChatbox(4)">KONSUL ASISTEN 3</button>
 </div>
 </div>
 
@@ -1630,25 +1629,59 @@ let currentLine = null;
     }
 }
 
+// ==================== UKUR LUAS LAHAN (PERFECTED) ====================
+
+
+// Variabel untuk menyimpan data agar rapi saat dikirim ke WA
+let luasTotalHa = "0";
+let luasTotalM2 = "0";
+
 function initMap() {
     if (map) {
-        map.invalidateSize(); // Refresh ukuran peta
+        map.invalidateSize();
         return;
     }
 
-    map = L.map('mapContainer', { zoomControl: true, attributionControl: false })
-           .setView([-4.0, 120.0], 13);
+    // Menggunakan posisi kontrol zoom kustom agar tampilan mobile lebih rapi
+    map = L.map('mapContainer', { 
+        zoomControl: false, 
+        attributionControl: false 
+    }).setView([-4.1333, 120.0333], 10); // Default koordinat berpusat di area pemetaan utama
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+    L.control.zoom({ position: 'topright' }).addTo(map);
+
+    // Layer 1: Peta Standar Jalan (OpenStreetMap)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 22,
+        className: 'map-tiles'
+    }).addTo(map);
+
+    // Layer 2: Peta Satelit (Esri World Imagery) - Mempermudah melihat batas petakan sawah
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19,
+        opacity: 0.6
+    }).addTo(map);
 
     drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
 
-    // Toolbar Draw
+    // Toolbar Draw (Posisi diubah ke kiri atas)
     new L.Control.Draw({
+        position: 'topleft',
         draw: {
-            polygon: { shapeOptions: { color: '#22d3ee' } },
-            rectangle: { shapeOptions: { color: '#22d3ee' } },
+            polygon: { 
+                shapeOptions: { 
+                    color: '#22d3ee', 
+                    weight: 4,
+                    opacity: 0.9 
+                } 
+            },
+            rectangle: { 
+                shapeOptions: { 
+                    color: '#22d3ee', 
+                    weight: 4 
+                } 
+            },
             polyline: false,
             circle: false,
             marker: false,
@@ -1658,76 +1691,115 @@ function initMap() {
     }).addTo(map);
 
     map.on(L.Draw.Event.CREATED, function(e) {
+        // Hapus ukuran sebelumnya agar fokus pada 1 lahan yang baru digambar
+        drawnItems.clearLayers(); 
         drawnItems.addLayer(e.layer);
         hitungLuas(e.layer);
     });
+
+    // Otomatis lacak lokasi awal pengguna saat membuka peta
+    map.locate({setView: true, maxZoom: 18});
 }
 
 function hitungLuas(layer) {
-    let area = 0;
-    const latlngs = layer.getLatLngs()[0] || layer.getLatLngs();
+    let latlngs = layer.getLatLngs();
+    
+    // Handle both polygon and rectangle
+    if (Array.isArray(latlngs[0])) latlngs = latlngs[0];
 
-    if (latlngs && latlngs.length > 2) {
-        // Hitung manual karena GeometryUtil kadang bermasalah
-        area = L.GeometryUtil.geodesicArea ? 
-               L.GeometryUtil.geodesicArea(latlngs) : 
-               calculatePolygonArea(latlngs);
-    }
-
-    const areaHa = (area / 10000).toFixed(3);
-    const areaM2 = Math.round(area);
-
-    document.getElementById('ukurResult').style.display = 'block';
-    document.getElementById('luasDisplay').innerHTML = `${areaHa} <small style="font-size:0.95rem;">Hektar</small>`;
-    document.getElementById('luasDetail').innerHTML = `${areaM2.toLocaleString('id-ID')} m²`;
-}
-
-function calculatePolygonArea(latlngs) {
-    let area = 0;
-    const n = latlngs.length;
-    for (let i = 0; i < n; i++) {
-        const j = (i + 1) % n;
-        area += latlngs[i].lng * latlngs[j].lat;
-        area -= latlngs[j].lng * latlngs[i].lat;
-    }
-    return Math.abs(area) * 111319.5 * 111319.5 / 2; // Rough conversion
-}
-
-function modePeta() {
-    currentModeUkur = 'peta';
-    alert("🗺️ Klik di peta untuk membuat titik polygon.\nKlik titik pertama lagi untuk menyelesaikan.");
-}
-
-async function modeJalan() {
-    currentModeUkur = 'jalan';
-    gpsPoints = [];
-
-    document.getElementById('btnSelesaiJalan').style.display = 'block';
-
-    if (!navigator.geolocation) {
-        alert("Browser Anda tidak mendukung GPS.");
+    if (!latlngs || latlngs.length < 3) {
+        alert("Minimal 3 titik diperlukan untuk menghitung luas.");
         return;
     }
 
-    alert("🚶 Mulai berjalan mengelilingi lahan sawah.\nPastikan GPS HP menyala!");
+    let area = 0;
+    
+    // Metode paling akurat (Geodesic)
+    if (typeof L.GeometryUtil !== 'undefined' && L.GeometryUtil.geodesicArea) {
+        area = L.GeometryUtil.geodesicArea(latlngs);
+    } else {
+        area = calculatePolygonArea(latlngs);
+    }
+
+    luasTotalHa = (area / 10000).toFixed(4);
+    luasTotalM2 = Math.round(area).toLocaleString('id-ID');
+
+    document.getElementById('ukurResult').style.display = 'block';
+    document.getElementById('luasDisplay').innerHTML = `${luasTotalHa} <small style="font-size:0.5em; opacity:0.8;">Hektar</small>`;
+    document.getElementById('luasDetail').innerHTML = `
+        ${luasTotalM2} m²<br>
+        <small style="opacity:0.7;">Akurasi tinggi • Metode geodesik</small>
+    `;
+}
+
+// Fallback rumus manual koordinat bumi dalam meter
+function calculatePolygonArea(latlngs) {
+    let area = 0;
+    const n = latlngs.length;
+    
+    for (let i = 0; i < n; i++) {
+        const j = (i + 1) % n;
+        const lat1 = latlngs[i].lat * Math.PI / 180;
+        const lon1 = latlngs[i].lng * Math.PI / 180;
+        const lat2 = latlngs[j].lat * Math.PI / 180;
+        const lon2 = latlngs[j].lng * Math.PI / 180;
+        
+        area += (lon2 - lon1) * (2 + Math.sin(lat1) + Math.sin(lat2));
+    }
+    
+    return Math.abs(area) * 6378137 * 6378137 / 2; // Radius bumi dalam meter
+}
+
+function modePeta() {
+    alert("🗺️ CARA MENGUKUR MANUAL:\n\n1. Klik ikon ⬟ (Polygon) di kiri atas peta.\n2. Klik pada layar untuk membuat batas sudut lahan.\n3. Klik kembali titik pertama untuk menutup area.");
+}
+
+async function modeJalan() {
+    gpsPoints = [];
+    document.getElementById('btnSelesaiJalan').style.display = 'block';
+    document.getElementById('ukurResult').style.display = 'none';
+
+    if (!navigator.geolocation) {
+        alert("Browser tidak mendukung GPS.");
+        return;
+    }
+
+    alert("🚶 MULAI BERJALAN!\n\nSilakan berjalan mengelilingi batas lahan sawah. Pastikan GPS HP menyala dalam mode 'Akurasi Tinggi' dan Anda berada di luar ruangan.");
 
     watchId = navigator.geolocation.watchPosition((pos) => {
-        const latlng = [pos.coords.latitude, pos.coords.longitude];
+        const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
         gpsPoints.push(latlng);
 
         if (gpsPoints.length > 1) {
-            if (currentLine) map.removeLayer(currentLine);
-            currentLine = L.polyline(gpsPoints, { color: '#22d3ee', weight: 5, opacity: 0.8 }).addTo(map);
+            // Optimasi performa tracking linear
+            if (!currentLine) {
+                currentLine = L.polyline(gpsPoints, { 
+                    color: '#eab308', 
+                    weight: 6, 
+                    opacity: 0.9 
+                }).addTo(map);
+            } else {
+                currentLine.setLatLngs(gpsPoints);
+            }
         }
-        map.flyTo(latlng, 18);
+
+        map.flyTo(latlng, 19, { duration: 1 });
     }, (err) => {
-        alert("Gagal mendapatkan GPS: " + err.message);
-    }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 });
+        console.warn("GPS Error:", err);
+        // Mengabaikan notifikasi timeout ringan (code 3) agar tidak mengganggu proses berjalan
+        if(err.code !== 3) {
+            alert("Sinyal GPS lemah atau tidak diizinkan. Aktifkan GPS HP Anda.");
+        }
+    }, { 
+        enableHighAccuracy: true, 
+        maximumAge: 0, 
+        timeout: 10000 
+    });
 }
 
 function selesaiJalan() {
     if (gpsPoints.length < 3) {
-        alert("Minimal 3 titik GPS diperlukan untuk menghitung luas.");
+        alert("Titik GPS kurang dari 3. Lanjutkan berjalan sedikit lagi atau pastikan sinyal GPS bagus.");
         return;
     }
 
@@ -1736,8 +1808,16 @@ function selesaiJalan() {
         watchId = null;
     }
 
-    const polygon = L.polygon(gpsPoints, { color: '#22d3ee' });
+    drawnItems.clearLayers(); 
+    const polygon = L.polygon(gpsPoints, { color: '#22d3ee', weight: 4 });
     drawnItems.addLayer(polygon);
+    
+    // PENYEMPURNAAN: Menghapus garis kuning sisa tracking agar peta bersih dan menyisakan poligon biru saja
+    if (currentLine) {
+        map.removeLayer(currentLine);
+        currentLine = null;
+    }
+
     hitungLuas(polygon);
 
     document.getElementById('btnSelesaiJalan').style.display = 'none';
@@ -1745,16 +1825,36 @@ function selesaiJalan() {
 
 function resetPengukuran() {
     if (drawnItems) drawnItems.clearLayers();
-    if (currentLine) { map.removeLayer(currentLine); currentLine = null; }
+    if (currentLine) {
+        map.removeLayer(currentLine);
+        currentLine = null;
+    }
     gpsPoints = [];
+    luasTotalHa = "0";
+    luasTotalM2 = "0";
+    
+    if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+    }
+
     document.getElementById('ukurResult').style.display = 'none';
     document.getElementById('btnSelesaiJalan').style.display = 'none';
 }
 
 function kirimLuasKeWA() {
-    const luas = document.getElementById('luasDisplay').innerText || "0 Ha";
-    const teks = `*📐 UKUR LUAS LAHAN*\n\nLuas Lahan: ${luas}\nWaktu: ${new Date().toLocaleString('id-ID')}\n\nDihitung via Smart Farming PPL Milenial Wajo`;
-    window.open(`https://wa.me/?text=${encodeURIComponent(teks)}`);
+    if(luasTotalHa === "0") {
+        alert("Belum ada area yang diukur!");
+        return;
+    }
+
+    const teks = `*📐 UKUR LUAS LAHAN SAWAH - PPL MILENIAL WAJO*\n\n` +
+                 `📍 Luas: ${luasTotalHa} Hektar\n` +
+                 `📏 Detail: ${luasTotalM2} m²\n` +
+                 `🕒 Waktu: ${new Date().toLocaleString('id-ID')}\n\n` +
+                 `_Dihitung menggunakan aplikasi Smart Farming_`;
+
+    window.open("https://wa.me/?text=" + encodeURIComponent(teks), "_blank");
 }
         function handleFile(event) {
     const file = event.target.files[0];
