@@ -86,7 +86,7 @@
 
        .tab-container {
     display: grid;
-    grid-template-columns: repeat(5, 1fr); /* Membagi menu jadi 3 kolom sama rata */
+    grid-template-columns: repeat(4, 1fr); /* Membagi menu jadi 3 kolom sama rata */
     gap: 6px;
     background: #111c2e;
     padding: 6px; 
@@ -443,9 +443,10 @@
     <button class="tab-btn" id="tabTanah" onclick="switchMode('tanah')">FISIK TANAH</button>
     <button class="tab-btn" id="tabBWD" onclick="switchMode('bwd')">UJI BWD UREA</button>
     <button class="tab-btn" id="tabUkur" onclick="switchMode('ukur')">UKUR LUAS LAHAN</button>
-    <button class="tab-btn" id="tabChat1" onclick="toggleChatbox(1)">KONSUL ASISTEN 1</button>
-    <button class="tab-btn" id="tabChat2" onclick="toggleChatbox(2)">KONSUL ASISTEN 2</button>
-    <button class="tab-btn" id="tabChat4" onclick="toggleChatbox(4)">KONSUL ASISTEN 3</button>
+    <button class="tab-btn" id="tabChat1" onclick="toggleChatbox(1)">KONSUL ASIST 1</button>
+    <button class="tab-btn" id="tabChat2" onclick="toggleChatbox(2)">KONSUL ASIST 2</button>
+    <button class="tab-btn" id="tabChat3" onclick="toggleChatbox(3)">KONSUL ASIST 3</button>
+    <button class="tab-btn" id="tabChat4" onclick="toggleChatbox(4)">KONSUL ASIST 4</button>
 </div>
 </div>
 
@@ -1772,10 +1773,16 @@ function modePeta() {
 // Tambahkan ini di deretan variabel global paling atas (bersama map, currentLine, dll)
 let userMarker = null;
 
-// ==========================================
+// Konfigurasi GPS
+const GPS_ACCURACY_MAX = 10;      // Maksimal akurasi yang diterima (meter)
+const MIN_MOVE_DISTANCE = 2;      // Minimal perpindahan untuk menyimpan titik
+const MAX_GPS_JUMP = 50;          // Abaikan loncatan GPS di atas ini
+const CLOSE_POLYGON_DISTANCE = 5; // Jarak ke titik awal untuk menutup area
 
 async function modeJalan() {
+
     gpsPoints = [];
+
     document.getElementById('btnSelesaiJalan').style.display = 'block';
 
     if (!navigator.geolocation) {
@@ -1783,84 +1790,283 @@ async function modeJalan() {
         return;
     }
 
-    let gpsMonitor = document.getElementById('gpsMonitor');
-    if (!gpsMonitor) {
-        gpsMonitor = document.createElement('div');
-        gpsMonitor.id = 'gpsMonitor';
-        gpsMonitor.style.cssText = 'position:fixed; top:60px; left:50%; transform:translateX(-50%); background:rgba(0,0,0,0.8); color:#22d3ee; padding:8px 15px; border-radius:20px; z-index:1000; font-size:13px; font-weight:bold; border: 1px solid #22d3ee; text-align:center;';
-        document.body.appendChild(gpsMonitor);
+    // Bersihkan watch lama jika ada
+    if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
     }
-    gpsMonitor.innerHTML = '🔄 Mencari sinyal satelit...';
 
-    alert("🚶 MULAI BERJALAN!\n\nUntuk akurasi maksimal, berhentilah sejenak di setiap sudut pematang sawah agar titik terkunci dengan baik.");
+    // Hapus monitor lama
+    const oldMonitor = document.getElementById('gpsMonitor');
+    if (oldMonitor) oldMonitor.remove();
 
-    watchId = navigator.geolocation.watchPosition((pos) => {
-        const lat = pos.coords.latitude;
-        const lng = pos.coords.longitude;
-        const akurasi = Math.round(pos.coords.accuracy); 
-        
-        const latlng = L.latLng(lat, lng);
-        
-        // 1. UPDATE MARKER POSISI VISUAL
-        // Marker titik selalu mengikuti asalkan akurasi masuk akal (< 30m)
-        // agar user tahu bahwa GPS HP-nya merespon
-        if (akurasi <= 30) {
+    // Buat monitor GPS
+    const gpsMonitor = document.createElement('div');
+    gpsMonitor.id = 'gpsMonitor';
+
+    gpsMonitor.style.cssText = `
+        position: fixed;
+        top: 60px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(0,0,0,0.85);
+        color: #22d3ee;
+        padding: 10px 16px;
+        border-radius: 20px;
+        z-index: 9999;
+        font-size: 13px;
+        font-weight: bold;
+        border: 1px solid #22d3ee;
+    `;
+
+    gpsMonitor.innerHTML = "🔄 Sedang mencari GPS...";
+    document.body.appendChild(gpsMonitor);
+
+    alert(
+        "🚶 MULAI BERJALAN\n\n" +
+        "Kelilingi batas lahan hingga kembali ke titik awal.\n" +
+        "Pastikan berada di area terbuka agar GPS lebih akurat."
+    );
+
+    watchId = navigator.geolocation.watchPosition(
+
+        (pos) => {
+
+            const lat = pos.coords.latitude;
+            const lng = pos.coords.longitude;
+            const accuracy = Math.round(pos.coords.accuracy);
+
+            const latlng = L.latLng(lat, lng);
+
+            // Marker posisi selalu diperbarui
             if (!userMarker) {
+
                 userMarker = L.circleMarker(latlng, {
-                    radius: 7, color: 'white', weight: 2, fillColor: '#eab308', fillOpacity: 1
+                    radius: 7,
+                    color: 'white',
+                    weight: 2,
+                    fillColor: '#eab308',
+                    fillOpacity: 1
                 }).addTo(map);
+
             } else {
+
                 userMarker.setLatLng(latlng);
             }
-        }
 
-        // 2. FILTER KETAT UNTUK PENGUKURAN (AKURASI TINGGI)
-        // Garis batas lahan hanya akan direkam jika sinyal benar-benar bagus (<= 15m)
-        if (akurasi <= 20) {
+            // Update monitor
+            gpsMonitor.innerHTML =
+                `📍 Titik: ${gpsPoints.length} | Akurasi: ±${accuracy} m`;
+
+            gpsMonitor.style.color =
+                accuracy <= GPS_ACCURACY_MAX
+                    ? '#4ade80'
+                    : '#f87171';
+
+            // Tolak jika akurasi buruk
+            if (accuracy > GPS_ACCURACY_MAX) {
+                return;
+            }
+
+            // Titik pertama
             if (gpsPoints.length === 0) {
-                // Titik pertama langsung dimasukkan
+
                 gpsPoints.push(latlng);
+
             } else {
-                // Hitung jarak dari titik terakhir yang direkam
-                const titikTerakhir = gpsPoints[gpsPoints.length - 1];
-                const jarakLangkah = titikTerakhir.distanceTo(latlng);
 
-                // Titik baru hanya direkam jika user sudah bergeser minimal 2.5 meter
-                if (jarakLangkah >= 2.5) {
-                    gpsPoints.push(latlng);
+                const lastPoint = gpsPoints[gpsPoints.length - 1];
 
-                    if (!currentLine) {
-                        currentLine = L.polyline(gpsPoints, { 
-                            color: '#eab308', weight: 6, opacity: 0.9 
-                        }).addTo(map);
-                    } else {
-                        currentLine.setLatLngs(gpsPoints);
-                    }
+                const distance =
+                    lastPoint.distanceTo(latlng);
+
+                // Belum bergerak cukup jauh
+                if (distance < MIN_MOVE_DISTANCE) {
+                    return;
+                }
+
+                // GPS loncat
+                if (distance > MAX_GPS_JUMP) {
+
+                    console.warn(
+                        "GPS jump terdeteksi:",
+                        distance.toFixed(1),
+                        "meter"
+                    );
+
+                    return;
+                }
+
+                gpsPoints.push(latlng);
+            }
+
+            // Update garis
+            if (gpsPoints.length > 1) {
+
+                if (!currentLine) {
+
+                    currentLine = L.polyline(
+                        gpsPoints,
+                        {
+                            color: '#eab308',
+                            weight: 6,
+                            opacity: 0.9
+                        }
+                    ).addTo(map);
+
+                } else {
+
+                    currentLine.setLatLngs(gpsPoints);
                 }
             }
-        }
 
-        // Update informasi di layar
-        if (gpsMonitor) {
-            let statusTeks = `📍 Titik Terekam: ${gpsPoints.length}<br>Akurasi: ±${akurasi}m`;
-            
-            if (akurasi > 15) {
-                gpsMonitor.style.color = '#f87171'; // Merah (Tunggu sinyal bagus)
-                statusTeks += " (Sinyal Lemah)";
-            } else {
-                gpsMonitor.style.color = '#4ade80'; // Hijau (Siap merekam)
+            // Fokus ke posisi user
+            map.setView(latlng, 19);
+
+        },
+
+        (err) => {
+
+            console.warn("GPS Error:", err);
+
+            let pesan = "GPS tidak tersedia";
+
+            switch (err.code) {
+
+                case 1:
+                    pesan = "Izin lokasi ditolak";
+                    break;
+
+                case 2:
+                    pesan = "Lokasi tidak dapat ditentukan";
+                    break;
+
+                case 3:
+                    pesan = "Timeout GPS";
+                    break;
             }
-            gpsMonitor.innerHTML = statusTeks;
-        }
 
-        map.flyTo(latlng, 19, { duration: 1 });
-    }, (err) => {
-        console.warn("GPS Error:", err);
-    }, { 
-        enableHighAccuracy: true, 
-        maximumAge: 0, 
-        timeout: 10000 
-    });
+            gpsMonitor.innerHTML = `❌ ${pesan}`;
+            gpsMonitor.style.color = "#f87171";
+        },
+
+        {
+            enableHighAccuracy: true,
+            maximumAge: 0,
+            timeout: 15000
+        }
+    );
+}
+
+function selesaiJalan() {
+
+    if (gpsPoints.length < 10) {
+
+        alert(
+            "Titik GPS terlalu sedikit.\n" +
+            "Lanjutkan berjalan mengelilingi lahan."
+        );
+
+        return;
+    }
+
+    const firstPoint = gpsPoints[0];
+    const lastPoint = gpsPoints[gpsPoints.length - 1];
+
+    const closingDistance =
+        firstPoint.distanceTo(lastPoint);
+
+    if (closingDistance > CLOSE_POLYGON_DISTANCE) {
+
+        alert(
+            `Anda belum kembali ke titik awal.\n\n` +
+            `Jarak ke titik awal: ${closingDistance.toFixed(1)} meter`
+        );
+
+        return;
+    }
+
+    if (watchId) {
+
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+    }
+
+    const gpsMonitor =
+        document.getElementById('gpsMonitor');
+
+    if (gpsMonitor) {
+        gpsMonitor.remove();
+    }
+
+    drawnItems.clearLayers();
+
+    const polygon = L.polygon(
+        gpsPoints,
+        {
+            color: '#22d3ee',
+            weight: 4,
+            fillOpacity: 0.2
+        }
+    );
+
+    drawnItems.addLayer(polygon);
+
+    if (currentLine) {
+
+        map.removeLayer(currentLine);
+        currentLine = null;
+    }
+
+    if (userMarker) {
+
+        map.removeLayer(userMarker);
+        userMarker = null;
+    }
+
+    hitungLuas(polygon);
+
+    document.getElementById('btnSelesaiJalan').style.display = 'none';
+}
+
+function resetPengukuran() {
+
+    if (watchId) {
+
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+    }
+
+    if (drawnItems) {
+        drawnItems.clearLayers();
+    }
+
+    if (currentLine) {
+
+        map.removeLayer(currentLine);
+        currentLine = null;
+    }
+
+    if (userMarker) {
+
+        map.removeLayer(userMarker);
+        userMarker = null;
+    }
+
+    const gpsMonitor =
+        document.getElementById('gpsMonitor');
+
+    if (gpsMonitor) {
+        gpsMonitor.remove();
+    }
+
+    gpsPoints = [];
+
+    luasTotalHa = "0";
+    luasTotalM2 = "0";
+
+    document.getElementById('ukurResult').style.display = 'none';
+    document.getElementById('btnSelesaiJalan').style.display = 'none';
 }
         function handleFile(event) {
     const file = event.target.files[0];
