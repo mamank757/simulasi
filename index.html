@@ -1769,6 +1769,11 @@ function modePeta() {
     alert("🗺️ Cara Menggunakan:\n\n1. Klik beberapa titik mengelilingi lahan\n2. Klik titik pertama lagi untuk menutup polygon");
 }
 
+// Tambahkan ini di deretan variabel global paling atas (bersama map, currentLine, dll)
+let userMarker = null;
+
+// ==========================================
+
 async function modeJalan() {
     gpsPoints = [];
     document.getElementById('btnSelesaiJalan').style.display = 'block';
@@ -1778,14 +1783,24 @@ async function modeJalan() {
         return;
     }
 
-    alert("🚶 Mulai berjalan mengelilingi lahan sawah.\n\nPastikan GPS HP menyala dalam mode 'Akurasi Tinggi' (High Accuracy)!");
+    alert("🚶 MULAI BERJALAN!\n\nPENTING: Garis kuning baru akan ditarik setelah Anda melangkah beberapa meter (butuh minimal 2 titik GPS).");
 
     watchId = navigator.geolocation.watchPosition((pos) => {
         const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
         gpsPoints.push(latlng);
 
+        // FITUR BARU: Tambahkan marker titik bulat agar pergerakan langsung terlihat
+        // meskipun garis belum bisa ditarik
+        if (!userMarker) {
+            userMarker = L.circleMarker(latlng, {
+                radius: 6, color: 'white', weight: 2, fillColor: '#eab308', fillOpacity: 1
+            }).addTo(map);
+        } else {
+            userMarker.setLatLng(latlng);
+        }
+
         if (gpsPoints.length > 1) {
-            // Optimasi: Update koordinat garis agar tidak berat di memori
+            // Tarik garis jika sudah ada 2 titik atau lebih
             if (!currentLine) {
                 currentLine = L.polyline(gpsPoints, { 
                     color: '#eab308', 
@@ -1800,14 +1815,13 @@ async function modeJalan() {
         map.flyTo(latlng, 19, { duration: 1 });
     }, (err) => {
         console.warn("GPS Error:", err);
-        // Sembunyikan alert jika error code 3 (timeout ringan) agar tidak mengganggu saat jalan
         if(err.code !== 3) {
-            alert("Gagal mendapatkan sinyal GPS yang akurat. Pastikan Anda berada di luar ruangan.\n\nPesan sistem: " + err.message);
+            console.log("Mencari sinyal satelit...");
         }
     }, { 
         enableHighAccuracy: true, 
-        maximumAge: 0, 
-        timeout: 10000 
+        maximumAge: 2000, // Diubah agar Android boleh pakai cache GPS sepersekian detik
+        timeout: 20000 // Diperpanjang agar Android punya waktu mencari satelit
     });
 }
 
@@ -1822,14 +1836,18 @@ function selesaiJalan() {
         watchId = null;
     }
 
-    drawnItems.clearLayers(); // Pastikan area bersih sebelum render poligon GPS
+    drawnItems.clearLayers(); 
     const polygon = L.polygon(gpsPoints, { color: '#22d3ee', weight: 4 });
     drawnItems.addLayer(polygon);
     
-    // Hapus garis kuning penanda jalan agar bersih
+    // Bersihkan garis dan marker jalan
     if (currentLine) {
         map.removeLayer(currentLine);
         currentLine = null;
+    }
+    if (userMarker) {
+        map.removeLayer(userMarker);
+        userMarker = null;
     }
 
     hitungLuas(polygon);
@@ -1843,6 +1861,11 @@ function resetPengukuran() {
         map.removeLayer(currentLine);
         currentLine = null;
     }
+    if (userMarker) {
+        map.removeLayer(userMarker);
+        userMarker = null;
+    }
+    
     gpsPoints = [];
     luasTotalHa = "0";
     luasTotalM2 = "0";
