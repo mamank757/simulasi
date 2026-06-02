@@ -1666,15 +1666,23 @@ function initMap() {
 
     // Layer OSM (fallback)
     const osmLayer = L.tileLayer(
-        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        { maxZoom: 22, className: 'map-tiles' }
-    );
+    'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    { 
+        maxZoom: 22,
+        maxNativeZoom: 19,  // ← tambahkan ini
+        className: 'map-tiles' 
+    }
+);
 
     // Layer Satelit (lebih jelas untuk batas lahan)
     const satLayer = L.tileLayer(
-        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-        { maxZoom: 19, opacity: 0.85 }
-    );
+    'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    { 
+        maxZoom: 22,        // ← ubah dari 19 ke 22
+        maxNativeZoom: 19,  // ← tambahkan ini
+        opacity: 0.85 
+    }
+);
 
     osmLayer.addTo(map);
     satLayer.addTo(map);
