@@ -1631,32 +1631,23 @@ let currentLine = null;
 
 // ==================== UKUR LUAS LAHAN (PERFECTED) ====================
 
-
-// Variabel untuk menyimpan data agar rapi saat dikirim ke WA
-let luasTotalHa = "0";
-let luasTotalM2 = "0";
-
 function initMap() {
     if (map) {
         map.invalidateSize();
         return;
     }
 
-    // Menggunakan posisi kontrol zoom kustom agar tampilan mobile lebih rapi
     map = L.map('mapContainer', { 
-        zoomControl: false, 
+        zoomControl: true, 
         attributionControl: false 
-    }).setView([-4.1333, 120.0333], 10); // Default koordinat berpusat di area pemetaan utama
+    }).setView([-4.0, 120.0], 13);
 
-    L.control.zoom({ position: 'topright' }).addTo(map);
-
-    // Layer 1: Peta Standar Jalan (OpenStreetMap)
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 22,
         className: 'map-tiles'
     }).addTo(map);
 
-    // Layer 2: Peta Satelit (Esri World Imagery) - Mempermudah melihat batas petakan sawah
+    // Tambahan Layer Satelit agar batas lahan terlihat lebih jelas
     L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 19,
         opacity: 0.6
@@ -1665,9 +1656,8 @@ function initMap() {
     drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
 
-    // Toolbar Draw (Posisi diubah ke kiri atas)
+    // Toolbar Draw
     new L.Control.Draw({
-        position: 'topleft',
         draw: {
             polygon: { 
                 shapeOptions: { 
@@ -1697,8 +1687,33 @@ function initMap() {
         hitungLuas(e.layer);
     });
 
-    // Otomatis lacak lokasi awal pengguna saat membuka peta
-    map.locate({setView: true, maxZoom: 18});
+    // Panggil fungsi auto-lokasi khusus Android saat peta dimuat
+    fokusLokasiSekarang();
+}
+
+// Fungsi baru untuk memaksa auto-posisi di Android
+function fokusLokasiSekarang() {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition((position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        map.flyTo([lat, lng], 18, { duration: 1.5 });
+
+        // Beri marker kecil agar tahu titik awal
+        if(markerLokasi) map.removeLayer(markerLokasi);
+        markerLokasi = L.circleMarker([lat, lng], {
+            radius: 8, fillColor: "#3b82f6", color: "#fff", weight: 2, opacity: 1, fillOpacity: 0.9
+        }).addTo(map);
+
+    }, (error) => {
+        console.warn("Auto-posisi terhalang:", error.message);
+    }, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
+    });
 }
 
 function hitungLuas(layer) {
@@ -1714,7 +1729,7 @@ function hitungLuas(layer) {
 
     let area = 0;
     
-    // Metode paling akurat (Geodesic)
+    // Metode paling akurat
     if (typeof L.GeometryUtil !== 'undefined' && L.GeometryUtil.geodesicArea) {
         area = L.GeometryUtil.geodesicArea(latlngs);
     } else {
@@ -1725,14 +1740,14 @@ function hitungLuas(layer) {
     luasTotalM2 = Math.round(area).toLocaleString('id-ID');
 
     document.getElementById('ukurResult').style.display = 'block';
-    document.getElementById('luasDisplay').innerHTML = `${luasTotalHa} <small style="font-size:0.5em; opacity:0.8;">Hektar</small>`;
+    document.getElementById('luasDisplay').innerHTML = `${luasTotalHa} <small style="font-size:0.95rem; opacity:0.9;">Hektar</small>`;
     document.getElementById('luasDetail').innerHTML = `
         ${luasTotalM2} m²<br>
         <small style="opacity:0.7;">Akurasi tinggi • Metode geodesik</small>
     `;
 }
 
-// Fallback rumus manual koordinat bumi dalam meter
+// Fallback rumus manual yang lebih akurat
 function calculatePolygonArea(latlngs) {
     let area = 0;
     const n = latlngs.length;
@@ -1747,31 +1762,30 @@ function calculatePolygonArea(latlngs) {
         area += (lon2 - lon1) * (2 + Math.sin(lat1) + Math.sin(lat2));
     }
     
-    return Math.abs(area) * 6378137 * 6378137 / 2; // Radius bumi dalam meter
+    return Math.abs(area) * 6378137 * 6378137 / 2; // Earth radius in meters
 }
 
 function modePeta() {
-    alert("🗺️ CARA MENGUKUR MANUAL:\n\n1. Klik ikon ⬟ (Polygon) di kiri atas peta.\n2. Klik pada layar untuk membuat batas sudut lahan.\n3. Klik kembali titik pertama untuk menutup area.");
+    alert("🗺️ Cara Menggunakan:\n\n1. Klik beberapa titik mengelilingi lahan\n2. Klik titik pertama lagi untuk menutup polygon");
 }
 
 async function modeJalan() {
     gpsPoints = [];
     document.getElementById('btnSelesaiJalan').style.display = 'block';
-    document.getElementById('ukurResult').style.display = 'none';
 
     if (!navigator.geolocation) {
         alert("Browser tidak mendukung GPS.");
         return;
     }
 
-    alert("🚶 MULAI BERJALAN!\n\nSilakan berjalan mengelilingi batas lahan sawah. Pastikan GPS HP menyala dalam mode 'Akurasi Tinggi' dan Anda berada di luar ruangan.");
+    alert("🚶 Mulai berjalan mengelilingi lahan sawah.\n\nPastikan GPS HP menyala dalam mode 'Akurasi Tinggi' (High Accuracy)!");
 
     watchId = navigator.geolocation.watchPosition((pos) => {
         const latlng = L.latLng(pos.coords.latitude, pos.coords.longitude);
         gpsPoints.push(latlng);
 
         if (gpsPoints.length > 1) {
-            // Optimasi performa tracking linear
+            // Optimasi: Update koordinat garis agar tidak berat di memori
             if (!currentLine) {
                 currentLine = L.polyline(gpsPoints, { 
                     color: '#eab308', 
@@ -1786,9 +1800,9 @@ async function modeJalan() {
         map.flyTo(latlng, 19, { duration: 1 });
     }, (err) => {
         console.warn("GPS Error:", err);
-        // Mengabaikan notifikasi timeout ringan (code 3) agar tidak mengganggu proses berjalan
+        // Sembunyikan alert jika error code 3 (timeout ringan) agar tidak mengganggu saat jalan
         if(err.code !== 3) {
-            alert("Sinyal GPS lemah atau tidak diizinkan. Aktifkan GPS HP Anda.");
+            alert("Gagal mendapatkan sinyal GPS yang akurat. Pastikan Anda berada di luar ruangan.\n\nPesan sistem: " + err.message);
         }
     }, { 
         enableHighAccuracy: true, 
@@ -1799,7 +1813,7 @@ async function modeJalan() {
 
 function selesaiJalan() {
     if (gpsPoints.length < 3) {
-        alert("Titik GPS kurang dari 3. Lanjutkan berjalan sedikit lagi atau pastikan sinyal GPS bagus.");
+        alert("Minimal 3 titik GPS diperlukan untuk membentuk area lahan.");
         return;
     }
 
@@ -1808,11 +1822,11 @@ function selesaiJalan() {
         watchId = null;
     }
 
-    drawnItems.clearLayers(); 
+    drawnItems.clearLayers(); // Pastikan area bersih sebelum render poligon GPS
     const polygon = L.polygon(gpsPoints, { color: '#22d3ee', weight: 4 });
     drawnItems.addLayer(polygon);
     
-    // PENYEMPURNAAN: Menghapus garis kuning sisa tracking agar peta bersih dan menyisakan poligon biru saja
+    // Hapus garis kuning penanda jalan agar bersih
     if (currentLine) {
         map.removeLayer(currentLine);
         currentLine = null;
