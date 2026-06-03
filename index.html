@@ -1914,10 +1914,10 @@ function modeJalan() {
         gpsMonitor = document.createElement('div');
         gpsMonitor.id = 'gpsMonitor';
         gpsMonitor.style.cssText =
-            'position:fixed; top:60px; left:50%; transform:translateX(-50%);' +
-            'background:rgba(0,0,0,0.85); color:#22d3ee; padding:8px 18px;' +
-            'border-radius:20px; z-index:1000; font-size:13px; font-weight:bold;' +
-            'border:1px solid #22d3ee; white-space:nowrap;';
+    'position:fixed; top:50%; left:50%; transform:translate(-50%, -50%);' + // ← tengah layar
+    'background:rgba(0,0,0,0.85); color:#22d3ee; padding:12px 20px;' +
+    'border-radius:20px; z-index:1000; font-size:14px; font-weight:bold;' +
+    'border:1px solid #22d3ee; white-space:nowrap; text-align:center;';
         document.body.appendChild(gpsMonitor);
     }
     gpsMonitor.textContent = '🔄 Mencari satelit…';
