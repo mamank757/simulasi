@@ -1650,10 +1650,10 @@ let kalman = null;
 
 // ─── KONSTANTA ───────────────────────────────────────────────────────────────
 const EARTH_RADIUS_M   = 6378137;          // WGS-84 semi-major axis
-const AKURASI_MAX_M    = 20;               // Tolak titik dengan akurasi > 20 m
-const JARAK_MIN_M      = 1.5;             // Titik baru minimal 1.5 m dari titik terakhir
+const AKURASI_MAX_M    = 15;               // Tolak titik dengan akurasi > 20 m
+const JARAK_MIN_M      = 2;             // Titik baru minimal 1.5 m dari titik terakhir
 const FLYTO_ZOOM       = 18;
-const GPS_TIMEOUT_MS   = 12000;
+const GPS_TIMEOUT_MS   = 15000;
 
 // ─── INISIALISASI PETA ───────────────────────────────────────────────────────
 function initMap() {
@@ -1825,29 +1825,62 @@ function sphericalExcessArea(latlngs) {
     return Math.abs(total * EARTH_RADIUS_M * EARTH_RADIUS_M / 2);
 }
 
-// ─── KALMAN FILTER SEDERHANA ──────────────────────────────────────────────────
+// ─── KALMAN FILTER SEDERHANA ─────────────────────────────────────────────────
 /**
- * Kalman 1-D sederhana untuk meredam noise GPS.
+ * Kalman 1-D untuk meredam noise GPS.
  * Dipakai secara independen untuk lat dan lng.
+ *
+ * @param {number} R - Noise pengukuran (makin besar = makin halus, makin lambat)
+ * @param {number} Q - Noise proses (makin kecil = makin lambat adaptasi)
  */
-function KalmanFilter(R = 3, Q = 0.5) {
-    this.R = R;        // Noise pengukuran (meter)
-    this.Q = Q;        // Noise proses
-    this.P = 1;
-    this.X = null;
-    this.K = 0;
+class KalmanFilter {
+    constructor(R = 5, Q = 0.3) {
+        this.R = R;
+        this.Q = Q;
+        this.reset();
+    }
 
-    this.filter = function(measurement) {
-        if (this.X === null) { this.X = measurement; return measurement; }
+    reset() {
+        this.P = 1;       // Estimasi error awal
+        this.X = null;    // Nilai estimasi (null = belum ada data)
+        this.K = 0;       // Kalman gain
+    }
+
+    filter(measurement) {
+        // Inisialisasi: titik pertama langsung diterima apa adanya
+        if (this.X === null) {
+            this.X = measurement;
+            return measurement;
+        }
+
+        // Prediksi error
+        this.P = this.P + this.Q;
+
+        // Hitung Kalman Gain
         this.K = this.P / (this.P + this.R);
+
+        // Update estimasi
         this.X = this.X + this.K * (measurement - this.X);
-        this.P = (1 - this.K) * this.P + this.Q;
+
+        // Update error estimasi
+        this.P = (1 - this.K) * this.P;
+
         return this.X;
-    };
+    }
 }
 
 function resetKalman() {
-    kalman = { lat: new KalmanFilter(), lng: new KalmanFilter() };
+    if (kalman) {
+        // Reuse instance yang ada, cukup reset state-nya
+        kalman.lat.reset();
+        kalman.lng.reset();
+    } else {
+        // Buat instance baru pertama kali
+        kalman = {
+            lat: new KalmanFilter(5, 0.3),
+            lng: new KalmanFilter(5, 0.3)
+        };
+    }
 }
 
 // ─── JARAK HAVERSINE (METER) ─────────────────────────────────────────────────
