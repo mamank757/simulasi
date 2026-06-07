@@ -1364,7 +1364,7 @@ body.light-mode .harga-table td { color: #334155 !important; border-bottom: 1px 
 
             <div id="boxBWD" style="display: none; text-align: center;">
 
-    <!-- PROMPT AKTIVASI — tampil pertama, tidak ada <video> di DOM -->
+    <!-- Panel prompt — tampil pertama, TIDAK ada <video> di DOM -->
     <div id="bwdCameraPrompt" style="padding: 10px 0 20px 0;">
         <div style="font-size: 2.5rem; margin-bottom: 12px;">🍃</div>
         <h4 style="margin: 0 0 8px 0; color: var(--text-main); font-size: 1.05rem; font-weight: 700;">Uji BWD — Bagan Warna Daun</h4>
@@ -1377,14 +1377,13 @@ body.light-mode .harga-table td { color: #334155 !important; border-bottom: 1px 
         </button>
     </div>
 
-    <!-- AREA KAMERA — dibuat secara dinamis via JS saat tombol diklik -->
+    <!-- Area kamera — <video> dibuat dinamis lewat JS, bukan hardcode -->
     <div id="cameraContainer" style="display:none; position: relative; width: 100%; max-width: 300px; margin: 0 auto; overflow: hidden; border-radius: 20px; background: #000;">
-        <!-- <video> dibuat dinamis oleh aktifkanKameraBWD(), tidak hardcode di sini -->
         <img id="bwdPreviewImage" style="display: none; width: 100%; height: 300px; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 10;">
         <div id="focusBox" style="display:none; position: absolute; top: 25%; left: 42%; width: 16%; height: 50%; border: 3px solid var(--accent-green); border-radius: 8px; box-shadow: 0 0 0 999px rgba(0,0,0,0.5); z-index: 15;"></div>
     </div>
 
-    <button class="btn-main" id="btnCapture" style="display:none; margin-top: 20px; background: var(--accent-green);">AMBIL DAN ANALISIS DAUN</button>
+    <button class="btn-main" id="btnCapture" onclick="tangkapDanAnalisBWD()" style="display:none; margin-top: 20px; background: var(--accent-green);">AMBIL DAN ANALISIS DAUN</button>
     <canvas id="hiddenCanvas" style="display:none;"></canvas>
     <div id="outputBWD" style="margin-top: 20px; text-align: left;"></div>
 </div>
@@ -2141,10 +2140,10 @@ function getMovingAverage(data, windowSize = 3) {
         function switchMode(mode) {
     if (mode !== 'bwd') {
         stopCamera();
-        // Hapus <video> dari DOM saat keluar mode BWD — cegah iOS meminta izin ulang
+        // Hapus <video> dari DOM saat keluar BWD — iOS tidak akan minta izin ulang
         const oldVideo = document.getElementById('videoElement');
-        if (oldVideo) oldVideo.remove();
-        // Reset tampilan BWD ke panel prompt awal
+        if (oldVideo) { oldVideo.srcObject = null; oldVideo.remove(); }
+        // Reset tampilan BWD ke panel prompt
         const bwdPrompt    = document.getElementById('bwdCameraPrompt');
         const camContainer = document.getElementById('cameraContainer');
         const btnCapture   = document.getElementById('btnCapture');
@@ -2213,7 +2212,7 @@ function getMovingAverage(data, windowSize = 3) {
         document.getElementById('resConf').style.display = 'none';
         document.getElementById('resLabel').innerText = "Uji BWD — Bagan Warna Daun";
 
-        // Kembalikan ke panel prompt (tidak auto-aktifkan kamera)
+        // Tampilkan panel prompt, sembunyikan area kamera
         const bwdPrompt    = document.getElementById('bwdCameraPrompt');
         const camContainer = document.getElementById('cameraContainer');
         const btnCapture   = document.getElementById('btnCapture');
@@ -2229,11 +2228,11 @@ function getMovingAverage(data, windowSize = 3) {
         if (focusBox)     focusBox.style.display     = 'none';
         if (outBWD)       outBWD.innerHTML           = '';
         if (btnAktifkan)  {
-            btnAktifkan.innerText  = '📷 AKTIFKAN KAMERA';
-            btnAktifkan.disabled   = false;
+            btnAktifkan.innerText     = '📷 AKTIFKAN KAMERA';
+            btnAktifkan.disabled      = false;
             btnAktifkan.style.opacity = '1';
         }
-        // TIDAK memanggil startBWDCamera() — izin kamera hanya diminta saat user klik tombol
+        // TIDAK memanggil startBWDCamera() — hanya aktif saat user klik tombol
     }
 
     if (sub !== '') { 
@@ -3269,39 +3268,39 @@ function isWilayahSulsel(lat, lon) {
                 alert(`Gagal memuat data cuaca.\n\nPenyebab: ${err.message || "Tidak diketahui"}\n\nSolusi:\n• Pastikan GPS aktif\n• Izin Lokasi diberikan\n• Koneksi internet stabil\n• Coba lagi beberapa saat`);
             }
         }
-        // startBWDCamera: buat <video> secara dinamis agar iOS Safari
-        // tidak memicu permission prompt sebelum user klik tombol.
+        // ── BWD KAMERA: semua fungsi ──────────────────────────────────────────
+
+        // Buat <video> secara dinamis — iOS Safari tidak akan meminta izin
+        // kamera sebelum elemen ini benar-benar ada di DOM.
         async function startBWDCamera() {
             const container = document.getElementById('cameraContainer');
 
-            // Hapus <video> lama jika ada (misal dari sesi uji ulang)
+            // Hapus <video> lama jika ada (sesi uji ulang)
             const oldVideo = document.getElementById('videoElement');
-            if (oldVideo) oldVideo.remove();
+            if (oldVideo) { oldVideo.srcObject = null; oldVideo.remove(); }
 
-            // Buat elemen <video> baru — TIDAK ada di DOM sebelum ini
+            // Buat elemen <video> baru — tidak ada di HTML sama sekali
             const video = document.createElement('video');
             video.id          = 'videoElement';
             video.autoplay    = true;
-            video.playsInline = true;
             video.muted       = true;
-            video.setAttribute('playsinline', '');   // wajib iOS Safari
-            video.style.cssText = 'width:100%; height:300px; object-fit:cover;';
+            video.setAttribute('playsinline', '');  // wajib untuk iOS Safari
+            video.style.cssText = 'width:100%; height:300px; object-fit:cover; display:block;';
 
-            // Sisipkan sebelum bwdPreviewImage agar urutan z-index benar
+            // Sisipkan sebelum overlay gambar agar z-order benar
             const previewImg = document.getElementById('bwdPreviewImage');
             container.insertBefore(video, previewImg);
 
-            // Minta izin kamera — baru dipanggil DI SINI, bukan saat load halaman
+            // getUserMedia baru dipanggil di sini — SETELAH user klik tombol
             const stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: 'environment' }
             });
-
-            currentStream    = stream;
-            video.srcObject  = stream;
-            await video.play().catch(e => console.warn('BWD video play:', e));
+            currentStream   = stream;
+            video.srcObject = stream;
+            await video.play().catch(e => console.warn('BWD play:', e));
         }
 
-        // Dipanggil saat tombol "AKTIFKAN KAMERA" diklik
+        // Dipanggil tombol "AKTIFKAN KAMERA"
         async function aktifkanKameraBWD() {
             const btnAktifkan  = document.getElementById('btnAktifkanKameraBWD');
             const bwdPrompt    = document.getElementById('bwdCameraPrompt');
@@ -3309,149 +3308,143 @@ function isWilayahSulsel(lat, lon) {
             const btnCapture   = document.getElementById('btnCapture');
             const focusBox     = document.getElementById('focusBox');
 
-            if (btnAktifkan) {
-                btnAktifkan.innerText     = '⏳ Mengaktifkan Kamera...';
-                btnAktifkan.disabled      = true;
-                btnAktifkan.style.opacity = '0.7';
-            }
+            btnAktifkan.innerText     = '⏳ Mengaktifkan Kamera...';
+            btnAktifkan.disabled      = true;
+            btnAktifkan.style.opacity = '0.7';
 
             try {
                 await startBWDCamera();
 
-                // Berhasil → tampilkan area kamera, sembunyikan prompt
-                if (bwdPrompt)    bwdPrompt.style.display    = 'none';
-                if (camContainer) camContainer.style.display = 'block';
-                if (btnCapture)   btnCapture.style.display   = 'block';
-                if (focusBox)     focusBox.style.display     = 'block';
-
+                bwdPrompt.style.display    = 'none';
+                camContainer.style.display = 'block';
+                btnCapture.style.display   = 'block';
+                focusBox.style.display     = 'block';
                 document.getElementById('resLabel').innerText = "Arahkan Kamera ke Daun Padi";
 
             } catch (err) {
                 console.error('BWD kamera gagal:', err);
-                // Gagal (ditolak/tidak tersedia) → kembalikan tombol
-                if (btnAktifkan) {
-                    btnAktifkan.innerText     = '📷 AKTIFKAN KAMERA';
-                    btnAktifkan.disabled      = false;
-                    btnAktifkan.style.opacity = '1';
-                }
+                btnAktifkan.innerText     = '📷 AKTIFKAN KAMERA';
+                btnAktifkan.disabled      = false;
+                btnAktifkan.style.opacity = '1';
                 alert('Akses kamera ditolak atau tidak didukung di perangkat ini.');
             }
         }
 
-        // Dipanggil dari tombol "UJI ULANG" setelah hasil muncul
+        // Dipanggil tombol "UJI ULANG / DAUN LAIN" setelah hasil muncul
         async function ujiUlangBWD() {
-            const bwdPreview = document.getElementById('bwdPreviewImage');
-            const focusBox   = document.getElementById('focusBox');
-            const outBWD     = document.getElementById('outputBWD');
-            const btnCapture = document.getElementById('btnCapture');
+            const bwdPreview   = document.getElementById('bwdPreviewImage');
+            const focusBox     = document.getElementById('focusBox');
+            const outBWD       = document.getElementById('outputBWD');
+            const btnCapture   = document.getElementById('btnCapture');
             const camContainer = document.getElementById('cameraContainer');
 
-            if (bwdPreview)   { bwdPreview.style.display = 'none'; }
-            if (focusBox)     { focusBox.style.display   = 'block'; }
-            if (outBWD)       { outBWD.innerHTML          = ''; }
-            if (camContainer) { camContainer.style.display = 'block'; }
-            if (btnCapture)   {
+            if (bwdPreview)   bwdPreview.style.display   = 'none';
+            if (focusBox)     focusBox.style.display     = 'block';
+            if (outBWD)       outBWD.innerHTML            = '';
+            if (camContainer) camContainer.style.display = 'block';
+            if (btnCapture) {
                 btnCapture.style.display = 'block';
                 btnCapture.innerText     = 'AMBIL DAN ANALISIS DAUN';
                 btnCapture.disabled      = false;
                 btnCapture.style.opacity = '1';
             }
-
             document.getElementById('resLabel').innerText = "Arahkan Kamera ke Daun Padi";
 
             try {
                 await startBWDCamera();
             } catch (err) {
                 console.error('BWD uji ulang gagal:', err);
-                alert('Gagal mengaktifkan kamera kembali. Silakan coba lagi.');
+                alert('Gagal mengaktifkan kamera. Silakan coba lagi.');
             }
         }
 
-        document.getElementById('btnCapture').addEventListener('click', async () => {
-    const video = document.getElementById('videoElement');
-    const canvas = document.getElementById('hiddenCanvas');
-    const ctx = canvas.getContext('2d');
-    const btn = document.getElementById('btnCapture');
+        // Dipanggil oleh onclick="tangkapDanAnalisBWD()" pada btnCapture
+        // (menggantikan addEventListener yang tidak bisa dipasang saat load
+        //  karena btnCapture saat itu display:none dan video belum ada)
+        async function tangkapDanAnalisBWD() {
+            const video  = document.getElementById('videoElement');
+            const canvas = document.getElementById('hiddenCanvas');
+            const btn    = document.getElementById('btnCapture');
 
-    // Pastikan video sedang berjalan dan kamera aktif
-    if (!video.videoWidth || !currentStream) {
-        alert("Kamera belum siap, mohon tunggu sebentar.");
-        return;
-    }
+            // Guard: video belum siap
+            if (!video || !video.videoWidth || !currentStream) {
+                alert("Kamera belum siap, mohon tunggu sebentar lalu coba lagi.");
+                return;
+            }
 
-    // Ambil ukuran asli frame video
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0);
+            // Tangkap frame
+            const ctx = canvas.getContext('2d');
+            canvas.width  = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
 
-    // Resize gambar agar pengiriman ke server lebih ringan dan cepat
-    const exportCanvas = document.createElement('canvas');
-    const exportCtx = exportCanvas.getContext('2d');
-    const targetWidth = 800; // Resolusi aman untuk AI Roboflow
-    exportCanvas.width = targetWidth;
-    exportCanvas.height = (video.videoHeight * targetWidth) / video.videoWidth;
-    
-    // Tambahkan filter brightness & contrast sedikit agar AI lebih akurat membaca warna
-    exportCtx.filter = 'brightness(1.05) contrast(1.1)';
-    exportCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+            // Resize & enhance untuk AI
+            const exportCanvas = document.createElement('canvas');
+            const exportCtx    = exportCanvas.getContext('2d');
+            const targetWidth  = 800;
+            exportCanvas.width  = targetWidth;
+            exportCanvas.height = (video.videoHeight * targetWidth) / video.videoWidth;
+            exportCtx.filter = 'brightness(1.05) contrast(1.1)';
+            exportCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
 
-    // Ubah gambar menjadi format base64
-    const base64Img = exportCanvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+            const base64Img = exportCanvas.toDataURL('image/jpeg', 0.8).split(',')[1];
 
-    // --- TAMPILKAN PREVIEW FOTO ---
-    const previewImg = document.getElementById('bwdPreviewImage');
-    if (previewImg) {
-        previewImg.src = canvas.toDataURL('image/jpeg'); 
-        previewImg.style.display = 'block';
-    }
-    
-    // Sembunyikan kotak fokus hijau agar tidak menimpa hasil jepretan di layar
-    const focusBox = document.getElementById('focusBox');
-    if (focusBox) focusBox.style.display = 'none';
+            // Tampilkan preview
+            const previewImg = document.getElementById('bwdPreviewImage');
+            if (previewImg) {
+                previewImg.src          = canvas.toDataURL('image/jpeg');
+                previewImg.style.display = 'block';
+            }
 
-    // Ubah status tombol UI menjadi loading
-    const originalText = btn.innerText;
-    btn.innerHTML = "MENGANALISIS AI..."; 
-    btn.disabled = true;
-    btn.style.opacity = "0.7";
-    
-    const outputDiv = document.getElementById('outputBWD');
-    outputDiv.innerHTML = `
-        <div style="text-align: center; color: var(--accent-bwd); font-size: 0.85rem; margin-top: 15px;">
-            <div class="animasi-loading-kalender" style="color:var(--accent-bwd);">Menganalisis tingkat Nitrogen daun...</div>
-        </div>`;
+            // Sembunyikan focus box
+            const focusBox = document.getElementById('focusBox');
+            if (focusBox) focusBox.style.display = 'none';
 
-    try {
-        // Kirim HTTP POST ke Web App Google Apps Script BWD
-        const res = await fetch(URL_BWD, {
-            method: 'POST',
-            body: JSON.stringify({ image: base64Img })
-        });
-        
-        const data = await res.json();
-        
-        // Hentikan kamera perangkat untuk menghemat baterai HP
-        stopCamera();
-        
-        // Teruskan data ke fungsi global penampil hasil AI
-        currentMode = 'bwd';
-        tampilkanHasil(data);
+            // Status tombol loading
+            const originalText  = btn.innerText;
+            btn.innerHTML       = "MENGANALISIS AI...";
+            btn.disabled        = true;
+            btn.style.opacity   = "0.7";
 
-    } catch (err) {
-        console.error(err);
-        outputDiv.innerHTML = `<div class="error" style="display:block; text-align:center;">Gagal memproses gambar. Periksa koneksi internet atau URL Apps Script.</div>`;
-        
-        // Jika terjadi error (misal sinyal putus), kembalikan UI ke mode kamera live
-        if (previewImg) previewImg.style.display = 'none';
-        if (focusBox) focusBox.style.display = 'block';
-        
-    } finally {
-        // Kembalikan tombol ke kondisi semula
-        btn.innerText = originalText;
-        btn.disabled = false;
-        btn.style.opacity = "1";
-    }
-});
+            const outputDiv = document.getElementById('outputBWD');
+            outputDiv.innerHTML = `
+                <div style="text-align: center; color: var(--accent-bwd); font-size: 0.85rem; margin-top: 15px;">
+                    <div class="animasi-loading-kalender" style="color:var(--accent-bwd);">Menganalisis tingkat Nitrogen daun...</div>
+                </div>`;
+
+            try {
+                const res  = await fetch(URL_BWD, {
+                    method: 'POST',
+                    body: JSON.stringify({ image: base64Img })
+                });
+                const data = await res.json();
+
+                stopCamera();
+
+                if (data.success) {
+                    tampilkanHasil(data);
+                } else {
+                    throw new Error(data.error || 'Respon tidak valid');
+                }
+
+            } catch (err) {
+                console.warn('BWD server gagal, fallback lokal:', err);
+                // Fallback: analisis warna lokal
+                stopCamera();
+                const imgData = ctx.getImageData(
+                    Math.floor(canvas.width  * 0.42),
+                    Math.floor(canvas.height * 0.25),
+                    Math.floor(canvas.width  * 0.16),
+                    Math.floor(canvas.height * 0.50)
+                );
+                analisisWarnaDaun(imgData);
+            } finally {
+                btn.innerHTML     = originalText;
+                btn.disabled      = false;
+                btn.style.opacity = "1";
+            }
+        }
+
         async function mulaiAnalisis() {
             document.getElementById('scanWindow').classList.add('is-scanning');
             document.getElementById('loader').style.display = 'block';
@@ -3525,9 +3518,7 @@ function isWilayahSulsel(lat, lon) {
             }
 
             if (count === 0) {
-                document.getElementById('outputBWD').innerHTML = `
-                    <div style="color: var(--accent-soil); font-size:0.85rem; margin-top:10px;">⚠️ Daun tidak terdeteksi. Pastikan daun padi memenuhi kotak fokus hijau!</div>
-                    <button class="btn-main" onclick="ujiUlangBWD()" style="margin-top: 14px; background: #0e7490; color: #fff;">🔄 COBA LAGI</button>`;
+                document.getElementById('outputBWD').innerHTML = "⚠️ Daun tidak terdeteksi. Pastikan daun padi memenuhi kotak fokus hijau!";
                 return;
             }
 
