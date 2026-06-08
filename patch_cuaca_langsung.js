@@ -3,7 +3,7 @@
  *  PATCH: Menu Risiko Cuaca — Tampil Langsung via BTS,
  *         Sinkron GPS untuk Data Akurat + Risiko Lengkap
  *  PPL Milenial Wajo — Smart Farming
- *  Versi: 2.0
+ *  Versi: 2.1 (patch perbaikan bug)
  * ============================================================
  *
  *  CARA PASANG (urutan wajib):
@@ -152,7 +152,7 @@
                 return null;
             },
             async function() {
-                const d = await fetchRetry('http://ip-api.com/json/?fields=lat,lon,city,regionName', 1, 0);
+                const d = await fetchRetry('https://ip-api.com/json/?fields=lat,lon,city,regionName', 1, 0);
                 if (d.lat && d.lon) {
                     return {
                         lat: parseFloat(d.lat),
@@ -187,8 +187,8 @@
             'wind_speed_10m,wind_direction_10m,surface_pressure,weather_code' +
             '&hourly=precipitation_probability,precipitation,temperature_850hPa,' +
             'cape,temperature_2m,weather_code' +
-            '&daily=weather_code,temperature_2m_max,temperature_2m_min' +
-            '&timezone=auto';
+            '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_sum' +
+            '&forecast_days=7&timezone=auto';
 
         const urlArchive =
             'https://archive-api.open-meteo.com/v1/archive' +
@@ -340,19 +340,20 @@
         const ARAH  = ['Utara','Timur Laut','Timur','Tenggara','Selatan','Barat Daya','Barat','Barat Laut'];
         const dirEl = document.getElementById('windDir');
         if (dirEl) {
+            const arahIdx = Math.round(cur.wind_direction_10m / 45) % 8;
             dirEl.innerHTML =
                 '<div style="display:flex;align-items:center;justify-content:flex-end;gap:5px;">' +
-                '<span style="transform:rotate(' + (cur.wind_direction_10m+180) + 'deg)">⬆️</span>' +
-                '<span>Dari ' + ARAH[Math.round(cur.wind_direction_10m/45)%8] + '</span></div>';
+                '<span style="transform:rotate(' + (cur.wind_direction_10m + 180) + 'deg)">⬆️</span>' +
+                '<span>Dari ' + ARAH[arahIdx] + '</span></div>';
         }
 
         // ── Prediksi Atmosfer ────────────────────────────────────────────────
         var rainScore = 0;
         const prob = hourly.precipitation_probability;
-        if (prob && prob[idx+1] >= 30) rainScore += 40;
-        if (cape >= 1000)              rainScore += 30;
-        if (parseFloat(dp) <= 2)       rainScore += 20;
-        if (cur.relative_humidity_2m >= 90) rainScore += 10;
+        if (prob && (prob[idx + 1] ?? 0) >= 30) rainScore += 40;
+        if (cape >= 1000)                        rainScore += 30;
+        if (parseFloat(dp) <= 2)                 rainScore += 20;
+        if (cur.relative_humidity_2m >= 90)      rainScore += 10;
 
         const boxHujan = document.getElementById('prediksiHujan');
         const txtHujan = document.getElementById('hujanNext');
@@ -553,7 +554,7 @@
     //  FUNGSI UTAMA: MUAT CUACA
     // =========================================================================
 
-    async function muatCuaaca(koordinat, tampilkanRisiko) {
+    async function muatCuaca(koordinat, tampilkanRisiko) {
         if (state.sedangMemuat) return;
         state.sedangMemuat = true;
 
@@ -607,7 +608,8 @@
         if (mode === 'cuaca') {
             setTimeout(async function() {
                 if (state.gpsAktif && state.koordinat) {
-                    await muatCuaaca(state.koordinat, true);
+                    state.sedangMemuat = false;   // reset agar tidak skip
+                    await muatCuaca(state.koordinat, true);
                     return;
                 }
                 if (!state.btsSudahDicoba) {
@@ -621,13 +623,14 @@
                             if (nama) koordinat.label = nama;
                         }
                         state.koordinat = koordinat;
-                        await muatCuaaca(koordinat, false);
+                        await muatCuaca(koordinat, false);
                     } catch(err) {
                         state.koordinat = Object.assign({}, LOK_FALLBACK);
-                        await muatCuaaca(state.koordinat, false);
+                        await muatCuaca(state.koordinat, false);
                     }
                 } else if (state.koordinat) {
-                    await muatCuaaca(state.koordinat, state.gpsAktif);
+                    state.sedangMemuat = false;   // reset agar tidak skip
+                    await muatCuaca(state.koordinat, state.gpsAktif);
                 }
             }, 80);
         }
@@ -687,7 +690,7 @@
             if (statusEl) statusEl.innerHTML = '<span style="color:#10b981;">✅ GPS Akurat — Analisis risiko aktif</span>';
 
             state.sedangMemuat = false;
-            await muatCuaaca(state.koordinat, true);
+            await muatCuaca(state.koordinat, true);
 
         } catch(err) {
             console.error('[patch_cuaca] GPS gagal:', err);
@@ -724,6 +727,6 @@
         'body.light-mode #bannerTungguGPS{background:rgba(59,130,246,0.04)!important;}';
     document.head.appendChild(style);
 
-    console.log('✅ [patch_cuaca_langsung v2.0] Aktif: BTS otomatis → GPS akurat + risiko lengkap.');
+    console.log('✅ [patch_cuaca_langsung v2.1] Aktif: BTS otomatis → GPS akurat + risiko lengkap.');
 
 })();
