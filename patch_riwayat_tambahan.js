@@ -199,10 +199,10 @@
 
         var _varietasAsli = window.analisisVarietasPadi;
 
-        window.analisisVarietasPadi = function () {
+        window.analisisVarietasPadi = async function () {
 
             // Jalankan fungsi asli
-            _varietasAsli();
+            await _varietasAsli();
 
             // Beri jeda agar DOM hasil sudah terisi (fetch async)
             setTimeout(function () {
@@ -248,21 +248,23 @@
 
         window.hitungLuas = function (layer) {
 
+            // Catat dulu apakah ini dari GPS SEBELUM fungsi asli dipanggil
+            // karena gpsPoints akan di-reset oleh selesaiJalan() setelah hitungLuas
+            const dariGPS = (typeof gpsPoints !== 'undefined' && gpsPoints.length > 0);
+
             // Jalankan fungsi asli terlebih dahulu
             _hitungLuasAsli(layer);
 
             // Beri jeda agar luasTotalHa dan luasTotalM2 sudah diisi
             setTimeout(function () {
-                var ha = (typeof luasTotalHa !== 'undefined') ? luasTotalHa : '0';
-                var m2 = (typeof luasTotalM2 !== 'undefined') ? luasTotalM2 : '0';
+                // Ambil hasil dari variabel global yang sudah diset oleh hitungLuas asli
+                const ha = typeof luasTotalHa !== 'undefined' ? luasTotalHa : '0';
+                const m2 = typeof luasTotalM2 !== 'undefined' ? luasTotalM2 : '0';
 
-                // FIX 3: luasTotalHa adalah string seperti "0.2500", pakai parseFloat
-                if (!ha || parseFloat(ha) <= 0) return;
+                if (!ha || ha === '0') return; // Jangan simpan jika belum ada hasil
 
-                // Deteksi metode pengukuran
-                var metode = (typeof gpsPoints !== 'undefined' && Array.isArray(gpsPoints) && gpsPoints.length > 0)
-                    ? 'GPS Jalan Keliling'
-                    : 'Gambar di Peta';
+                // Deteksi metode pengukuran dari flag yang sudah diambil sebelumnya
+                const metode = dariGPS ? 'GPS Jalan Keliling' : 'Gambar di Peta';
 
                 // Baca nama lahan aktif
                 var namaLahan = 'Tanpa Lahan Aktif';
