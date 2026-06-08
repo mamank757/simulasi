@@ -736,4 +736,59 @@
 
     console.log('✅ [patch_cuaca_langsung v2.2] Aktif: BTS otomatis → GPS akurat + risiko lengkap. Sinkron dengan index.html.');
 
+    // =========================================================================
+    //  AUTO-INIT: Jalankan deteksi BTS otomatis saat patch selesai dimuat.
+    //
+    //  Masalah sebelumnya: switchMode('cuaca') di HTML dipanggil SEBELUM
+    //  patch ini di-load (script patch ada di akhir </body>), sehingga hook
+    //  switchMode belum aktif dan deteksi BTS tidak pernah berjalan otomatis.
+    //
+    //  Solusi: patch mendeteksi sendiri apakah mode cuaca sudah aktif saat
+    //  ini, lalu langsung jalankan deteksi BTS tanpa menunggu klik tab.
+    // =========================================================================
+
+    function isModeAktif(mode) {
+        var modeKapital = mode.charAt(0).toUpperCase() + mode.slice(1);
+        var tabEl = document.getElementById('tab' + modeKapital);
+        if (tabEl && tabEl.classList.contains('active')) return true;
+        var boxEl = document.getElementById('box' + modeKapital);
+        if (boxEl && boxEl.style.display !== 'none' && boxEl.style.display !== '') return true;
+        if (typeof window.currentMode !== 'undefined' && window.currentMode === mode) return true;
+        return false;
+    }
+
+    function autoInitCuaca() {
+        if (!isModeAktif('cuaca') || state.btsSudahDicoba) return;
+
+        state.btsSudahDicoba = true;
+
+        var resLabel = document.getElementById('resLabel');
+        if (resLabel) resLabel.innerHTML =
+            '<span style="color:#f59e0b;font-size:0.9rem;">📡 Mendeteksi lokasi via sinyal BTS...</span>';
+
+        dapatkanLokasiVIABTS().then(async function(koordinat) {
+            try {
+                if (koordinat.akurasi === 'bts' || koordinat.akurasi === 'ip') {
+                    var nama = await reverseGeocode(koordinat.lat, koordinat.lon);
+                    if (nama) koordinat.label = nama;
+                }
+            } catch(e) {}
+            state.koordinat = koordinat;
+            await muatCuaca(koordinat, false);
+        }).catch(async function() {
+            state.koordinat = Object.assign({}, LOK_FALLBACK);
+            await muatCuaca(state.koordinat, false);
+        });
+    }
+
+    // Tunggu semua script HTML selesai (termasuk switchMode('cuaca') awal),
+    // lalu jalankan auto-init dengan jeda kecil
+    if (document.readyState === 'complete') {
+        setTimeout(autoInitCuaca, 150);
+    } else {
+        window.addEventListener('load', function() {
+            setTimeout(autoInitCuaca, 150);
+        });
+    }
+
 })();
