@@ -1364,26 +1364,29 @@ body.light-mode .harga-table td { color: #334155 !important; border-bottom: 1px 
 
             <div id="boxBWD" style="display: none; text-align: center;">
 
-    <!-- Input file tersembunyi — sama persis seperti menu Daun/Hama/Gulma -->
-    <input type="file" id="bwdFileInput" accept="image/*" hidden onchange="handleBWDFile(event)">
-
-    <!-- Pratinjau foto yang dipilih -->
-    <div id="bwdPreviewWrap" style="display:none; position:relative; width:100%; max-width:300px; margin:0 auto; border-radius:20px; overflow:hidden; background:#000;">
-        <img id="bwdPreviewImage" style="width:100%; height:300px; object-fit:cover; display:block;">
+    <!-- PANEL PROMPT AKTIVASI KAMERA (tampil pertama saat masuk menu BWD) -->
+    <div id="bwdCameraPrompt" style="padding: 10px 0 20px 0;">
+        <div style="font-size: 2.5rem; margin-bottom: 12px;">🍃</div>
+        <h4 style="margin: 0 0 8px 0; color: var(--text-main); font-size: 1.05rem; font-weight: 700;">Uji BWD — Bagan Warna Daun</h4>
+        <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 20px 0; line-height: 1.6;">
+            Fitur ini menggunakan kamera untuk menganalisis warna daun padi secara AI dan menentukan kebutuhan pupuk Urea.<br>
+            <span style="color: var(--accent-bwd); font-weight: 600;">Kamera akan aktif setelah Anda mengizinkan.</span>
+        </p>
+        <button class="btn-main" id="btnAktifkanKameraBWD" onclick="aktifkanKameraBWD()" style="background: var(--accent-bwd); color: #fff; max-width: 280px; margin: 0 auto;">
+            📷 AKTIFKAN KAMERA
+        </button>
     </div>
 
-    <!-- Tombol ambil foto / galeri (muncul sejak awal, tanpa minta izin kamera) -->
-    <button class="btn-main" id="btnCapture" onclick="document.getElementById('bwdFileInput').click()"
-        style="margin-top: 12px; background: var(--accent-bwd);">
-        📸 AMBIL FOTO / GALERI
-    </button>
-
-    <!-- Tombol analisis — muncul setelah foto dipilih -->
-    <button class="btn-main" id="btnAnalisBWD" onclick="jalankanAnalisBWD()"
-        style="display:none; margin-top: 10px; background: var(--accent-green);">
-        🚀 ANALISIS WARNA DAUN
-    </button>
-
+    <!-- AREA KAMERA (tersembunyi sampai pengguna klik tombol aktifkan) -->
+    <div id="cameraContainer" style="display: none; position: relative; width: 100%; max-width: 300px; margin: 0 auto; overflow: hidden; border-radius: 20px; background: #000;">
+        <video id="videoElement" autoplay playsinline muted style="width: 100%; height: 300px; object-fit: cover;"></video>
+        
+        <img id="bwdPreviewImage" style="display: none; width: 100%; height: 300px; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 10;">
+        
+        <div id="focusBox" style="position: absolute; top: 25%; left: 42%; width: 16%; height: 50%; border: 3px solid var(--accent-green); border-radius: 8px; box-shadow: 0 0 0 999px rgba(0,0,0,0.5); z-index: 15;"></div>
+    </div>
+    
+    <button class="btn-main" id="btnCapture" style="display: none; margin-top: 20px; background: var(--accent-green);">AMBIL DAN ANALISIS DAUN</button>
     <canvas id="hiddenCanvas" style="display:none;"></canvas>
     <div id="outputBWD" style="margin-top: 20px; text-align: left;"></div>
 </div>
@@ -1400,24 +1403,25 @@ body.light-mode .harga-table td { color: #334155 !important; border-bottom: 1px 
 
             <div id="boxCuaca" style="display:none; text-align: center;">
                <div id="gpsPrompt" style="padding: 15px 5px;">
-    <div class="form-group" style="text-align: left; margin-bottom: 16px;">
-        <label style="display: block; margin-bottom: 8px;">📅 TANGGAL AWAL TANAM</label>
+    <div style="font-size: 2.5rem; margin-bottom: 12px;">🛰️</div>
+    <h4 style="margin: 0; color: var(--text-main); font-size: 1.1rem; font-weight: 700;">Akses Lokasi / Lahan Sawah</h4>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin: 10px 0 15px; line-height: 1.5;">
+        Kami memerlukan koordinat GPS untuk mengambil data cuaca langsung dari satelit di titik sawah Anda saat ini.
+    </p>
+    
+    <div class="form-group" style="text-align: left; margin-bottom: 24px;">
+        <label style="text-align: center; display: block; margin-bottom: 8px;">📅 MASUKKAN TANGGAL AWAL TANAM</label>
         <input type="date" id="tglTanamCuaca" class="form-input">
     </div>
-    <div class="form-group" style="text-align: left; margin-bottom: 16px;">
-        <label style="display: block; margin-bottom: 8px;">🌱 UMUR VARIETAS PADI</label>
-        <select id="umurVarietasCuaca" class="form-select">
-            <option value="genjah">Genjah (< 95 Hari)</option>
-            <option value="sedang" selected>Sedang (95 - 115 Hari)</option>
-            <option value="dalam">Dalam (>= 116 Hari)</option>
-        </select>
-    </div>
-    <button class="btn-main btn-live" onclick="aktifkanGPS()">
-        📡 PERBARUI KE LOKASI AKURAT (GPS)
-    </button>
-    <div style="font-size:0.72rem; color:#64748b; text-align:center; margin-top:8px;">
-        Peta & cuaca sudah tampil otomatis via IP. Klik tombol di atas untuk akurasi lebih tinggi.
-    </div>
+    <div class="form-group" style="text-align: left; margin-bottom: 24px;">
+    <label style="text-align: center; display: block; margin-bottom: 8px;">🌱 UMUR VARIETAS PADI</label>
+    <select id="umurVarietasCuaca" class="form-select">
+        <option value="genjah">Genjah (< 95 Hari)</option>
+        <option value="sedang" selected>Sedang (95 - 115 Hari)</option>
+        <option value="dalam">Dalam (>= 116 Hari)</option>
+    </select>
+</div>
+    <button class="btn-main btn-live" onclick="aktifkanGPS()">SINKRONKAN GPS & SATELIT</button>
 </div>
 
                 <div id="weatherData" style="display: none; text-align: left;">
@@ -1550,7 +1554,7 @@ window.addEventListener('load', function() {
         let currentMode = 'cuaca', base64Image = "";
         let hasilSampelBulir = []; 
         let isGpsSynced = false; 
-        window.databasePupuk = []; 
+        let databasePupuk = []; 
         let hasilTeksWA = "";   
         let hasilTeksWAVarietas = "";
         let macroChartInstance = null;
@@ -2137,7 +2141,18 @@ function getMovingAverage(data, windowSize = 3) {
         }
 
         function switchMode(mode) {
-    stopCamera(); // aman dipanggil selalu, tidak ada efek jika stream kosong
+    if (mode !== 'bwd') {
+        stopCamera();
+        // Reset tampilan BWD ke prompt awal agar tidak tertinggal kamera aktif
+        const bwdPrompt    = document.getElementById('bwdCameraPrompt');
+        const camContainer = document.getElementById('cameraContainer');
+        const btnCapture   = document.getElementById('btnCapture');
+        const btnAktifkan  = document.getElementById('btnAktifkanKameraBWD');
+        if (bwdPrompt)    bwdPrompt.style.display    = 'block';
+        if (camContainer) camContainer.style.display = 'none';
+        if (btnCapture)   btnCapture.style.display   = 'none';
+        if (btnAktifkan)  { btnAktifkan.innerText = '📷 AKTIFKAN KAMERA'; btnAktifkan.disabled = false; btnAktifkan.style.opacity = '1'; }
+    }
     
     currentMode = mode;
     let color = '#4fc3f7'; 
@@ -2147,16 +2162,9 @@ function getMovingAverage(data, windowSize = 3) {
     const subEl = document.getElementById('tabSubtitleDisplay');
     const boxLokal = document.getElementById('localSstBox');
     if (boxLokal) boxLokal.style.display = 'none';
-// Di dalam switch case 'cuaca' atau di bagian akhir switchMode
-if (mode === 'cuaca') {
-    // Langsung muat tanpa tunggu klik tombol
-    setTimeout(() => {
-        muatLokasiOtomatisIP();
-    }, 300);
-}
+
     // Pengaturan Title & Warna
     switch(mode) {
-        
         case 'daun':
             color = '#ff4a5a'; title = 'Deteksi Penyakit Padi'; break;
         case 'hama':
@@ -2189,23 +2197,31 @@ if (mode === 'cuaca') {
             sub = 'Data HPP, pasar, dan tren harga gabah'; break;
     }
 
-    // Reset UI BWD — cukup sembunyikan elemen standar & reset output
+    // Reset UI BWD
     if (mode === 'bwd') {
-        document.getElementById('btnCamera').style.display   = 'none';
-        document.getElementById('scanWindow').style.display  = 'none';
+        document.getElementById('btnCamera').style.display = 'none';
+        document.getElementById('scanWindow').style.display = 'none';
         document.getElementById('btnAnalisis').style.display = 'none';
-        document.getElementById('result').style.display      = 'block';
-        document.getElementById('resConf').style.display     = 'none';
-        document.getElementById('resLabel').innerText        = "Uji BWD — Pilih Foto Daun Padi";
+        document.getElementById('result').style.display = 'block';
+        document.getElementById('resConf').style.display = 'none';
+        document.getElementById('resLabel').innerText = "Uji BWD — Pilih Daun Padi";
 
-        // Reset state file BWD
-        bwdBase64 = null;
-        const previewWrap  = document.getElementById('bwdPreviewWrap');
-        const btnAnalisBWD = document.getElementById('btnAnalisBWD');
-        const outBWD       = document.getElementById('outputBWD');
-        if (previewWrap)  previewWrap.style.display  = 'none';
-        if (btnAnalisBWD) btnAnalisBWD.style.display = 'none';
-        if (outBWD)       outBWD.innerHTML           = '';
+        // Reset tampilan BWD ke kondisi awal (prompt aktivasi kamera)
+        const bwdPrompt = document.getElementById('bwdCameraPrompt');
+        const camContainer = document.getElementById('cameraContainer');
+        const btnCapture = document.getElementById('btnCapture');
+        const previewImg = document.getElementById('bwdPreviewImage');
+        const focusBox = document.getElementById('focusBox');
+        const outBWD = document.getElementById('outputBWD');
+
+        if (bwdPrompt)    bwdPrompt.style.display = 'block';
+        if (camContainer) camContainer.style.display = 'none';
+        if (btnCapture)   btnCapture.style.display = 'none';
+        if (previewImg)   previewImg.style.display = 'none';
+        if (focusBox)     focusBox.style.display = 'block';
+        if (outBWD)       outBWD.innerHTML = '';
+
+        // TIDAK memanggil startBWDCamera() — kamera hanya aktif saat pengguna klik tombol
     }
 
     if (sub !== '') { 
@@ -2820,61 +2836,6 @@ function isWilayahSulsel(lat, lon) {
     reader.readAsDataURL(file);
 }
 
-// Jalankan otomatis saat tab cuaca dibuka
-async function muatLokasiOtomatisIP() {
-    try {
-        document.getElementById('resLabel').innerHTML = 
-            `<span style="color:var(--accent-bwd);">📡 Mendeteksi lokasi via jaringan...</span>`;
-        
-        // Ambil lokasi dari IP (tanpa izin apapun)
-        const ipRes = await fetch('https://ipapi.co/json/');
-        const ipData = await ipRes.json();
-
-        if (!ipData.latitude) throw new Error("IP geolocation gagal");
-
-        const lat = ipData.latitude;
-        const lon = ipData.longitude;
-
-        // Tampilkan info lokasi
-        document.getElementById('lokasiSawah').innerText = 
-            `${lat.toFixed(5)}, ${lon.toFixed(5)}`;
-        document.getElementById('alamatDesa').innerHTML = 
-            `<b>${ipData.city || 'Kota Tidak Diketahui'}</b>, ${ipData.region || ''} 
-             <span style="color:#64748b; font-size:0.75rem;">(via jaringan IP)</span>`;
-
-        // Langsung tampilkan section data cuaca
-        document.getElementById('weatherData').style.display = 'block';
-        document.getElementById('result').style.display = 'block';
-
-        // Muat peta radar otomatis
-        const radarIframe = document.getElementById('radarMap');
-        if (radarIframe) {
-            radarIframe.src = `https://mamank757.github.io/peta?lat=${lat}&lon=${lon}`;
-        }
-
-        // Muat grafik ENSO/IOD otomatis
-        loadGlobalClimateIndices();
-
-        // Muat data cuaca lengkap di background
-        await loadWeatherDariKoordinat(lat, lon);
-
-        isGpsSynced = true;
-
-    } catch(err) {
-        console.warn("Auto-lokasi IP gagal:", err);
-        // Fallback: tampilkan dengan koordinat default Wajo
-        const lat = -4.0, lon = 120.4;
-        document.getElementById('lokasiSawah').innerText = `${lat}, ${lon}`;
-        document.getElementById('alamatDesa').innerHTML = 
-            `<span style="color:#f59e0b;">⚠️ Estimasi wilayah Sulsel (lokasi belum akurat)</span>`;
-        document.getElementById('weatherData').style.display = 'block';
-        document.getElementById('result').style.display = 'block';
-        const radarIframe = document.getElementById('radarMap');
-        if (radarIframe) radarIframe.src = `https://mamank757.github.io/peta?lat=${lat}&lon=${lon}`;
-        loadGlobalClimateIndices();
-    }
-}
-
         async function aktifkanGPS() {
     const btn = document.querySelector('.btn-live'); 
     const originalText = "SINKRONKAN GPS & SATELIT";
@@ -2930,7 +2891,7 @@ async function muatLokasiOtomatisIP() {
     }
 }
 
-        async function loadWeatherDariKoordinat(lat, lon) {
+        async function loadWeather() {
             try {
                 const pos = await new Promise((res, rej) => {
     // Coba akurasi satelit tinggi terlebih dahulu
@@ -2977,14 +2938,6 @@ async function muatLokasiOtomatisIP() {
                     document.getElementById('alamatDesa').innerText = "Satelit Cuaca Aktif"; 
                 }
 
-async function loadWeather() {
-    // Sekarang hanya bertugas ambil GPS lalu panggil fungsi di atas
-    const pos = await new Promise((res, rej) => {
-        navigator.geolocation.getCurrentPosition(res, rej, 
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 });
-    });
-    await loadWeatherDariKoordinat(pos.coords.latitude, pos.coords.longitude);
-}
                 // ─── FUNGSI FETCH DENGAN RETRY ─────────────────────────────
                 async function fetchDenganRetry(url, maxCoba = 3, jedaMs = 1500) {
                     for (let i = 0; i < maxCoba; i++) {
@@ -3304,110 +3257,160 @@ async function loadWeather() {
                 alert(`Gagal memuat data cuaca.\n\nPenyebab: ${err.message || "Tidak diketahui"}\n\nSolusi:\n• Pastikan GPS aktif\n• Izin Lokasi diberikan\n• Koneksi internet stabil\n• Coba lagi beberapa saat`);
             }
         }
-        // ── BWD: berbasis file input, sama seperti menu Daun/Hama/Gulma ──────────
-
-        // Variabel menyimpan base64 foto BWD yang dipilih user
-        let bwdBase64 = null;
-
-        // Dipanggil saat user memilih foto dari galeri/kamera via input[type=file]
-        function handleBWDFile(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = e => {
-                const img = new Image();
-                img.src = e.target.result;
-                img.onload = () => {
-                    // Resize & simpan ke canvas tersembunyi — sama seperti handleFile()
-                    const canvas  = document.getElementById('hiddenCanvas');
-                    const ctx     = canvas.getContext('2d');
-                    const targetW = 800;
-                    canvas.width  = targetW;
-                    canvas.height = (img.height * targetW) / img.width;
-                    ctx.filter    = 'brightness(1.05) contrast(1.1)';
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                    bwdBase64 = canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
-
-                    // Tampilkan pratinjau foto
-                    const previewWrap = document.getElementById('bwdPreviewWrap');
-                    const previewImg  = document.getElementById('bwdPreviewImage');
-                    previewImg.src            = canvas.toDataURL('image/jpeg');
-                    previewWrap.style.display = 'block';
-
-                    // Tampilkan tombol analisis, reset output
-                    document.getElementById('btnAnalisBWD').style.display = 'block';
-                    document.getElementById('outputBWD').innerHTML = '';
-                    document.getElementById('resLabel').innerText  = "Foto Daun Siap Dianalisis";
-
-                    // Reset file input agar foto yang sama bisa dipilih ulang
-                    event.target.value = '';
+        async function startBWDCamera() {
+            const video = document.getElementById('videoElement');
+            try {
+                // Diupdate untuk menyimpan stream ke variabel global
+                currentStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                video.srcObject = currentStream;
+                video.onloadedmetadata = () => {
+                    video.play().catch(e => console.error("Gagal play video:", e));
                 };
-            };
-            reader.readAsDataURL(file);
+            } catch (err) {
+                console.error(err);
+                alert("Akses kamera ditolak atau tidak didukung di perangkat ini!");
+            }
         }
 
-        // Dipanggil tombol "ANALISIS WARNA DAUN"
-        async function jalankanAnalisBWD() {
-            if (!bwdBase64) {
-                alert('Pilih foto daun terlebih dahulu.');
-                return;
+        // Fungsi aktivasi kamera BWD — dipanggil MANUAL oleh pengguna lewat tombol
+        async function aktifkanKameraBWD() {
+            const btnAktifkan  = document.getElementById('btnAktifkanKameraBWD');
+            const bwdPrompt    = document.getElementById('bwdCameraPrompt');
+            const camContainer = document.getElementById('cameraContainer');
+            const btnCapture   = document.getElementById('btnCapture');
+
+            // Ubah tombol ke status loading
+            if (btnAktifkan) {
+                btnAktifkan.innerText = '⏳ Mengaktifkan Kamera...';
+                btnAktifkan.disabled = true;
+                btnAktifkan.style.opacity = '0.7';
             }
-
-            const btn       = document.getElementById('btnAnalisBWD');
-            const outputDiv = document.getElementById('outputBWD');
-            btn.innerText     = '⏳ MENGANALISIS AI...';
-            btn.disabled      = true;
-            btn.style.opacity = '0.7';
-
-            outputDiv.innerHTML = `
-                <div style="text-align:center; color:var(--accent-bwd); font-size:0.85rem; margin-top:15px;">
-                    <div class="animasi-loading-kalender" style="color:var(--accent-bwd);">Menganalisis tingkat Nitrogen daun...</div>
-                </div>`;
 
             try {
-                const res  = await fetch(URL_BWD, {
-                    method: 'POST',
-                    body:   JSON.stringify({ image: bwdBase64 })
-                });
-                const data = await res.json();
+                await startBWDCamera();
 
-                if (data.success) {
-                    tampilkanHasil(data);
-                } else {
-                    throw new Error(data.error || 'Respon tidak valid');
-                }
+                // Kamera berhasil → sembunyikan prompt, tampilkan area kamera
+                if (bwdPrompt)    bwdPrompt.style.display = 'none';
+                if (camContainer) camContainer.style.display = 'block';
+                if (btnCapture)   btnCapture.style.display = 'block';
+
+                document.getElementById('resLabel').innerText = "Arahkan Kamera ke Daun Padi";
 
             } catch (err) {
-                console.warn('BWD server gagal, fallback analisis lokal:', err);
-                // Fallback: analisis warna langsung dari canvas
-                const canvas  = document.getElementById('hiddenCanvas');
-                const ctx     = canvas.getContext('2d');
-                const imgData = ctx.getImageData(
-                    Math.floor(canvas.width  * 0.30),
-                    Math.floor(canvas.height * 0.20),
-                    Math.floor(canvas.width  * 0.40),
-                    Math.floor(canvas.height * 0.60)
-                );
-                analisisWarnaDaun(imgData);
-            } finally {
-                btn.innerText     = '🚀 ANALISIS WARNA DAUN';
-                btn.disabled      = false;
-                btn.style.opacity = '1';
+                // Gagal → kembalikan tombol ke semula
+                if (btnAktifkan) {
+                    btnAktifkan.innerText = '📷 AKTIFKAN KAMERA';
+                    btnAktifkan.disabled = false;
+                    btnAktifkan.style.opacity = '1';
+                }
             }
         }
 
-        // Dipanggil tombol "Foto Lagi" setelah hasil muncul
-        function ujiUlangBWD() {
-            bwdBase64 = null;
-            document.getElementById('bwdPreviewWrap').style.display = 'none';
-            document.getElementById('btnAnalisBWD').style.display   = 'none';
-            document.getElementById('outputBWD').innerHTML          = '';
-            document.getElementById('resLabel').innerText           = "Uji BWD — Bagan Warna Daun";
-            document.getElementById('bwdFileInput').click();  // langsung buka galeri/kamera
+        // Fungsi uji ulang BWD — reset state & aktifkan kamera kembali
+        async function ujiUlangBWD() {
+            const bwdPreview = document.getElementById('bwdPreviewImage');
+            const focusBox   = document.getElementById('focusBox');
+            const outBWD     = document.getElementById('outputBWD');
+            const btnCapture = document.getElementById('btnCapture');
+
+            if (bwdPreview) bwdPreview.style.display = 'none';
+            if (focusBox)   focusBox.style.display   = 'block';
+            if (outBWD)     outBWD.innerHTML          = '';
+            if (btnCapture) { btnCapture.innerText = 'AMBIL DAN ANALISIS DAUN'; btnCapture.disabled = false; btnCapture.style.opacity = '1'; }
+
+            document.getElementById('resLabel').innerText = "Arahkan Kamera ke Daun Padi";
+
+            // Aktifkan kamera kembali
+            await startBWDCamera();
         }
 
+        document.getElementById('btnCapture').addEventListener('click', async () => {
+    const video = document.getElementById('videoElement');
+    const canvas = document.getElementById('hiddenCanvas');
+    const ctx = canvas.getContext('2d');
+    const btn = document.getElementById('btnCapture');
+
+    // Pastikan video sedang berjalan dan kamera aktif
+    if (!video.videoWidth || !currentStream) {
+        alert("Kamera belum siap, mohon tunggu sebentar.");
+        return;
+    }
+
+    // Ambil ukuran asli frame video
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    ctx.drawImage(video, 0, 0);
+
+    // Resize gambar agar pengiriman ke server lebih ringan dan cepat
+    const exportCanvas = document.createElement('canvas');
+    const exportCtx = exportCanvas.getContext('2d');
+    const targetWidth = 800; // Resolusi aman untuk AI Roboflow
+    exportCanvas.width = targetWidth;
+    exportCanvas.height = (video.videoHeight * targetWidth) / video.videoWidth;
+    
+    // Tambahkan filter brightness & contrast sedikit agar AI lebih akurat membaca warna
+    exportCtx.filter = 'brightness(1.05) contrast(1.1)';
+    exportCtx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height);
+
+    // Ubah gambar menjadi format base64
+    const base64Img = exportCanvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+
+    // --- TAMPILKAN PREVIEW FOTO ---
+    const previewImg = document.getElementById('bwdPreviewImage');
+    if (previewImg) {
+        previewImg.src = canvas.toDataURL('image/jpeg'); 
+        previewImg.style.display = 'block';
+    }
+    
+    // Sembunyikan kotak fokus hijau agar tidak menimpa hasil jepretan di layar
+    const focusBox = document.getElementById('focusBox');
+    if (focusBox) focusBox.style.display = 'none';
+
+    // Ubah status tombol UI menjadi loading
+    const originalText = btn.innerText;
+    btn.innerHTML = "MENGANALISIS AI..."; 
+    btn.disabled = true;
+    btn.style.opacity = "0.7";
+    
+    const outputDiv = document.getElementById('outputBWD');
+    outputDiv.innerHTML = `
+        <div style="text-align: center; color: var(--accent-bwd); font-size: 0.85rem; margin-top: 15px;">
+            <div class="animasi-loading-kalender" style="color:var(--accent-bwd);">Menganalisis tingkat Nitrogen daun...</div>
+        </div>`;
+
+    try {
+        // Kirim HTTP POST ke Web App Google Apps Script BWD
+        const res = await fetch(URL_BWD, {
+            method: 'POST',
+            body: JSON.stringify({ image: base64Img })
+        });
+        
+        const data = await res.json();
+        
+        // Hentikan kamera perangkat untuk menghemat baterai HP
+        stopCamera();
+        
+        // Teruskan data ke fungsi global penampil hasil AI
+        currentMode = 'bwd';
+        tampilkanHasil(data);
+
+    } catch (err) {
+        console.error(err);
+        outputDiv.innerHTML = `<div class="error" style="display:block; text-align:center;">Gagal memproses gambar. Periksa koneksi internet atau URL Apps Script.</div>`;
+        
+        // Jika terjadi error (misal sinyal putus), kembalikan UI ke mode kamera live
+        if (previewImg) previewImg.style.display = 'none';
+        if (focusBox) focusBox.style.display = 'block';
+        
+    } finally {
+        // Kembalikan tombol ke kondisi semula
+        btn.innerText = originalText;
+        btn.disabled = false;
+        btn.style.opacity = "1";
+    }
+});
         async function mulaiAnalisis() {
             document.getElementById('scanWindow').classList.add('is-scanning');
             document.getElementById('loader').style.display = 'block';
@@ -3481,9 +3484,7 @@ async function loadWeather() {
             }
 
             if (count === 0) {
-                document.getElementById('outputBWD').innerHTML = `
-                    <div style="color:var(--accent-soil); font-size:0.85rem; margin-top:10px;">⚠️ Warna hijau daun tidak terdeteksi. Coba foto lebih dekat dengan pencahayaan cukup.</div>
-                    <button class="btn-main" onclick="ujiUlangBWD()" style="margin-top:14px; background:#0e7490; color:#fff;">📸 FOTO ULANG</button>`;
+                document.getElementById('outputBWD').innerHTML = "⚠️ Daun tidak terdeteksi. Pastikan daun padi memenuhi kotak fokus hijau!";
                 return;
             }
 
@@ -3491,10 +3492,13 @@ async function loadWeather() {
             const ratioG = gSum / count;
             const ratioB = bSum / count;
 
+            // Memunculkan notifikasi tanpa detail rasio
+            alert("WARNA DAUN TERDETEKSI\n\nAnalisis berhasil dilakukan. Silakan lihat hasil skala BWD di bawah.");
+
             const skala = cariSkalaTerdekatViaRasio(ratioR, ratioG, ratioB);
             
-            const colorToClass   = { 1: "skala-1", 2: "skala-2", 3: "skala-3", 4: "skala-4", 5: "skala-5" };
-            const styleClass     = colorToClass[skala] || "skala-3";
+            const colorToClass = { 1: "skala-1", 2: "skala-2", 3: "skala-3", 4: "skala-4", 5: "skala-5" };
+            const styleClass = colorToClass[skala] || "skala-3";
             const kamusWarnaLokal = { 1: "Kuning (Kritis N)", 2: "Hijau Kekuningan", 3: "Hijau Muda", 4: "Hijau (Optimal)", 5: "Hijau Tua" };
 
             document.getElementById('outputBWD').innerHTML = `
@@ -3508,7 +3512,9 @@ async function loadWeather() {
                         ${getSaranPupukBWD(skala)}
                     </div>
                 </div>
-                <button class="btn-main" onclick="ujiUlangBWD()" style="margin-top:14px; background:#0e7490; color:#fff;">📸 FOTO DAUN LAIN</button>
+                <button class="btn-main" onclick="ujiUlangBWD()" style="margin-top: 14px; background: #0e7490; color: #fff;">
+                    🔄 UJI ULANG / DAUN LAIN
+                </button>
             `;
         }
 
@@ -4851,9 +4857,7 @@ document.getElementById('resPenyebabHama').innerHTML = (hasilHama.penyebab || "-
                 let listTempHTML = '';
                 const colors = out.leafColors || out.leaf_colors || []; const dets = Array.isArray(out.detections) ? out.detections : (out.detections?.predictions || []);
                 if (colors.length === 0) { 
-                    bwdContainer.innerHTML = `
-                        <div class="info-box" style="border-left-color: var(--red-alert);">Daun tidak terdeteksi. Coba foto lebih dekat dengan pencahayaan cukup.</div>
-                        <button class="btn-main" onclick="ujiUlangBWD()" style="margin-top:14px; background:#0e7490; color:#fff;">📸 FOTO ULANG</button>`; 
+                    bwdContainer.innerHTML = `<div class="info-box" style="border-left-color: var(--red-alert);">Daun tidak terdeteksi. Silakan coba lagi.</div>`; 
                     document.getElementById('resConf').innerText = `Tingkat Keyakinan: 0%`; 
                     return; 
                 }
@@ -4881,7 +4885,9 @@ document.getElementById('resPenyebabHama').innerHTML = (hasilHama.penyebab || "-
                         <div class="vote-summary">📊 Mayoritas: ${kamusWarna[winnerKey]} (${maxVotes} dari ${colors.length} daun)</div>
                         <div style="font-size: 0.85rem; display: flex; gap: 8px; align-items: flex-start;"><span>✅</span><span>${winData?.rec || "-"}</span></div>
                     </div>
-                    <button class="btn-main" onclick="ujiUlangBWD()" style="margin-top:14px; background:#0e7490; color:#fff;">📸 FOTO DAUN LAIN</button>`;
+                    <button class="btn-main" onclick="ujiUlangBWD()" style="margin-top: 14px; background: #0e7490; color: #fff;">
+                        🔄 UJI ULANG / DAUN LAIN
+                    </button>`;
 
                 document.getElementById('resLabel').innerText = "Hasil Analisis Warna Daun";
                 let finalConfidence = (1 - akumulasiSalah) * 100; if (finalConfidence > 99.9) finalConfidence = 99.9;
@@ -5001,7 +5007,7 @@ document.getElementById('resPenyebabHama').innerHTML = (hasilHama.penyebab || "-
                 <div style="font-size: 1rem; font-weight:800; color:var(--accent-pupuk); margin-bottom:12px; text-align:center; border-bottom: 1px dashed rgba(255,255,255,0.1); padding-bottom: 8px;">
                     📋 HASIL REKOMENDASI DOSIS
                 </div>
-                <b>📍 Wilayah Binaan:</b> ${kecInput}<br>
+                <b>📍 Wilayah:</b> ${kecInput}<br>
                 <b>📐 Luas Hamparan:</b> ${luas} Ha<br><br>
                 
                 <div style="background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; margin-bottom: 12px; border-left: 3px solid var(--accent-soil)">
@@ -5447,10 +5453,9 @@ async function prosesAnalisisKalender() {
             </div>`;
     }
 }
-
         switchMode('cuaca');
 
-        window.analisisVarietasPadi = async function() {
+        async function analisisVarietasPadi() {
             const divOutput = document.getElementById("outputHasilVarietas");
             const btnWA = document.getElementById("btnKirimWAVarietas");
             const btnCopy = document.getElementById("btnCopyVarietas");
@@ -5915,6 +5920,22 @@ function tambahkanPesanLayar(pengirim, teks, warnaAksen) {
     areaPesan.scrollTop = areaPesan.scrollHeight;
 }
 
+function startBWDCamera() {
+    const video = document.getElementById('videoElement');
+    if (!video) return;
+
+    navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "environment" } 
+    })
+    .then(stream => {
+        currentStream = stream;
+        video.srcObject = stream;
+    })
+    .catch(err => {
+        console.error("Camera error:", err);
+        alert("Gagal mengakses kamera. Pastikan izin kamera diberikan.");
+    });
+}
 
 // ====================================================================
 // KODE FULL HARGA PESTISIDA & HARGA GABAH (SUDAH DIPERBAIKI)
@@ -6234,7 +6255,7 @@ async function cariHargaPestisida() {
     </div>
 </div>
 <script src="patch_smartfarming.js"></script>
-    <script src="patch_riwayat_tambahan.js"></script>
+<script src="patch_riwayat_tambahan.js"></script>
     <script src="patch_cuaca_langsung.js"></script>
 </body>
 </html>
