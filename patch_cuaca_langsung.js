@@ -3,7 +3,7 @@
  *  PATCH: Menu Risiko Cuaca — Tampil Langsung via BTS,
  *         Sinkron GPS untuk Data Akurat + Risiko Lengkap
  *  PPL Milenial Wajo — Smart Farming
- *  Versi: 2.1 (patch perbaikan bug)
+ *  Versi: 2.2 (sinkronisasi penuh dengan index.html)
  * ============================================================
  *
  *  CARA PASANG (urutan wajib):
@@ -403,6 +403,7 @@
 
     function hapusBoxRisiko() {
         document.querySelectorAll('#weatherData .info-box-risiko').forEach(function(el){ el.remove(); });
+        document.querySelectorAll('#weatherData .info-box-dynamic').forEach(function(el){ el.remove(); });
         const boxBlast = document.getElementById('boxBlastRisk');
         if (boxBlast) boxBlast.style.display = 'none';
         const lokal = document.getElementById('localSstBox');
@@ -606,6 +607,12 @@
         _switchModeAsli(mode);
 
         if (mode === 'cuaca') {
+            // Pulihkan localSstBox jika GPS sudah aktif (HTML switchMode selalu hide-nya)
+            if (state.gpsAktif) {
+                const boxLokal = document.getElementById('localSstBox');
+                if (boxLokal) boxLokal.style.display = 'block';
+            }
+
             setTimeout(async function() {
                 if (state.gpsAktif && state.koordinat) {
                     state.sedangMemuat = false;   // reset agar tidak skip
@@ -727,6 +734,6 @@
         'body.light-mode #bannerTungguGPS{background:rgba(59,130,246,0.04)!important;}';
     document.head.appendChild(style);
 
-    console.log('✅ [patch_cuaca_langsung v2.1] Aktif: BTS otomatis → GPS akurat + risiko lengkap.');
+    console.log('✅ [patch_cuaca_langsung v2.2] Aktif: BTS otomatis → GPS akurat + risiko lengkap. Sinkron dengan index.html.');
 
 })();
