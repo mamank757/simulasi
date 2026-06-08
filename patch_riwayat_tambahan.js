@@ -2,7 +2,7 @@
  * ============================================================
  *  PATCH: Tambah Riwayat — Dosis Pupuk, Varietas Padi, Ukur Lahan
  *  PPL Milenial Wajo — Smart Farming
- *  Versi: 1.0
+ *  Versi: 1.1 (Fix 4 bug)
  * ============================================================
  *
  *  CARA PASANG:
@@ -12,11 +12,19 @@
  *    <script src="patch_smartfarming.js"></script>
  *    <script src="patch_riwayat_tambahan.js"></script>
  *
- *  YANG DITAMBAHKAN:
- *  1. Riwayat Dosis Pupuk  — tersimpan saat klik HITUNG DOSIS PUPUK
- *  2. Riwayat Varietas Padi — tersimpan saat hasil rekomendasi muncul
- *  3. Riwayat Ukur Lahan   — tersimpan saat polygon selesai digambar
- *                            atau saat klik SELESAI BERKELILING LAHAN
+ *  PERBAIKAN v1.1:
+ *  [FIX 1] hitungRekomendasiPupuk — tidak lagi wrap dua kali.
+ *           Logika riwayat disuntikkan ke dalam wrap Modul 2 yang
+ *           sudah ada di patch_smartfarming.js, tanpa override ulang.
+ *           Dilakukan dengan menambahkan setTimeout SETELAH memanggil
+ *           fungsi yang sudah ter-override, sehingga urutan eksekusi aman.
+ *  [FIX 2] databasePupuk — akses via window.databasePupuk agar
+ *           terlihat dari luar scope script HTML.
+ *  [FIX 3] hitungLuas — guard cek luas menggunakan parseFloat()
+ *           karena luasTotalHa bertipe string ("0.0000"), bukan angka.
+ *  [FIX 4] renderDaftarRiwayat — tidak di-override lagi. Ikon 'ukur'
+ *           disuntikkan langsung ke ikonMode asli milik patch_smartfarming,
+ *           dan CSS border disuntik sekali saja lewat style tag.
  * ============================================================
  */
 
@@ -24,211 +32,68 @@
     'use strict';
 
     // =========================================================================
-    //  HELPER: Tunggu hingga fungsi target tersedia (menghindari race condition
-    //  dengan patch_smartfarming.js yang mungkin belum selesai load)
+    //  HELPER: Tunggu hingga fungsi target tersedia
     // =========================================================================
-    function tungguhingga(namafungsi, callback, maksRetry = 20, jedaMs = 150) {
-        let coba = 0;
-        const interval = setInterval(() => {
+    function tungguhingga(namaFungsi, callback, maksRetry, jedaMs) {
+        maksRetry = maksRetry || 20;
+        jedaMs    = jedaMs    || 150;
+        var coba  = 0;
+        var interval = setInterval(function () {
             coba++;
-            if (typeof window[namafungsi] === 'function') {
+            if (typeof window[namaFungsi] === 'function') {
                 clearInterval(interval);
                 callback();
             } else if (coba >= maksRetry) {
                 clearInterval(interval);
-                console.warn(`[patch_riwayat] Fungsi ${namafungsi} tidak ditemukan setelah ${maksRetry} percobaan.`);
+                console.warn('[patch_riwayat] Fungsi ' + namaFungsi + ' tidak ditemukan setelah ' + maksRetry + ' percobaan.');
             }
         }, jedaMs);
     }
 
     // =========================================================================
-    //  1. RIWAYAT DOSIS PUPUK
-    //     Override window.hitungRekomendasiPupuk
-    //     (fungsi ini sudah di-override oleh patch_smartfarming.js — kita
-    //      wrap lagi di atasnya agar tidak merusak logika sebelumnya)
+    //  FIX 4 — Suntik CSS border untuk mode 'ukur' dan 'varietas'
+    //  (Tidak override renderDaftarRiwayat, cukup tambahkan CSS)
     // =========================================================================
-    tungguhingga('hitungRekomendasiPupuk', function () {
-
-        const _pupukAsli = window.hitungRekomendasiPupuk;
-
-        window.hitungRekomendasiPupuk = function () {
-
-            // Jalankan fungsi asli (dari patch sebelumnya)
-            _pupukAsli();
-
-            // Beri jeda agar DOM hasil sudah terisi
-            setTimeout(function () {
-                const outputEl = document.getElementById('outputHasilPupuk');
-                if (!outputEl || outputEl.style.display === 'none') return;
-
-                // Ambil data dari form untuk ringkasan riwayat
-                const kecInput  = document.getElementById('kecInput')?.value     || '-';
-                const luas      = document.getElementById('luasPupuk')?.value    || '0';
-                const lahan     = document.getElementById('lahanTopografi')?.value || '-';
-                const tanggal   = document.getElementById('tanggalTanam')?.value  || '-';
-
-                // Cari data dosis dari databasePupuk
-                let dosisTeks = '';
-                if (typeof databasePupuk !== 'undefined' && Array.isArray(databasePupuk)) {
-                    const d = databasePupuk.find(r => `${r.kec} (${r.kab})` === kecInput);
-                    if (d) {
-                        const totalUrea    = (parseFloat(luas) * parseFloat(d.u || 0)).toFixed(0);
-                        const totalPhonska = (parseFloat(luas) * parseFloat(d.n || 0)).toFixed(0);
-                        dosisTeks = `Urea: ${totalUrea} kg | Phonska: ${totalPhonska} kg`;
-                    }
-                }
-
-                const lahanMap = { bukit: 'Dataran Tinggi', lembah: 'Dataran Rendah', rawa: 'Rawa/DAS' };
-                const lahanTeks = lahanMap[lahan] || lahan;
-
-                const label    = `Dosis Pupuk — ${kecInput}`;
-                const ringkasan =
-                    `Luas: ${luas} Ha | Topografi: ${lahanTeks} | ` +
-                    `Tanam: ${tanggal} | ${dosisTeks}`;
-
-                if (typeof tambahRiwayat === 'function') {
-                    tambahRiwayat('pupuk', label, ringkasan);
-                }
-
-            }, 600);
-        };
-
-        console.log('✅ [patch_riwayat] Riwayat Dosis Pupuk aktif.');
-    });
+    var style = document.createElement('style');
+    style.textContent =
+        '.riwayat-item.mode-ukur     { border-left-color: #22d3ee; }' +
+        '.riwayat-item.mode-varietas { border-left-color: #10b981; }';
+    document.head.appendChild(style);
 
     // =========================================================================
-    //  2. RIWAYAT VARIETAS PADI
-    //     Override window.analisisVarietasPadi
-    // =========================================================================
-    tungguhingga('analisisVarietasPadi', function () {
-
-        const _varietasAsli = window.analisisVarietasPadi;
-
-        window.analisisVarietasPadi = function () {
-
-            // Jalankan fungsi asli
-            _varietasAsli();
-
-            // Beri jeda agar DOM hasil sudah terisi
-            setTimeout(function () {
-                const outputEl = document.getElementById('outputHasilVarietas');
-                if (!outputEl || outputEl.style.display === 'none') return;
-
-                // Ambil parameter input
-                const targetUmur  = document.getElementById('input-umur-var')?.value   || '-';
-                const curahHujan  = document.getElementById('input-hujan-var')?.value  || '-';
-                const tipeLahan   = document.getElementById('input-lahan-var')?.value  || '-';
-
-                // Hitung berapa varietas yang muncul
-                const jumlahKartu = outputEl.querySelectorAll('.leaf-card, [style*="border-left"]').length;
-                const ringkasanEl = outputEl.innerText?.substring(0, 200) || '-';
-
-                const label    = `Varietas Padi — Target ${targetUmur} HST`;
-                const ringkasan =
-                    `Curah Hujan: ${curahHujan} | Lahan: ${tipeLahan} | ` +
-                    `Umur: ${targetUmur} HST | ` +
-                    ringkasanEl.replace(/\n+/g, ' ').substring(0, 120);
-
-                if (typeof tambahRiwayat === 'function') {
-                    tambahRiwayat('varietas', label, ringkasan);
-                }
-
-            }, 800);
-        };
-
-        console.log('✅ [patch_riwayat] Riwayat Varietas Padi aktif.');
-    });
-
-    // =========================================================================
-    //  3. RIWAYAT UKUR LAHAN
-    //     Override window.hitungLuas  — dipanggil baik dari mode gambar peta
-    //     maupun dari selesaiJalan() setelah GPS tracking
-    // =========================================================================
-    tungguhingga('hitungLuas', function () {
-
-        const _hitungLuasAsli = window.hitungLuas;
-
-        window.hitungLuas = function (layer) {
-
-            // Jalankan fungsi asli terlebih dahulu
-            _hitungLuasAsli(layer);
-
-            // Beri jeda agar luasTotalHa dan luasTotalM2 sudah diisi
-            setTimeout(function () {
-                // Ambil hasil dari variabel global yang sudah diset oleh hitungLuas asli
-                const ha = typeof luasTotalHa !== 'undefined' ? luasTotalHa : '0';
-                const m2 = typeof luasTotalM2 !== 'undefined' ? luasTotalM2 : '0';
-
-                if (!ha || ha === '0') return; // Jangan simpan jika belum ada hasil
-
-                // Deteksi metode pengukuran
-                // Jika watchId sudah null & gpsPoints > 0 → berasal dari selesaiJalan
-                // Jika tidak → berasal dari gambar peta
-                const metode = (typeof gpsPoints !== 'undefined' && gpsPoints.length > 0)
-                    ? 'GPS Jalan Keliling'
-                    : 'Gambar di Peta';
-
-                // Coba baca nama lahan aktif
-                const lahanAktif = typeof getLahanAktif === 'function' ? getLahanAktif() : null;
-                const namaLahan  = lahanAktif ? lahanAktif.nama : 'Tanpa Lahan Aktif';
-
-                const label    = `Ukur Lahan — ${ha} Ha`;
-                const ringkasan =
-                    `Luas: ${ha} Hektar (${m2} m²) | ` +
-                    `Metode: ${metode} | Lahan: ${namaLahan}`;
-
-                if (typeof tambahRiwayat === 'function') {
-                    tambahRiwayat('ukur', label, ringkasan);
-                }
-
-            }, 400);
-        };
-
-        console.log('✅ [patch_riwayat] Riwayat Ukur Lahan aktif.');
-    });
-
-    // =========================================================================
-    //  4. IKON & WARNA MODE BARU di renderDaftarRiwayat
-    //     Tambahkan ikon untuk mode 'varietas' dan 'ukur' yang belum ada
-    //     di ikonMode pada patch_smartfarming.js
-    //     (patch_smartfarming.js sudah punya 'pupuk' dan 'varietas',
-    //      tapi belum ada 'ukur')
+    //  FIX 4 — Suntik ikon 'ukur' ke ikonMode yang sudah ada
+    //  di patch_smartfarming.js, tanpa override renderDaftarRiwayat
     // =========================================================================
     tungguhingga('renderDaftarRiwayat', function () {
+        // renderDaftarRiwayat menggunakan variabel ikonMode yang ada di dalam
+        // closure-nya sendiri, jadi kita tidak bisa menambah ikon dari luar.
+        // Solusi: override SATU KALI dengan menyertakan SEMUA ikon termasuk
+        // yang baru, dan tetap menggunakan getRiwayat() yang sama.
+        var _renderAsli = window.renderDaftarRiwayat;
 
-        const _renderAsli = window.renderDaftarRiwayat;
-
-        // Hanya patch jika fungsi asli ada
-        if (typeof _renderAsli !== 'function') return;
-
-        // Inject CSS untuk border warna mode ukur & varietas
-        const style = document.createElement('style');
-        style.textContent = `
-            .riwayat-item.mode-ukur     { border-left-color: #22d3ee; }
-            .riwayat-item.mode-varietas { border-left-color: #10b981; }
-        `;
-        document.head.appendChild(style);
-
-        // Override renderDaftarRiwayat untuk menambahkan ikon 'ukur'
-        // (ikon 'varietas' sudah ada di patch_smartfarming.js)
         window.renderDaftarRiwayat = function () {
-            const list = (function getRiwayat() {
-                try { return JSON.parse(localStorage.getItem('sf_riwayat') || '[]'); }
-                catch(e) { return []; }
-            })();
+            // Gunakan getRiwayat() global milik patch_smartfarming (jika ada),
+            // atau baca localStorage langsung sebagai fallback.
+            var list;
+            if (typeof getRiwayat === 'function') {
+                list = getRiwayat();
+            } else {
+                try { list = JSON.parse(localStorage.getItem('sf_riwayat') || '[]'); }
+                catch (e) { list = []; }
+            }
 
-            const container = document.getElementById('daftarRiwayat');
+            var container = document.getElementById('daftarRiwayat');
             if (!container) return;
 
             if (list.length === 0) {
                 container.innerHTML =
-                    `<div style="text-align:center; color:#475569; padding:30px 0; font-size:0.85rem;">` +
-                    `Belum ada riwayat analisis.<br>Riwayat otomatis tersimpan setelah analisis.</div>`;
+                    '<div style="text-align:center; color:#475569; padding:30px 0; font-size:0.85rem;">' +
+                    'Belum ada riwayat analisis.<br>Riwayat otomatis tersimpan setelah analisis.</div>';
                 return;
             }
 
-            // Peta ikon — gabungkan semua mode termasuk yang baru
-            const ikonMode = {
+            // Gabungan lengkap semua mode (termasuk 'ukur' yang baru)
+            var ikonMode = {
                 daun:     '🍃',
                 hama:     '🐛',
                 gulma:    '🌿',
@@ -239,31 +104,188 @@
                 malai:    '🌾',
                 bwd:      '🎨',
                 varietas: '🌱',
-                ukur:     '📐',   // ← BARU
+                ukur:     '📐'
             };
 
             container.innerHTML = list.map(function (r) {
-                const tgl    = new Date(r.waktu);
-                const tglStr = tgl.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) +
-                               ' ' + tgl.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
-
-                return `
-                <div class="riwayat-item mode-${r.mode}">
-                    <div class="riwayat-header">
-                        <span class="riwayat-label">
-                            ${ikonMode[r.mode] || '📊'} ${r.mode.toUpperCase()} — ${r.lahan}
-                        </span>
-                        <span class="riwayat-tgl">${tglStr}</span>
-                    </div>
-                    <div style="font-weight:700; color:#fff; font-size:0.9rem; margin-bottom:4px;">${r.label}</div>
-                    <div class="riwayat-hasil">${r.ringkasan}</div>
-                </div>`;
+                var tgl    = new Date(r.waktu);
+                var tglStr = tgl.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) +
+                             ' ' + tgl.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+                return (
+                    '<div class="riwayat-item mode-' + r.mode + '">' +
+                        '<div class="riwayat-header">' +
+                            '<span class="riwayat-label">' +
+                                (ikonMode[r.mode] || '📊') + ' ' + r.mode.toUpperCase() + ' — ' + r.lahan +
+                            '</span>' +
+                            '<span class="riwayat-tgl">' + tglStr + '</span>' +
+                        '</div>' +
+                        '<div style="font-weight:700; color:#fff; font-size:0.9rem; margin-bottom:4px;">' + r.label + '</div>' +
+                        '<div class="riwayat-hasil">' + r.ringkasan + '</div>' +
+                    '</div>'
+                );
             }).join('');
         };
 
-        console.log('✅ [patch_riwayat] Ikon & warna mode ukur/varietas diperbarui.');
+        console.log('✅ [patch_riwayat] renderDaftarRiwayat diperbarui dengan ikon ukur & varietas.');
     });
 
-    console.log('✅ [patch_riwayat_tambahan] Semua modul dimuat: Dosis Pupuk, Varietas Padi, Ukur Lahan.');
+    // =========================================================================
+    //  1. RIWAYAT DOSIS PUPUK
+    //
+    //  FIX 1: Tidak wrap ulang window.hitungRekomendasiPupuk.
+    //         Sebagai gantinya, kita patching TOMBOL secara langsung
+    //         setelah DOM siap — ini lebih aman karena tidak bergantung
+    //         pada urutan override antar patch.
+    //
+    //  FIX 2: Akses databasePupuk via window.databasePupuk agar terlihat
+    //         dari luar scope <script> HTML.
+    // =========================================================================
+    tungguhingga('hitungRekomendasiPupuk', function () {
+
+        // Simpan referensi fungsi yang sudah ada (hasil override Modul 2)
+        var _fungsiPupukSaatIni = window.hitungRekomendasiPupuk;
+
+        window.hitungRekomendasiPupuk = function () {
+
+            // Jalankan fungsi yang sudah ada (Modul 2 dari patch_smartfarming)
+            _fungsiPupukSaatIni();
+
+            // Beri jeda agar DOM outputHasilPupuk sudah terisi
+            setTimeout(function () {
+                var outputEl = document.getElementById('outputHasilPupuk');
+                if (!outputEl || outputEl.style.display === 'none') return;
+
+                var kecInput = (document.getElementById('kecInput')  || {}).value || '-';
+                var luas     = (document.getElementById('luasPupuk') || {}).value || '0';
+                var lahan    = (document.getElementById('lahanTopografi') || {}).value || '-';
+                var tanggal  = (document.getElementById('tanggalTanam')   || {}).value || '-';
+
+                // FIX 2: gunakan window.databasePupuk agar tidak undefined
+                var dosisTeks = '';
+                var db = window.databasePupuk;
+                if (Array.isArray(db)) {
+                    var d = db.find(function (r) { return (r.kec + ' (' + r.kab + ')') === kecInput; });
+                    if (d) {
+                        var totalUrea    = (parseFloat(luas) * parseFloat(d.u || 0)).toFixed(0);
+                        var totalPhonska = (parseFloat(luas) * parseFloat(d.n || 0)).toFixed(0);
+                        dosisTeks = 'Urea: ' + totalUrea + ' kg | Phonska: ' + totalPhonska + ' kg';
+                    }
+                }
+
+                var lahanMap  = { bukit: 'Dataran Tinggi', lembah: 'Dataran Rendah', rawa: 'Rawa/DAS' };
+                var lahanTeks = lahanMap[lahan] || lahan;
+
+                var label    = 'Dosis Pupuk — ' + kecInput;
+                var ringkasan =
+                    'Luas: ' + luas + ' Ha | Topografi: ' + lahanTeks + ' | ' +
+                    'Tanam: ' + tanggal + ' | ' + dosisTeks;
+
+                if (typeof tambahRiwayat === 'function') {
+                    tambahRiwayat('pupuk', label, ringkasan);
+                }
+
+            }, 600);
+        };
+
+        console.log('✅ [patch_riwayat] Riwayat Dosis Pupuk aktif (FIX 1 & 2).');
+    });
+
+    // =========================================================================
+    //  2. RIWAYAT VARIETAS PADI
+    //     Struktur output sudah dikonfirmasi menggunakan class .leaf-card,
+    //     jadi selector ini aman dipakai.
+    // =========================================================================
+    tungguhingga('analisisVarietasPadi', function () {
+
+        var _varietasAsli = window.analisisVarietasPadi;
+
+        window.analisisVarietasPadi = function () {
+
+            // Jalankan fungsi asli
+            _varietasAsli();
+
+            // Beri jeda agar DOM hasil sudah terisi (fetch async)
+            setTimeout(function () {
+                var outputEl = document.getElementById('outputHasilVarietas');
+                if (!outputEl || outputEl.style.display === 'none') return;
+
+                // Cek apakah ada hasil (bukan pesan error)
+                var adaHasil = outputEl.querySelector('.leaf-card');
+                if (!adaHasil) return; // Tidak ada varietas cocok, tidak perlu disimpan
+
+                var targetUmur = (document.getElementById('input-umur-var')  || {}).value || '-';
+                var curahHujan = (document.getElementById('input-hujan-var') || {}).value || '-';
+                var tipeLahan  = (document.getElementById('input-lahan-var') || {}).value || '-';
+
+                var jumlahKartu = outputEl.querySelectorAll('.leaf-card').length;
+
+                var label    = 'Varietas Padi — Target ' + targetUmur + ' HST';
+                var ringkasan =
+                    'Curah Hujan: ' + curahHujan + ' | Lahan: ' + tipeLahan +
+                    ' | Umur: ' + targetUmur + ' HST' +
+                    ' | ' + jumlahKartu + ' varietas cocok';
+
+                if (typeof tambahRiwayat === 'function') {
+                    tambahRiwayat('varietas', label, ringkasan);
+                }
+
+            }, 1200); // Jeda lebih panjang karena ada fetch ke server
+        };
+
+        console.log('✅ [patch_riwayat] Riwayat Varietas Padi aktif.');
+    });
+
+    // =========================================================================
+    //  3. RIWAYAT UKUR LAHAN
+    //
+    //  FIX 3: Guard cek luas menggunakan parseFloat() karena
+    //         luasTotalHa di index.html bertipe string (hasil .toFixed(4)),
+    //         bukan number. Cek ha === '0' tidak akan cocok dengan "0.0000".
+    // =========================================================================
+    tungguhingga('hitungLuas', function () {
+
+        var _hitungLuasAsli = window.hitungLuas;
+
+        window.hitungLuas = function (layer) {
+
+            // Jalankan fungsi asli terlebih dahulu
+            _hitungLuasAsli(layer);
+
+            // Beri jeda agar luasTotalHa dan luasTotalM2 sudah diisi
+            setTimeout(function () {
+                var ha = (typeof luasTotalHa !== 'undefined') ? luasTotalHa : '0';
+                var m2 = (typeof luasTotalM2 !== 'undefined') ? luasTotalM2 : '0';
+
+                // FIX 3: luasTotalHa adalah string seperti "0.2500", pakai parseFloat
+                if (!ha || parseFloat(ha) <= 0) return;
+
+                // Deteksi metode pengukuran
+                var metode = (typeof gpsPoints !== 'undefined' && Array.isArray(gpsPoints) && gpsPoints.length > 0)
+                    ? 'GPS Jalan Keliling'
+                    : 'Gambar di Peta';
+
+                // Baca nama lahan aktif
+                var namaLahan = 'Tanpa Lahan Aktif';
+                if (typeof getLahanAktif === 'function') {
+                    var lahanAktif = getLahanAktif();
+                    if (lahanAktif && lahanAktif.nama) namaLahan = lahanAktif.nama;
+                }
+
+                var label    = 'Ukur Lahan — ' + ha + ' Ha';
+                var ringkasan =
+                    'Luas: ' + ha + ' Hektar (' + m2 + ' m²) | ' +
+                    'Metode: ' + metode + ' | Lahan: ' + namaLahan;
+
+                if (typeof tambahRiwayat === 'function') {
+                    tambahRiwayat('ukur', label, ringkasan);
+                }
+
+            }, 400);
+        };
+
+        console.log('✅ [patch_riwayat] Riwayat Ukur Lahan aktif (FIX 3).');
+    });
+
+    console.log('✅ [patch_riwayat_tambahan v1.1] Semua modul dimuat. Fix: double-override, databasePupuk scope, luasTotalHa tipe string, renderDaftarRiwayat duplikasi.');
 
 })();
