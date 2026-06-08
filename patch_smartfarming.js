@@ -1,4 +1,47 @@
 /**
+ * PATCH: Tab "Risiko Cuaca"
+ *
+ * ATURAN:
+ * - Cuaca (lokasi, prakiraan per jam, 7 hari, parameter satelit, radar)
+ *   → tampil otomatis via IP seperti biasa
+ * - Kotak analisis risiko (Fase Tanaman, Tikus, Penggerek Batang,
+ *   Hawar Pelepah, Wereng, Tungro) dengan class .info-box-dynamic
+ *   → HANYA tampil setelah tombol "Perbarui ke Lokasi Akurat (GPS)" ditekan
+ */
+
+(function () {
+
+  // Flag: sudah tekan GPS atau belum
+  var _gpsAktif = false;
+
+  // ── CSS: sembunyikan .info-box-dynamic sampai GPS ditekan ────────────────
+  var style = document.createElement('style');
+  style.id  = 'patch-risiko-style';
+  style.textContent = '.info-box-dynamic { display: none !important; }';
+  document.head.appendChild(style);
+
+  // ── Fungsi: hapus aturan CSS sehingga kotak risiko muncul ────────────────
+  function tampilkanKotakRisiko() {
+    var el = document.getElementById('patch-risiko-style');
+    if (el) el.remove();
+  }
+
+  // ── Override aktifkanGPS setelah semua script halaman siap ───────────────
+  window.addEventListener('load', function () {
+    var _aktifkanGPSAsli = window.aktifkanGPS;
+
+    window.aktifkanGPS = async function () {
+      // Jalankan fungsi GPS asli (ambil koordinat presisi + load cuaca akurat)
+      await _aktifkanGPSAsli();
+
+      // Setelah GPS sukses, hapus CSS yang menyembunyikan kotak risiko
+      _gpsAktif = true;
+      tampilkanKotakRisiko();
+    };
+  });
+
+})();
+/**
  * ============================================================
  *  PATCH: Perbaikan Kalkulasi & Jadwal Pemupukan E-RDKK
  *  PPL Milenial Wajo — Smart Farming
