@@ -134,8 +134,8 @@
         var persen = (sisa / batas) * 100;
 
         var warna;
-        if      (sisa > 6) warna = '#10b981';
-        else if (sisa > 3) warna = '#f59e0b';
+        if      (sisa > 4) warna = '#10b981';
+        else if (sisa > 2) warna = '#f59e0b';
         else if (sisa > 0) warna = '#ef4444';
         else               warna = '#7f1d1d';
 
