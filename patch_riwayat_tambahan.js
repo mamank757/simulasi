@@ -2,7 +2,7 @@
  * ============================================================
  *  PATCH: Tambah Riwayat — Dosis Pupuk, Varietas Padi, Ukur Lahan
  *  PPL Milenial Wajo — Smart Farming
- *  Versi: 1.0
+ *  Versi: 1.1  (bugfix Ukur Lahan)
  * ============================================================
  *
  *  CARA PASANG:
@@ -13,10 +13,24 @@
  *    <script src="patch_riwayat_tambahan.js"></script>
  *
  *  YANG DITAMBAHKAN:
- *  1. Riwayat Dosis Pupuk  — tersimpan saat klik HITUNG DOSIS PUPUK
+ *  1. Riwayat Dosis Pupuk   — tersimpan saat klik HITUNG DOSIS PUPUK
  *  2. Riwayat Varietas Padi — tersimpan saat hasil rekomendasi muncul
- *  3. Riwayat Ukur Lahan   — tersimpan saat polygon selesai digambar
- *                            atau saat klik SELESAI BERKELILING LAHAN
+ *  3. Riwayat Ukur Lahan    — tersimpan saat:
+ *       a) selesaiJalan() dipanggil (GPS keliling lahan), ATAU
+ *       b) event draw:created / draw:edited Leaflet-Draw (gambar polygon manual)
+ *     TIDAK lagi melalui override hitungLuas() agar:
+ *       • Deteksi metode selalu akurat (GPS vs Gambar)
+ *       • Tidak ada riwayat duplikat saat polygon diedit
+ *       • Tidak tersimpan saat hitungLuas dipanggil internal (mis. reset)
+ *
+ *  CHANGELOG v1.1:
+ *  - [FIX] Deteksi metode "GPS" vs "Gambar" sebelumnya selalu salah
+ *    karena gpsPoints tidak dikosongkan oleh selesaiJalan() — kini
+ *    riwayat disimpan LANGSUNG di titik pemanggil yang benar.
+ *  - [FIX] Riwayat duplikat saat user mengedit polygon telah dihilangkan
+ *    dengan memisahkan hook draw:created dan draw:edited.
+ *  - [FIX] Guard nilai luas diperkuat: cek parseFloat > 0, bukan string '0'.
+ *  - [FIX] Guard tambahRiwayat & getLahanAktif aman meski load terlambat.
  * ============================================================
  */
 
@@ -141,51 +155,106 @@
 
     // =========================================================================
     //  3. RIWAYAT UKUR LAHAN
-    //     Override window.hitungLuas  — dipanggil baik dari mode gambar peta
-    //     maupun dari selesaiJalan() setelah GPS tracking
+    //
+    //  DESAIN BARU (v1.1) — TIDAK lagi override hitungLuas().
+    //
+    //  Masalah dengan pendekatan lama (override hitungLuas):
+    //  ① gpsPoints TIDAK dikosongkan oleh selesaiJalan(), hanya oleh
+    //    resetPengukuran(). Akibatnya, setelah jalan keliling, jika user
+    //    kemudian menggambar polygon manual, gpsPoints masih berisi titik
+    //    lama → metode selalu terbaca "GPS Jalan Keliling" meski sebenarnya
+    //    "Gambar di Peta". Deteksi metode 100% tidak akurat.
+    //  ② Setiap kali user mengedit polygon yang sudah ada (draw:edited),
+    //    hitungLuas dipanggil lagi → riwayat tersimpan duplikat.
+    //  ③ hitungLuas juga dipanggil saat reset internal — bisa menyimpan
+    //    nilai yang tidak diminta.
+    //
+    //  Solusi: simpan riwayat di DUA titik yang tepat dan sudah punya
+    //  konteks metode yang benar:
+    //  A) Override window.selesaiJalan() → metode pasti "GPS Jalan Keliling"
+    //  B) Hook event Leaflet-Draw 'draw:created' pada map → metode pasti
+    //     "Gambar di Peta" (hanya dipanggil saat polygon BARU dibuat,
+    //     bukan saat diedit)
+    //
+    //  Riwayat tidak disimpan pada draw:edited agar tidak ada duplikat.
     // =========================================================================
-    tungguhingga('hitungLuas', function () {
 
-        const _hitungLuasAsli = window.hitungLuas;
+    // ── Helper internal: simpan satu entri riwayat ukur ──────────────────────
+    function simpanRiwayatUkur(metode) {
+        // Beri jeda singkat agar hitungLuas asli sudah selesai mengisi
+        // variabel global luasTotalHa & luasTotalM2
+        setTimeout(function () {
+            const ha = (typeof luasTotalHa !== 'undefined') ? luasTotalHa : '0';
+            const m2 = (typeof luasTotalM2 !== 'undefined') ? luasTotalM2 : '0';
 
-        window.hitungLuas = function (layer) {
+            // Guard ketat: nilai harus berupa angka positif
+            // luasTotalHa dari hitungLuas asli berformat "x.xxxx" (toFixed(4))
+            if (!ha || parseFloat(ha) <= 0) return;
 
-            // Jalankan fungsi asli terlebih dahulu
-            _hitungLuasAsli(layer);
+            // Guard: pastikan fungsi riwayat sudah tersedia
+            if (typeof tambahRiwayat !== 'function') return;
 
-            // Beri jeda agar luasTotalHa dan luasTotalM2 sudah diisi
-            setTimeout(function () {
-                // Ambil hasil dari variabel global yang sudah diset oleh hitungLuas asli
-                const ha = typeof luasTotalHa !== 'undefined' ? luasTotalHa : '0';
-                const m2 = typeof luasTotalM2 !== 'undefined' ? luasTotalM2 : '0';
+            const lahanAktif = (typeof getLahanAktif === 'function') ? getLahanAktif() : null;
+            const namaLahan  = (lahanAktif && lahanAktif.nama) ? lahanAktif.nama : 'Tanpa Lahan Aktif';
 
-                if (!ha || ha === '0') return; // Jangan simpan jika belum ada hasil
+            const label    = `Ukur Lahan — ${ha} Ha`;
+            const ringkasan =
+                `Luas: ${ha} Hektar (${m2} m²) | ` +
+                `Metode: ${metode} | Lahan: ${namaLahan}`;
 
-                // Deteksi metode pengukuran
-                // Jika watchId sudah null & gpsPoints > 0 → berasal dari selesaiJalan
-                // Jika tidak → berasal dari gambar peta
-                const metode = (typeof gpsPoints !== 'undefined' && gpsPoints.length > 0)
-                    ? 'GPS Jalan Keliling'
-                    : 'Gambar di Peta';
+            tambahRiwayat('ukur', label, ringkasan);
 
-                // Coba baca nama lahan aktif
-                const lahanAktif = typeof getLahanAktif === 'function' ? getLahanAktif() : null;
-                const namaLahan  = lahanAktif ? lahanAktif.nama : 'Tanpa Lahan Aktif';
+        }, 450); // 450ms: cukup untuk hitungLuas selesai isi DOM + variabel global
+    }
 
-                const label    = `Ukur Lahan — ${ha} Ha`;
-                const ringkasan =
-                    `Luas: ${ha} Hektar (${m2} m²) | ` +
-                    `Metode: ${metode} | Lahan: ${namaLahan}`;
+    // ── A) Override selesaiJalan — metode GPS pasti benar di sini ────────────
+    tungguhingga('selesaiJalan', function () {
 
-                if (typeof tambahRiwayat === 'function') {
-                    tambahRiwayat('ukur', label, ringkasan);
-                }
+        const _selesaiJalanAsli = window.selesaiJalan;
 
-            }, 400);
+        window.selesaiJalan = function () {
+            // Jalankan fungsi asli (stop watchPosition, buat polygon, panggil hitungLuas)
+            _selesaiJalanAsli();
+
+            // Saat tiba di sini, konteks metode sudah PASTI GPS karena
+            // selesaiJalan hanya bisa dipanggil via tombol "SELESAI BERKELILING LAHAN"
+            simpanRiwayatUkur('GPS Jalan Keliling');
         };
 
-        console.log('✅ [patch_riwayat] Riwayat Ukur Lahan aktif.');
+        console.log('✅ [patch_riwayat] Riwayat Ukur Lahan (GPS) aktif via selesaiJalan.');
     });
+
+    // ── B) Hook draw:created Leaflet-Draw — dipanggil hanya saat polygon BARU ─
+    //  Kita tidak bisa pakai tungguhingga() di sini karena 'map' bukan window.*
+    //  Gunakan strategi polling ringan yang berhenti sendiri.
+    (function hookLeafletDraw() {
+        let coba = 0;
+        const maxCoba = 40; // 40 × 250ms = 10 detik
+        const interval = setInterval(function () {
+            coba++;
+            // 'map' adalah variabel global di index.html (bukan window.map secara eksplisit,
+            // tapi berjalan di scope global sehingga window.map = map)
+            if (typeof window.map !== 'undefined' && window.map &&
+                typeof window.map.on === 'function') {
+                clearInterval(interval);
+
+                window.map.on('draw:created', function (/* e */) {
+                    // Saat draw:created: polygon baru selesai digambar manual di peta.
+                    // hitungLuas sudah dipanggil oleh handler asli di index.html
+                    // (listener draw:created lama), jadi kita hanya perlu simpan riwayat.
+                    simpanRiwayatUkur('Gambar di Peta');
+                });
+
+                // SENGAJA tidak hook draw:edited agar tidak ada duplikat riwayat.
+                // Edit polygon hanya memperbarui luas di layar, bukan aksi baru.
+
+                console.log('✅ [patch_riwayat] Riwayat Ukur Lahan (Gambar Peta) aktif via draw:created.');
+            } else if (coba >= maxCoba) {
+                clearInterval(interval);
+                console.warn('[patch_riwayat] window.map tidak ditemukan — hook draw:created dilewati.');
+            }
+        }, 250);
+    })();
 
     // =========================================================================
     //  4. IKON & WARNA MODE BARU di renderDaftarRiwayat
@@ -264,6 +333,6 @@
         console.log('✅ [patch_riwayat] Ikon & warna mode ukur/varietas diperbarui.');
     });
 
-    console.log('✅ [patch_riwayat_tambahan] Semua modul dimuat: Dosis Pupuk, Varietas Padi, Ukur Lahan.');
+    console.log('✅ [patch_riwayat_tambahan v1.1] Semua modul dimuat: Dosis Pupuk, Varietas Padi, Ukur Lahan.');
 
 })();
