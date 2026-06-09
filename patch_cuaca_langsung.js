@@ -551,7 +551,8 @@
         const boxBlast    = document.getElementById('boxBlastRisk');
 
         // Sembunyikan frame status lama milik HTML (resLabel + resConf di #result)
-        // karena patch punya UI lokasi sendiri di dalam gpsPrompt (#infoLokasiCuaca)
+        // karena patch punya UI lokasi sendiri di dalam gpsPrompt (#infoLokasiCuaca).
+        // Akan dikembalikan visible oleh switchMode saat user pindah ke mode lain.
         if (resLabel) resLabel.style.display = 'none';
         if (resConf)  resConf.style.display  = 'none';
 
@@ -594,6 +595,15 @@
     const _switchModeAsli = window.switchMode;
 
     window.switchMode = function(mode) {
+        // Kembalikan resLabel & resConf ke visible sebelum switchMode asli jalan,
+        // agar mode lain (kamera, BWD, ukur, dll) bisa menggunakannya normal
+        if (mode !== 'cuaca') {
+            const resLabel = document.getElementById('resLabel');
+            const resConf  = document.getElementById('resConf');
+            if (resLabel) resLabel.style.display = '';
+            if (resConf)  resConf.style.display  = '';
+        }
+
         _switchModeAsli(mode);
 
         if (mode === 'cuaca') {
