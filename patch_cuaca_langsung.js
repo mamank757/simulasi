@@ -615,11 +615,25 @@
 
             setTimeout(async function() {
                 if (state.gpsAktif && state.koordinat) {
-                    state.sedangMemuat = false;   // reset agar tidak skip
+                    // GPS sudah aktif → render ulang dengan risiko lengkap
+                    state.sedangMemuat = false;
                     await muatCuaca(state.koordinat, true);
                     return;
                 }
-                if (!state.btsSudahDicoba) {
+                if (state.btsSudahDicoba && state.koordinat) {
+                    // Prefetch sudah selesai di background → render langsung, tidak fetch ulang
+                    state.sedangMemuat = false;
+                    await muatCuaca(state.koordinat, false);
+                } else if (state.btsSudahDicoba && !state.koordinat) {
+                    // Prefetch sedang berjalan → tunggu sebentar lalu coba lagi
+                    setTimeout(async function() {
+                        if (state.koordinat) {
+                            state.sedangMemuat = false;
+                            await muatCuaca(state.koordinat, false);
+                        }
+                    }, 1500);
+                } else {
+                    // Belum dicoba sama sekali (fallback)
                     state.btsSudahDicoba = true;
                     const resLabel = document.getElementById('resLabel');
                     if (resLabel) resLabel.innerHTML = '<span style="color:#f59e0b;font-size:0.9rem;">📡 Mendeteksi lokasi via sinyal BTS...</span>';
@@ -635,9 +649,6 @@
                         state.koordinat = Object.assign({}, LOK_FALLBACK);
                         await muatCuaca(state.koordinat, false);
                     }
-                } else if (state.koordinat) {
-                    state.sedangMemuat = false;   // reset agar tidak skip
-                    await muatCuaca(state.koordinat, state.gpsAktif);
                 }
             }, 80);
         }
@@ -734,61 +745,64 @@
         'body.light-mode #bannerTungguGPS{background:rgba(59,130,246,0.04)!important;}';
     document.head.appendChild(style);
 
-    console.log('✅ [patch_cuaca_langsung v2.2] Aktif: BTS otomatis → GPS akurat + risiko lengkap. Sinkron dengan index.html.');
+    console.log('✅ [patch_cuaca_langsung v2.3] Aktif: BTS otomatis → GPS akurat + risiko lengkap.');
 
     // =========================================================================
-    //  AUTO-INIT: Jalankan deteksi BTS otomatis saat patch selesai dimuat.
+    //  AUTO-INIT — Background Prefetch (strategi baru, v2.3)
     //
-    //  Masalah sebelumnya: switchMode('cuaca') di HTML dipanggil SEBELUM
-    //  patch ini di-load (script patch ada di akhir </body>), sehingga hook
-    //  switchMode belum aktif dan deteksi BTS tidak pernah berjalan otomatis.
+    //  Masalah v2.2: isModeAktif() tidak reliable karena:
+    //    - currentMode dideklarasi 'let' (scope lokal script tag, bukan window)
+    //    - patch di-load setelah switchMode('cuaca') dipanggil, tapi SEBELUM
+    //      window 'load' — state DOM bisa berubah oleh patch lain di antaranya
     //
-    //  Solusi: patch mendeteksi sendiri apakah mode cuaca sudah aktif saat
-    //  ini, lalu langsung jalankan deteksi BTS tanpa menunggu klik tab.
+    //  Strategi baru: ABAIKAN cek mode sama sekali.
+    //  Langsung fetch lokasi + data cuaca di background begitu patch di-load.
+    //  Hasilnya disimpan di `state`. Saat user berada/membuka tab cuaca,
+    //  data sudah siap → render instan. Tidak ada penundaan apapun.
+    //
+    //  Dua skenario yang ditangani:
+    //    A) Tab cuaca sudah aktif saat patch di-load → render langsung ke DOM
+    //    B) Tab cuaca belum aktif → data tersimpan di state, render saat diklik
     // =========================================================================
 
-    function isModeAktif(mode) {
-        var modeKapital = mode.charAt(0).toUpperCase() + mode.slice(1);
-        var tabEl = document.getElementById('tab' + modeKapital);
-        if (tabEl && tabEl.classList.contains('active')) return true;
-        var boxEl = document.getElementById('box' + modeKapital);
-        if (boxEl && boxEl.style.display !== 'none' && boxEl.style.display !== '') return true;
-        if (typeof window.currentMode !== 'undefined' && window.currentMode === mode) return true;
-        return false;
-    }
-
-    function autoInitCuaca() {
-        if (!isModeAktif('cuaca') || state.btsSudahDicoba) return;
-
+    async function prefetchCuacaBackground() {
+        if (state.btsSudahDicoba) return;
         state.btsSudahDicoba = true;
 
+        // Tampilkan status loading jika elemen resLabel sudah ada di DOM
         var resLabel = document.getElementById('resLabel');
-        if (resLabel) resLabel.innerHTML =
-            '<span style="color:#f59e0b;font-size:0.9rem;">📡 Mendeteksi lokasi via sinyal BTS...</span>';
+        if (resLabel) {
+            resLabel.innerHTML =
+                '<span style="color:#f59e0b;font-size:0.9rem;">📡 Mendeteksi lokasi via sinyal BTS...</span>';
+        }
 
-        dapatkanLokasiVIABTS().then(async function(koordinat) {
-            try {
-                if (koordinat.akurasi === 'bts' || koordinat.akurasi === 'ip') {
+        try {
+            var koordinat = await dapatkanLokasiVIABTS();
+            if (koordinat.akurasi === 'bts' || koordinat.akurasi === 'ip') {
+                try {
                     var nama = await reverseGeocode(koordinat.lat, koordinat.lon);
                     if (nama) koordinat.label = nama;
-                }
-            } catch(e) {}
+                } catch(e) {}
+            }
             state.koordinat = koordinat;
-            await muatCuaca(koordinat, false);
-        }).catch(async function() {
+        } catch(e) {
             state.koordinat = Object.assign({}, LOK_FALLBACK);
+        }
+
+        // Cek apakah box cuaca sedang tampil (mode cuaca aktif saat ini)
+        var boxCuaca = document.getElementById('boxCuaca');
+        var modeCuacaAktif = boxCuaca && boxCuaca.style.display !== 'none';
+
+        if (modeCuacaAktif) {
+            // Render langsung ke UI karena tab cuaca sedang terbuka
             await muatCuaca(state.koordinat, false);
-        });
+        }
+        // Jika tidak aktif: state.koordinat sudah tersimpan.
+        // switchMode override akan pakai data ini saat tab diklik.
     }
 
-    // Tunggu semua script HTML selesai (termasuk switchMode('cuaca') awal),
-    // lalu jalankan auto-init dengan jeda kecil
-    if (document.readyState === 'complete') {
-        setTimeout(autoInitCuaca, 150);
-    } else {
-        window.addEventListener('load', function() {
-            setTimeout(autoInitCuaca, 150);
-        });
-    }
+    // Jalankan segera — tidak perlu tunggu event apapun.
+    // Script ini sudah ada di akhir </body>, DOM pasti sudah siap.
+    setTimeout(prefetchCuacaBackground, 100);
 
 })();
