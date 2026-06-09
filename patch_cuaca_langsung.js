@@ -375,19 +375,8 @@
         const radarEl = document.getElementById('radarMap');
         if (radarEl) radarEl.src = 'https://mamank757.github.io/peta?lat=' + koordinat.lat + '&lon=' + koordinat.lon;
 
-        // ── Label Konfirmasi ─────────────────────────────────────────────────
-        const resLabel = document.getElementById('resLabel');
-        const resConf  = document.getElementById('resConf');
-        if (resLabel) {
-            resLabel.innerText = koordinat.akurasi === 'gps'
-                ? '🛰️ Data Cuaca Lokasi Sawah Anda'
-                : '☁️ Data Cuaca — ' + koordinat.label;
-        }
-        
-        // Sembunyikan resConf agar tidak dobel dengan status di UI Tombol GPS
-        if (resConf) {
-            resConf.style.display = 'none'; 
-        }
+        // resLabel dan resConf (frame lama HTML) disembunyikan oleh muatCuaca.
+        // Status lokasi & akurasi kini tampil di #infoLokasiCuaca dalam gpsPrompt.
 
         return { cur: cur, dp: dp, cape: cape, idx: idx };
     }
@@ -558,12 +547,17 @@
         const weatherData = document.getElementById('weatherData');
         const result      = document.getElementById('result');
         const resConf     = document.getElementById('resConf');
+        const resLabel    = document.getElementById('resLabel');
         const boxBlast    = document.getElementById('boxBlastRisk');
+
+        // Sembunyikan frame status lama milik HTML (resLabel + resConf di #result)
+        // karena patch punya UI lokasi sendiri di dalam gpsPrompt (#infoLokasiCuaca)
+        if (resLabel) resLabel.style.display = 'none';
+        if (resConf)  resConf.style.display  = 'none';
 
         if (gpsPrompt)   gpsPrompt.style.display   = 'block';
         if (weatherData) weatherData.style.display = 'block';
         if (result)      result.style.display      = 'block';
-        if (resConf)     resConf.style.display     = 'block';
         if (boxBlast && !tampilkanRisiko) boxBlast.style.display = 'none';
 
         renderUITombolGPS(koordinat);
@@ -583,10 +577,11 @@
             }
         } catch (err) {
             console.error('[patch_cuaca] Gagal fetch:', err.message);
-            const resLabel = document.getElementById('resLabel');
-            if (resLabel) resLabel.innerText = '⚠️ Gagal Memuat Data Cuaca';
-            const rc = document.getElementById('resConf');
-            if (rc) rc.innerText = err.message || 'Periksa koneksi internet';
+            // Tampilkan error di dalam gpsPrompt (UI patch), bukan resLabel lama
+            const namaEl = document.getElementById('namaLokasiCuacaUI');
+            const statusEl = document.getElementById('statusLokasiCuacaUI');
+            if (namaEl)   namaEl.textContent = '⚠️ Gagal Memuat Data Cuaca';
+            if (statusEl) statusEl.innerHTML = '<span style="color:#ef4444;">' + (err.message || 'Periksa koneksi internet') + '</span>';
         } finally {
             state.sedangMemuat = false;
         }
@@ -630,8 +625,6 @@
                 } else {
                     // Belum dicoba sama sekali (fallback)
                     state.btsSudahDicoba = true;
-                    const resLabel = document.getElementById('resLabel');
-                    if (resLabel) resLabel.innerHTML = '<span style="color:#f59e0b;font-size:0.9rem;">📡 Mendeteksi lokasi via sinyal BTS...</span>';
                     try {
                         const koordinat = await dapatkanLokasiVIABTS();
                         if (koordinat.akurasi === 'bts' || koordinat.akurasi === 'ip') {
@@ -763,13 +756,6 @@
     async function prefetchCuacaBackground() {
         if (state.btsSudahDicoba) return;
         state.btsSudahDicoba = true;
-
-        // Tampilkan status loading jika elemen resLabel sudah ada di DOM
-        var resLabel = document.getElementById('resLabel');
-        if (resLabel) {
-            resLabel.innerHTML =
-                '<span style="color:#f59e0b;font-size:0.9rem;">📡 Mendeteksi lokasi via sinyal BTS...</span>';
-        }
 
         try {
             var koordinat = await dapatkanLokasiVIABTS();
