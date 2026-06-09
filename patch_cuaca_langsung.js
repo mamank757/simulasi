@@ -268,7 +268,7 @@
         if (alamatEl) {
             const warnaBadge = koordinat.akurasi === 'gps' ? '#10b981' : (koordinat.akurasi === 'bts' ? '#f59e0b' : '#64748b');
             const ikonBadge  = koordinat.akurasi === 'gps' ? '🛰️' : '📡';
-            const labelBadge = koordinat.akurasi === 'gps' ? 'GPS Akurat' : (koordinat.akurasi === 'bts' ? 'Sinyal BTS/WiFi' : 'Estimasi Wilayah');
+            const labelBadge = koordinat.akurasi === 'gps' ? 'GPS Akurat' : (koordinat.akurasi === 'bts' ? 'Lokasi dari sinyal BTS/WiFi' : 'Estimasi Wilayah');
             alamatEl.innerHTML =
                 '<b>' + koordinat.label + '</b>' +
                 '<span style="display:inline-block;margin-left:8px;font-size:0.7rem;padding:2px 8px;border-radius:6px;' +
@@ -484,7 +484,7 @@
             ikonTombol = '✅';
             teksTombol = 'GPS TERSINKRON — KLIK UNTUK PERBARUI';
         } else if (koordinat.akurasi === 'bts') {
-            statusAkurasi = '<span style="color:#f59e0b;">⚠️ Sinyal BTS/WiFi — Tekan GPS untuk risiko sawah akurat</span>';
+            statusAkurasi = '<span style="color:#f59e0b;">⚠️ Dari sinyal BTS/WiFi — Tekan Tombol (SINKRONKAN GPS) di bawah untuk lokasi sawah akurat</span>';
             bgTombol   = 'linear-gradient(135deg,#3b82f6,#2563eb)';
             ikonTombol = '🛰️';
             teksTombol = 'SINKRONKAN GPS & SATELIT';
