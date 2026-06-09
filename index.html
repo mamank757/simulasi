@@ -6277,5 +6277,54 @@ async function cariHargaPestisida() {
 </div>
 <script src="patch_smartfarming.js"></script>
 <script src="patch_riwayat_tambahan.js"></script>
+<script src="patch_cuaca_langsung.js"></script>
+
+<script>
+// ================================================================
+//  GUARD: aktifkanGPS — pisahkan antara mode cuaca dan ukur lahan
+//
+//  Masalah: patch_cuaca_langsung.js menimpa window.aktifkanGPS
+//  menjadi alias ke sinkronGPSCuaca(). Akibatnya jika tombol GPS
+//  di mode ukur lahan dipanggil, dia akan masuk ke alur cuaca.
+//
+//  Solusi: setelah semua patch dimuat, bungkus aktifkanGPS agar
+//  routing-nya berdasarkan currentMode:
+//    - mode 'cuaca'  → tetap pakai sinkronGPSCuaca (dari patch)
+//    - mode lainnya  → minta user aktifkan GPS HP secara manual
+//                      (ukur lahan pakai fokusLokasiSekarang &
+//                       watchPosition sendiri — tidak perlu aktifkanGPS)
+// ================================================================
+(function() {
+    // Simpan referensi ke versi patch (sinkronGPSCuaca)
+    const _gpsUntukCuaca = window.aktifkanGPS || window.sinkronGPSCuaca;
+
+    window.aktifkanGPS = async function() {
+        // Baca currentMode — dideklarasikan sebagai 'let' di script utama HTML,
+        // patch_cuaca menyimpan state di closure-nya sendiri.
+        // Cara paling aman: baca dari tab yang sedang aktif di DOM.
+        const tabAktif = document.querySelector('.tab-btn.active');
+        const modeSekarang = tabAktif ? tabAktif.id.replace('tab','').toLowerCase() : '';
+
+        if (modeSekarang === 'ukur') {
+            // Mode ukur lahan: jangan panggil patch cuaca.
+            // Peta ukur lahan sudah punya GPS sendiri via fokusLokasiSekarang()
+            // dan watchPosition di modeJalan(). Cukup berikan panduan ke user.
+            const pesan = '📍 Untuk ukur lahan:\n\n' +
+                '1. Pastikan GPS di HP sudah aktif\n' +
+                '2. Tekan 🗺️ "Gambar di Peta" atau 🚶 "Jalan Keliling"\n' +
+                '3. Peta akan otomatis pindah ke lokasi Anda';
+            alert(pesan);
+            return;
+        }
+
+        // Mode cuaca atau lainnya → gunakan fungsi patch cuaca
+        if (typeof _gpsUntukCuaca === 'function') {
+            await _gpsUntukCuaca();
+        }
+    };
+
+    console.log('✅ [guard-gps] aktifkanGPS sudah dipisahkan: cuaca vs ukur lahan.');
+})();
+</script>
 </body>
 </html>
