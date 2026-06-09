@@ -21,12 +21,12 @@
     // ── KONFIGURASI ──────────────────────────────────────────────────────────
     // Untuk mengubah batas, edit angka di sini saja
     var KUOTA_PER_MENU = {
-        daun  : 10,   // Deteksi Penyakit Padi
-        hama  : 10,   // Deteksi Hama Padi
-        gulma : 10,   // Identifikasi Gulma
-        tanah : 10,   // Analisis Tanah
+        daun  : 5,   // Deteksi Penyakit Padi
+        hama  : 5,   // Deteksi Hama Padi
+        gulma : 5,   // Identifikasi Gulma
+        tanah : 5,   // Analisis Tanah
         malai : 10,   // Estimasi Panen
-        bwd   : 10    // Uji BWD Urea
+        bwd   : 5    // Uji BWD Urea
     };
 
     var KEY_STORAGE = 'sf_kuota_v2';   // v2 agar tidak bentrok dengan patch lama
