@@ -261,14 +261,15 @@
         if (idx === -1) idx = hourly.time.findIndex(function(t) { return new Date(t) >= now; });
         if (idx === -1) idx = 0;
 
-      // ── Lokasi ───────────────────────────────────────────────────────────
+        // ── Lokasi ───────────────────────────────────────────────────────────
         const lokasiEl = document.getElementById('lokasiSawah');
         const alamatEl = document.getElementById('alamatDesa');
         if (lokasiEl) lokasiEl.innerText = koordinat.lat.toFixed(5) + ', ' + koordinat.lon.toFixed(5);
         if (alamatEl) {
-            // Hanya menampilkan nama lokasi dengan format tebal
-            alamatEl.innerHTML = '<b>' + koordinat.label + '</b>';
-        }
+            const warnaBadge = koordinat.akurasi === 'gps' ? '#10b981' : (koordinat.akurasi === 'bts' ? '#f59e0b' : '#64748b');
+            const ikonBadge  = koordinat.akurasi === 'gps' ? '🛰️' : '📡';
+            const labelBadge = koordinat.akurasi === 'gps' ? 'GPS Akurat' : (koordinat.akurasi === 'bts' ? 'Sinyal BTS/WiFi' : 'Estimasi Wilayah');
+            alamatEl.innerHTML =
                 '<b>' + koordinat.label + '</b>' +
                 '<span style="display:inline-block;margin-left:8px;font-size:0.7rem;padding:2px 8px;border-radius:6px;' +
                 'background:rgba(255,255,255,0.08);color:' + warnaBadge + ';">' +
@@ -374,7 +375,6 @@
         const radarEl = document.getElementById('radarMap');
         if (radarEl) radarEl.src = 'https://mamank757.github.io/peta?lat=' + koordinat.lat + '&lon=' + koordinat.lon;
 
-        // ── Label Konfirmasi ─────────────────────────────────────────────────
         // ── Label Konfirmasi ─────────────────────────────────────────────────
         const resLabel = document.getElementById('resLabel');
         const resConf  = document.getElementById('resConf');
