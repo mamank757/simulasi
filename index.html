@@ -3,346 +3,638 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#0a1220">
-<title>🌾 Simulator Bertani Padi</title>
+<meta name="theme-color" content="#050d1a">
+<title>🌾 SimPadi — Agro-Digital Farming System</title>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{
-  --bg:#0a1220; --card:#16243a; --deep:#0d1829;
-  --border:rgba(255,255,255,0.06); --text:#f0f4ff; --muted:#556b8a;
-  --c1:#22d3ee; --c2:#3b82f6; --c3:#10b981;
-  --c4:#d946ef; --c5:#34d399; --c6:#f59e0b; --c7:#f43f5e;
+:root {
+  --bg:    #050d1a;
+  --bg2:   #070f1c;
+  --card:  #0c1b2e;
+  --deep:  #071018;
+  --panel: #0a1828;
+  --border: rgba(255,255,255,0.06);
+  --border2:rgba(255,255,255,0.12);
+  --text:  #ddeaff;
+  --text2: #8eaac8;
+  --muted: #3d5570;
+  --c1: #22d3ee;
+  --c2: #4f9cf9;
+  --c3: #10d9a0;
+  --c4: #c97dfc;
+  --c5: #34e09a;
+  --c6: #f5a623;
+  --c7: #f04c6e;
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --mono: 'JetBrains Mono', monospace;
 }
+
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{scroll-behavior:smooth}
-body{
-  font-family:'Plus Jakarta Sans',sans-serif;
-  background:var(--bg);color:var(--text);
-  min-height:100vh;padding-bottom:90px;
-}
-/* ── HEADER ─────────────────────────────────────── */
-.hdr{
-  position:sticky;top:0;z-index:200;
-  background:rgba(10,18,32,0.96);
-  backdrop-filter:blur(12px);
-  border-bottom:1px solid var(--border);
-  padding:12px 16px 10px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.hdr-brand{display:flex;align-items:center;gap:10px}
-.hdr-icon{font-size:1.6rem;line-height:1}
-.hdr-title{font-size:0.9rem;font-weight:800;letter-spacing:0.3px}
-.hdr-sub{font-size:0.6rem;color:var(--c2);font-weight:600;letter-spacing:0.5px;margin-top:1px}
-.hdr-phase{
-  font-size:0.65rem;font-weight:800;letter-spacing:1px;
-  padding:5px 10px;border-radius:8px;
-  background:rgba(59,130,246,0.15);color:var(--c2);
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding-bottom: 92px;
+  background-image:
+    radial-gradient(ellipse 60% 40% at 15% 10%, rgba(79,156,249,0.05) 0%, transparent 70%),
+    radial-gradient(ellipse 50% 40% at 85% 90%, rgba(16,217,160,0.04) 0%, transparent 70%),
+    url("data:image/svg+xml,%3Csvg width='32' height='32' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='16' cy='16' r='0.8' fill='rgba(255,255,255,0.022)'/%3E%3C/svg%3E");
 }
 
-/* ── PHASE TRACKER ───────────────────────────────── */
-.tracker{
-  display:flex;align-items:center;
-  padding:12px 12px 10px;
-  background:rgba(10,18,32,0.95);
-  backdrop-filter:blur(8px);
-  border-bottom:1px solid var(--border);
-  overflow-x:auto;scrollbar-width:none;
-  position:sticky;top:57px;z-index:199;
-  gap:0;
+/* ── HEADER ────────────────────────────────────────── */
+.hdr {
+  position:sticky; top:0; z-index:200;
+  background: rgba(5,13,26,0.96);
+  backdrop-filter: blur(16px) saturate(180%);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 14px 9px;
+  display: flex; align-items:center; justify-content:space-between;
+}
+.hdr::after {
+  content:'';
+  position:absolute; bottom:-1px; left:0; right:0; height:1px;
+  background: linear-gradient(90deg, transparent 0%, var(--c2) 30%, var(--c3) 70%, transparent 100%);
+  opacity: 0.45;
+}
+.hdr-brand { display:flex; align-items:center; gap:10px; }
+.hdr-logo {
+  width:36px; height:36px;
+  background: linear-gradient(135deg, #0a2040, #0d3060);
+  border: 1px solid rgba(79,156,249,0.35);
+  border-radius: 10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.3rem;
+  box-shadow: 0 0 14px rgba(79,156,249,0.18), inset 0 1px 0 rgba(255,255,255,0.08);
+  flex-shrink:0;
+}
+.hdr-title { font-size:0.88rem; font-weight:800; letter-spacing:0.2px; color:var(--text); }
+.hdr-sub { font-size:0.55rem; color:var(--c2); font-weight:700; letter-spacing:1px; margin-top:1px; }
+.hdr-right { display:flex; gap:6px; align-items:center; }
+.badge-phase {
+  font-size:0.58rem; font-weight:800; letter-spacing:0.8px;
+  padding:4px 9px; border-radius:7px;
+  background: rgba(79,156,249,0.1);
+  border: 1px solid rgba(79,156,249,0.22);
+  color: var(--c2);
+}
+.badge-sci {
+  font-family: var(--mono);
+  font-size:0.52rem; font-weight:600; letter-spacing:0.5px;
+  padding:3px 7px; border-radius:6px;
+  background: rgba(16,217,160,0.07);
+  border: 1px solid rgba(16,217,160,0.18);
+  color: var(--c3);
+}
+
+/* ── PHASE TRACKER ──────────────────────────────────── */
+.tracker {
+  display:flex; align-items:center;
+  padding:9px 12px 8px;
+  background: rgba(5,13,26,0.98);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+  overflow-x:auto; scrollbar-width:none;
+  position:sticky; top:56px; z-index:199;
 }
 .tracker::-webkit-scrollbar{display:none}
+
 .t-dot{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0;cursor:pointer}
-.t-circle{
-  width:30px;height:30px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:0.75rem;font-weight:800;
-  border:2px solid var(--muted);color:var(--muted);
-  background:var(--deep);transition:all 0.25s ease;
+.t-circle {
+  width:30px; height:30px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.78rem; font-weight:800;
+  border:2px solid var(--muted); color:var(--muted);
+  background:var(--deep); transition:all 0.25s ease;
+  position:relative;
 }
-.t-dot.active .t-circle{
-  border-color:currentColor;color:#fff;
-  transform:scale(1.18);
-  box-shadow:0 0 0 4px rgba(255,255,255,0.06);
+.t-dot.active .t-circle {
+  border-color:currentColor; color:#fff;
+  transform:scale(1.2);
+  box-shadow:0 0 0 4px rgba(255,255,255,0.04), 0 0 14px currentColor;
+}
+.t-dot.active .t-circle::after {
+  content:'';
+  position:absolute; inset:-5px;
+  border-radius:50%; border:1.5px solid currentColor;
+  opacity:0.25; animation:pulse-ring 1.8s ease-out infinite;
+}
+@keyframes pulse-ring{
+  0%{transform:scale(0.88);opacity:0.4}
+  100%{transform:scale(1.28);opacity:0}
 }
 .t-dot.done .t-circle{
-  background:currentColor;border-color:currentColor;color:var(--bg);
+  background:currentColor; border-color:currentColor;
+  color:var(--bg); font-size:0.7rem;
 }
 .t-label{
-  font-size:0.55rem;font-weight:700;color:var(--muted);
-  white-space:nowrap;letter-spacing:0.2px;text-align:center;
+  font-size:0.5rem; font-weight:700; color:var(--muted);
+  white-space:nowrap; letter-spacing:0.2px; text-align:center;
 }
 .t-dot.active .t-label,.t-dot.done .t-label{color:currentColor}
-.t-line{flex:1;height:2px;background:var(--border);min-width:12px;max-width:28px;margin-top:-20px;transition:background 0.3s}
-.t-line.done{background:var(--c3)}
+.t-line{
+  flex:1; height:2px; background:var(--border);
+  min-width:10px; max-width:26px; margin-top:-20px;
+  transition:background 0.4s; overflow:hidden; position:relative;
+}
+.t-line.done{background:linear-gradient(90deg,var(--c3),var(--c2));}
+.t-line.done::after{
+  content:''; position:absolute; top:0; left:-100%;
+  width:100%; height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.4),transparent);
+  animation:slide-shine 2s ease-in-out infinite;
+}
+@keyframes slide-shine{100%{left:200%}}
 
-/* ── FARM BAR ────────────────────────────────────── */
+/* ── FARM BAR ──────────────────────────────────────── */
 .farm-bar{
-  display:none;
-  background:var(--deep);
+  display:none; background:rgba(6,15,26,0.98);
   border-bottom:1px solid var(--border);
-  padding:10px 16px;
+  padding:7px 14px;
 }
 .farm-bar.on{display:block}
-.farm-bar-row{
-  display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;
-}
+.farm-bar-row{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none}
 .farm-bar-row::-webkit-scrollbar{display:none}
 .fb-chip{
   flex-shrink:0;
-  background:rgba(255,255,255,0.04);
-  border:1px solid var(--border);border-radius:10px;
-  padding:5px 10px;text-align:center;min-width:72px;
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:9px; padding:5px 10px;
+  text-align:center; min-width:68px;
+  transition:border-color 0.2s;
 }
-.fb-val{font-size:0.75rem;font-weight:800;color:var(--c3);display:block}
-.fb-lbl{font-size:0.56rem;color:var(--muted);font-weight:700;letter-spacing:0.3px}
+.fb-chip:hover{border-color:var(--border2)}
+.fb-val{font-size:0.7rem;font-weight:800;color:var(--c3);display:block;font-family:var(--mono)}
+.fb-lbl{font-size:0.5rem;color:var(--muted);font-weight:700;letter-spacing:0.4px}
 
-/* ── CONTENT SHELL ───────────────────────────────── */
+/* ── CONTENT ───────────────────────────────────────── */
 .wrap{max-width:480px;margin:0 auto;padding:14px 14px 0}
 .phase-sec{display:none}.phase-sec.on{display:block}
 
-/* ── PHASE HEADER ────────────────────────────────── */
+/* ── PHASE HEADER ───────────────────────────────────── */
 .ph{text-align:center;margin-bottom:18px}
-.ph-icon{font-size:2.4rem;display:block;margin-bottom:6px}
-.ph-title{font-size:1.1rem;font-weight:800;margin-bottom:4px}
-.ph-desc{font-size:0.75rem;color:var(--muted);line-height:1.55}
-
-/* ── CARD ────────────────────────────────────────── */
-.card{background:var(--card);border-radius:18px;padding:18px;margin-bottom:12px}
-.card-t{font-size:0.88rem;font-weight:800;margin-bottom:12px}
-
-/* ── BUTTONS ─────────────────────────────────────── */
-.btn{
-  width:100%;padding:13px 16px;border-radius:13px;border:none;
-  font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.82rem;
-  cursor:pointer;transition:all 0.18s;margin-bottom:8px;letter-spacing:0.4px;
+.ph-eyebrow{
+  display:inline-flex; align-items:center; gap:5px;
+  font-family:var(--mono); font-size:0.55rem; font-weight:600;
+  letter-spacing:1.5px; text-transform:uppercase;
+  padding:4px 10px; border-radius:6px;
+  margin-bottom:10px;
 }
-.btn:active{transform:scale(0.98)}
+.ph-icon{font-size:2.5rem;display:block;margin-bottom:8px}
+.ph-title{font-size:1.05rem;font-weight:800;margin-bottom:5px;letter-spacing:0.2px}
+.ph-desc{font-size:0.74rem;color:var(--text2);line-height:1.65}
+
+/* ── CARDS ─────────────────────────────────────────── */
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:17px; padding:17px;
+  margin-bottom:12px; position:relative; overflow:hidden;
+}
+.card::before{
+  content:''; position:absolute; top:0; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--border2),transparent);
+}
+.card-t{
+  font-size:0.84rem; font-weight:800;
+  margin-bottom:13px;
+  display:flex; align-items:center; gap:6px;
+}
+
+/* ── BUTTONS ────────────────────────────────────────── */
+.btn{
+  width:100%; padding:13px 16px;
+  border-radius:13px; border:none;
+  font-family:var(--font); font-weight:700; font-size:0.82rem;
+  cursor:pointer; transition:all 0.18s; margin-bottom:8px;
+  letter-spacing:0.3px; position:relative; overflow:hidden;
+}
+.btn::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(rgba(255,255,255,0.07),rgba(255,255,255,0));
+  opacity:0; transition:opacity 0.2s; border-radius:inherit;
+}
+.btn:hover::after{opacity:1}
+.btn:active{transform:scale(0.985)}
 .btn:last-child{margin-bottom:0}
 .btn-sm{width:auto;padding:8px 14px;font-size:0.72rem;margin-bottom:0}
 .btn-row{display:flex;gap:8px;margin-bottom:8px}
 .btn-row .btn{margin-bottom:0}
+.btn-outline{
+  background:transparent; color:var(--text2);
+  border:1px solid var(--border);
+  padding:10px 14px;
+}
+.btn-outline:hover{border-color:var(--border2);color:var(--text)}
 
-/* ── STATS GRID ──────────────────────────────────── */
+/* ── STAT GRIDS ─────────────────────────────────────── */
 .stat2{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
 .stat3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-.s-card{background:var(--deep);border-radius:12px;padding:12px;text-align:center}
-.s-val{font-size:0.95rem;font-weight:800;display:block;margin-bottom:2px}
-.s-lbl{font-size:0.6rem;color:var(--muted);font-weight:700;letter-spacing:0.4px}
+.s-card{
+  background:var(--deep); border:1px solid var(--border);
+  border-radius:12px; padding:12px 10px;
+  text-align:center; transition:border-color 0.2s;
+}
+.s-card:hover{border-color:var(--border2)}
+.s-val{font-size:0.92rem;font-weight:800;display:block;margin-bottom:3px;font-family:var(--mono)}
+.s-lbl{font-size:0.57rem;color:var(--muted);font-weight:700;letter-spacing:0.4px}
 
-/* ── INFO BOX ────────────────────────────────────── */
+/* ── INFO BOX ───────────────────────────────────────── */
 .ib{
-  background:var(--deep);border-radius:12px;padding:12px 14px;
-  border-left:4px solid var(--c2);margin-bottom:10px;
-  font-size:0.8rem;line-height:1.6;
+  background:var(--deep); border-radius:12px;
+  padding:12px 14px; border-left:3px solid var(--c2);
+  margin-bottom:10px; font-size:0.78rem; line-height:1.65;
 }
-.ib strong{display:block;font-size:0.74rem;margin-bottom:4px;color:#fff}
+.ib strong{display:block;font-size:0.72rem;margin-bottom:5px;color:#fff}
+.ib ul{padding-left:14px;margin-top:4px}
+.ib li{margin-bottom:3px;color:var(--text2)}
 
-/* ── MAP ─────────────────────────────────────────── */
-#map{height:340px;border-radius:14px;overflow:hidden;
-     border:1.5px solid var(--border);margin-bottom:10px}
+/* ── SCIENTIFIC METRIC ──────────────────────────────── */
+.sm-wrap{margin-bottom:8px}
+.sm-row{
+  display:flex; justify-content:space-between; align-items:baseline;
+  font-size:0.67rem; margin-bottom:4px;
+}
+.sm-label{color:var(--muted);font-weight:700;letter-spacing:0.4px;font-family:var(--mono)}
+.sm-val{font-weight:800;font-family:var(--mono)}
+.sm-track{
+  height:5px; background:var(--border);
+  border-radius:3px; overflow:hidden;
+}
+.sm-fill{
+  height:100%; border-radius:3px;
+  transition:width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+.sci-ref{
+  font-family:var(--mono);font-size:0.55rem;
+  color:var(--muted);margin-top:6px;display:block;
+  border-top:1px dashed var(--border); padding-top:6px;
+}
 
-/* ── VARIETY CARDS ───────────────────────────────── */
+/* ── NPK BREAKDOWN ───────────────────────────────────── */
+.npk-section{margin:10px 0}
+.npk-title{font-size:0.65rem;color:var(--muted);font-weight:700;letter-spacing:0.6px;margin-bottom:8px;font-family:var(--mono)}
+.npk-item{margin-bottom:7px}
+.npk-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}
+.npk-letter{
+  font-size:0.75rem;font-weight:800;font-family:var(--mono);
+  min-width:22px; display:inline-block;
+}
+.npk-fullname{font-size:0.62rem;color:var(--muted)}
+.npk-kg{font-size:0.72rem;font-weight:800;font-family:var(--mono)}
+.npk-track{height:6px;background:var(--border);border-radius:3px;overflow:hidden}
+.npk-fill{height:100%;border-radius:3px;transition:width 1.4s cubic-bezier(0.4,0,0.2,1)}
+
+/* ── DISEASE TRIANGLE ────────────────────────────────── */
+.dtri{
+  display:grid; grid-template-columns:1fr 1fr 1fr;
+  gap:6px; margin-bottom:10px;
+}
+.dt-f{
+  background:var(--deep); border:1px solid var(--border);
+  border-radius:12px; padding:11px 8px; text-align:center;
+  transition:border-color 0.2s;
+}
+.dt-icon{font-size:1.4rem;display:block;margin-bottom:4px}
+.dt-name{font-size:0.55rem;color:var(--muted);font-weight:700;letter-spacing:0.4px;margin-bottom:5px}
+.dt-score{font-size:1.1rem;font-weight:800;font-family:var(--mono)}
+.dt-product-row{
+  display:flex; align-items:center; gap:8px;
+  background:var(--panel); border:1px solid var(--border);
+  border-radius:10px; padding:10px 12px; margin-bottom:8px;
+}
+.dt-product-label{font-size:0.68rem;color:var(--muted);flex:1}
+.dt-product-val{font-size:0.85rem;font-weight:800;font-family:var(--mono)}
+
+/* ── HEALTH INDEX ─────────────────────────────────────── */
+.health-wrap{
+  display:flex; gap:14px; align-items:center;
+  background:var(--deep); border:1px solid var(--border);
+  border-radius:14px; padding:14px; margin-bottom:10px;
+}
+.health-ring{width:72px;height:72px;flex-shrink:0;position:relative}
+.health-ring svg{transform:rotate(-90deg)}
+.health-ring-pct{
+  position:absolute; inset:0;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--mono); font-size:0.8rem; font-weight:800;
+}
+.health-info .h-title{font-size:0.82rem;font-weight:800;margin-bottom:4px}
+.health-info .h-sub{font-size:0.68rem;color:var(--text2);line-height:1.55}
+
+/* ── MAP ─────────────────────────────────────────────── */
+#map{height:320px;border-radius:13px;overflow:hidden;
+     border:1px solid var(--border);margin-bottom:10px}
+
+/* ── VARIETY CARDS ───────────────────────────────────── */
 .v-card{
-  background:var(--deep);border-radius:13px;padding:13px;
-  margin-bottom:8px;border:2px solid transparent;cursor:pointer;
-  transition:border-color 0.2s,background 0.2s;
+  background:var(--deep); border:1.5px solid var(--border);
+  border-radius:14px; padding:13px; margin-bottom:8px;
+  cursor:pointer; transition:all 0.2s; position:relative; overflow:hidden;
 }
-.v-card.sel{border-color:var(--c3);background:rgba(16,185,129,0.06)}
-.v-card:active{transform:scale(0.99)}
-.v-name{font-size:0.95rem;font-weight:800;color:var(--c3);margin-bottom:4px}
-.v-meta{display:flex;gap:12px;font-size:0.72rem;color:var(--muted);margin-bottom:4px}
-.v-meta span{color:#d4e0ef;font-weight:600}
-.v-note{font-size:0.72rem;color:var(--muted);line-height:1.4}
+.v-card:hover{border-color:rgba(16,217,160,0.3);background:rgba(16,217,160,0.03)}
+.v-card.sel{border-color:var(--c3);background:rgba(16,217,160,0.05)}
+.v-card-accent{
+  position:absolute; top:0; left:0; bottom:0;
+  width:3px; background:var(--c3);
+  opacity:0; transition:opacity 0.2s;
+}
+.v-card.sel .v-card-accent{opacity:1}
+.v-name{font-size:0.95rem;font-weight:800;color:var(--c3);margin-bottom:5px}
+.v-meta{
+  display:flex; flex-wrap:wrap; gap:8px;
+  font-size:0.68rem; color:var(--muted);
+  margin-bottom:6px;
+}
+.v-meta-item{display:flex;align-items:center;gap:3px}
+.v-meta-item span{color:var(--text2);font-weight:700;font-family:var(--mono)}
+.v-badges{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px}
+.vb{
+  font-size:0.54rem;font-weight:700;letter-spacing:0.3px;
+  padding:2px 7px;border-radius:5px;
+}
+.vb-tahan{background:rgba(16,217,160,0.1);color:#10d9a0;border:1px solid rgba(16,217,160,0.2)}
+.vb-peka {background:rgba(240,76,110,0.1);color:#f04c6e;border:1px solid rgba(240,76,110,0.18)}
+.vb-sedang{background:rgba(245,166,35,0.1);color:#f5a623;border:1px solid rgba(245,166,35,0.18)}
+.vb-unggul{background:rgba(79,156,249,0.1);color:#4f9cf9;border:1px solid rgba(79,156,249,0.2)}
+.v-note{font-size:0.7rem;color:var(--muted);line-height:1.45;margin-top:2px}
 
-/* ── SCHEDULE LIST ───────────────────────────────── */
+/* ── SCHEDULE ────────────────────────────────────────── */
 .sch-item{
-  display:flex;align-items:flex-start;gap:10px;
-  background:var(--deep);padding:10px 12px;
-  border-radius:11px;margin-bottom:6px;
+  display:flex; align-items:flex-start; gap:10px;
+  background:var(--deep); border:1px solid var(--border);
+  padding:10px 12px; border-radius:11px; margin-bottom:6px;
+  transition:border-color 0.2s;
 }
-.sch-date{font-size:0.72rem;font-weight:800;min-width:72px;line-height:1.3}
-.sch-task{font-size:0.82rem;font-weight:700;margin-bottom:1px}
-.sch-desc{font-size:0.7rem;color:var(--muted)}
+.sch-item:hover{border-color:var(--border2)}
+.sch-date{font-family:var(--mono);font-size:0.66rem;font-weight:600;min-width:70px;line-height:1.4}
+.sch-task{font-size:0.82rem;font-weight:700;margin-bottom:2px}
+.sch-desc{font-size:0.68rem;color:var(--muted);line-height:1.4}
+.sch-tag{
+  font-size:0.55rem;font-weight:700;letter-spacing:0.3px;
+  padding:2px 6px;border-radius:4px;
+  background:rgba(201,125,252,0.1);color:var(--c4);
+  border:1px solid rgba(201,125,252,0.2);margin-top:3px;display:inline-block;
+}
 
-/* ── PUPUK CARDS ─────────────────────────────────── */
-.pk-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px}
-.pk-card{background:var(--deep);border-radius:11px;padding:11px 7px;text-align:center}
-.pk-name{font-size:0.58rem;color:var(--muted);font-weight:700;letter-spacing:0.5px;margin-bottom:4px}
-.pk-val{font-size:1rem;font-weight:800}
+/* ── PUPUK ────────────────────────────────────────────── */
+.pk-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}
+.pk-card{
+  background:var(--deep); border:1px solid var(--border);
+  border-radius:12px; padding:12px 8px; text-align:center;
+  transition:border-color 0.2s;
+}
+.pk-card:hover{border-color:var(--border2)}
+.pk-name{font-size:0.56rem;color:var(--muted);font-weight:700;letter-spacing:0.5px;margin-bottom:5px}
+.pk-val{font-size:1.1rem;font-weight:800;font-family:var(--mono)}
 .pk-val small{font-size:0.6rem;font-weight:600}
-.pk-sak{font-size:0.58rem;color:var(--muted);margin-top:2px}
+.pk-sak{font-size:0.57rem;color:var(--muted);margin-top:3px}
 
-/* ── TASK ITEMS ──────────────────────────────────── */
-.task{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--deep);border-radius:11px;margin-bottom:6px}
+/* ── TASKS ────────────────────────────────────────────── */
+.task{
+  display:flex; align-items:flex-start; gap:10px;
+  padding:10px 12px; background:var(--deep);
+  border:1px solid var(--border);
+  border-radius:12px; margin-bottom:6px;
+  transition:border-color 0.2s;
+}
 .task.overdue{border-left:3px solid var(--c7)}
-.task.today{border-left:3px solid var(--c6)}
-.task.done{opacity:0.4}
-.t-dot-sm{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
-.t-title{font-size:0.82rem;font-weight:700;margin-bottom:1px}
-.t-when{font-size:0.68rem;color:var(--muted)}
+.task.today  {border-left:3px solid var(--c6)}
+.task.done   {opacity:0.38}
+.task-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.t-title{font-size:0.82rem;font-weight:700;margin-bottom:2px}
+.t-when{font-size:0.66rem;color:var(--muted);font-family:var(--mono)}
 
-/* ── RISK BADGE ──────────────────────────────────── */
-.rbadge{display:inline-block;padding:4px 9px;border-radius:7px;font-size:0.65rem;font-weight:800;letter-spacing:0.5px}
-.r-lo{background:rgba(16,185,129,0.12);color:#10b981}
-.r-md{background:rgba(245,158,11,0.12);color:#f59e0b}
-.r-hi{background:rgba(244,63,94,0.14);color:#f43f5e}
+/* ── RISK BADGES ──────────────────────────────────────── */
+.rbadge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:0.6rem;font-weight:800;letter-spacing:0.4px}
+.r-lo{background:rgba(16,217,160,0.09);color:#10d9a0;border:1px solid rgba(16,217,160,0.2)}
+.r-md{background:rgba(245,166,35,0.09);color:#f5a623;border:1px solid rgba(245,166,35,0.2)}
+.r-hi{background:rgba(240,76,110,0.09);color:#f04c6e;border:1px solid rgba(240,76,110,0.2)}
 
-/* ── RISK ROW ────────────────────────────────────── */
 .risk-row{
-  display:flex;justify-content:space-between;align-items:center;
-  padding:9px 11px;background:var(--deep);border-radius:10px;margin-bottom:6px;
+  display:flex; justify-content:space-between; align-items:center;
+  padding:10px 12px; background:var(--deep);
+  border:1px solid var(--border); border-radius:11px; margin-bottom:6px;
+  transition:border-color 0.2s;
 }
-.risk-row .rn{font-size:0.8rem;font-weight:600}
+.risk-row:hover{border-color:var(--border2)}
+.rn{font-size:0.8rem;font-weight:600;margin-bottom:2px}
+.rt{font-size:0.65rem;color:var(--muted)}
 
-/* ── CHART ───────────────────────────────────────── */
+/* ── CHART ────────────────────────────────────────────── */
 .chart-box{
-  position:relative;height:190px;
-  background:var(--deep);border-radius:13px;
-  padding:10px;margin-bottom:10px;
+  position:relative; height:200px;
+  background:var(--deep); border:1px solid var(--border);
+  border-radius:13px; padding:12px; margin-bottom:10px;
+}
+.chart-box-pie{
+  position:relative; height:230px;
+  background:var(--deep); border:1px solid var(--border);
+  border-radius:13px; padding:12px; margin-bottom:10px;
 }
 
-/* ── FORM ────────────────────────────────────────── */
+/* ── FORMS ─────────────────────────────────────────────── */
 .fg{margin-bottom:12px}
-.fl{display:block;font-size:0.68rem;color:var(--muted);font-weight:700;margin-bottom:5px;letter-spacing:0.4px}
+.fl{
+  display:block; font-size:0.62rem; color:var(--muted);
+  font-weight:700; margin-bottom:5px; letter-spacing:0.6px;
+  text-transform:uppercase; font-family:var(--mono);
+}
 .fi,.fs{
-  width:100%;background:var(--deep);
-  border:1px solid var(--border);border-radius:11px;
-  padding:11px 13px;color:var(--text);
-  font-family:'Plus Jakarta Sans',sans-serif;font-size:0.82rem;font-weight:500;
+  width:100%; background:var(--deep);
+  border:1px solid var(--border); border-radius:11px;
+  padding:11px 13px; color:var(--text);
+  font-family:var(--font); font-size:0.82rem; font-weight:500;
+  transition:border-color 0.2s, box-shadow 0.2s;
 }
-.fi:focus,.fs:focus{outline:none;border-color:var(--c2)}
-.fs option{background:var(--deep)}
+.fi:focus,.fs:focus{
+  outline:none; border-color:rgba(79,156,249,0.5);
+  box-shadow:0 0 0 3px rgba(79,156,249,0.08);
+}
+.fs option{background:var(--card)}
 
-/* ── LOADING ─────────────────────────────────────── */
-.loading{text-align:center;padding:28px 16px;color:var(--c2)}
-.loading .spin{font-size:2rem;display:block;margin-bottom:8px;animation:rot 1.4s linear infinite}
-.loading .txt{font-size:0.78rem;font-weight:700;letter-spacing:1px;animation:fade 1.5s ease-in-out infinite}
+/* ── LOADING ──────────────────────────────────────────── */
+.loading{text-align:center;padding:34px 16px;color:var(--c2)}
+.loading .spin{font-size:2.2rem;display:block;margin-bottom:10px;animation:rot 1.2s linear infinite}
+.loading .txt{font-size:0.68rem;font-weight:600;letter-spacing:1.5px;animation:fade 1.5s ease-in-out infinite;color:var(--muted);font-family:var(--mono);display:block}
 @keyframes rot{100%{transform:rotate(360deg)}}
-@keyframes fade{0%,100%{opacity:0.5}50%{opacity:1}}
+@keyframes fade{0%,100%{opacity:0.35}50%{opacity:1}}
 
-/* ── RESULT BOX ──────────────────────────────────── */
+/* ── RESULT BOX ───────────────────────────────────────── */
 .res-box{
-  background:rgba(16,185,129,0.05);
-  border:1px solid rgba(16,185,129,0.25);
-  border-radius:14px;padding:14px;margin-top:10px;
+  background:rgba(16,217,160,0.04);
+  border:1px solid rgba(16,217,160,0.2);
+  border-radius:14px; padding:14px; margin-top:10px;
 }
 
-/* ── FINISH SUMMARY ──────────────────────────────── */
+/* ── FINISH SUMMARY ───────────────────────────────────── */
 .finish{
-  background:linear-gradient(135deg,rgba(16,185,129,0.08),rgba(59,130,246,0.05));
-  border:1px solid rgba(16,185,129,0.2);
-  border-radius:18px;padding:20px;text-align:center;margin-bottom:12px;
+  background:linear-gradient(135deg,rgba(16,217,160,0.06),rgba(79,156,249,0.04));
+  border:1px solid rgba(16,217,160,0.15);
+  border-radius:18px; padding:20px; text-align:center; margin-bottom:12px;
 }
-.finish .f-ico{font-size:2.6rem;display:block;margin-bottom:8px}
-.finish .f-ttl{font-size:1rem;font-weight:800;color:var(--c3);margin-bottom:10px}
+.finish .f-ico{font-size:2.8rem;display:block;margin-bottom:9px}
+.finish .f-ttl{font-size:0.92rem;font-weight:800;color:var(--c3);margin-bottom:12px}
 .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.sum-chip{background:rgba(255,255,255,0.04);border-radius:9px;padding:8px 6px}
-.sum-v{font-size:0.78rem;font-weight:800;color:var(--c3)}
-.sum-l{font-size:0.58rem;color:var(--muted);margin-top:1px}
+.sum-chip{
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  border-radius:9px;padding:9px 8px;
+}
+.sum-v{font-size:0.78rem;font-weight:800;color:var(--c3);font-family:var(--mono)}
+.sum-l{font-size:0.56rem;color:var(--muted);margin-top:2px}
 
 .divider{border:none;border-top:1px dashed var(--border);margin:12px 0}
+.divider-label{
+  display:flex;align-items:center;gap:8px;margin:12px 0;
+}
+.divider-label span{font-size:0.6rem;color:var(--muted);font-weight:700;letter-spacing:0.5px;white-space:nowrap;font-family:var(--mono)}
+.divider-label::before,.divider-label::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* ── BOTTOM NAV ──────────────────────────────────── */
+/* ── GDD ROW ──────────────────────────────────────────── */
+.gdd-row{
+  display:flex; align-items:center; gap:10px;
+  padding:8px 12px; background:var(--panel);
+  border:1px solid var(--border); border-radius:9px; margin-bottom:6px;
+}
+.gdd-val{font-family:var(--mono);font-size:0.82rem;font-weight:800;min-width:55px}
+.gdd-phase{font-size:0.72rem;font-weight:700;flex:1}
+.gdd-note{font-size:0.62rem;color:var(--muted)}
+
+/* ── PROGRESS BAR (FASE) ─────────────────────────────── */
+.phase-progress-track{
+  height:8px; background:var(--border);
+  border-radius:5px; overflow:hidden; margin:8px 0;
+}
+.phase-progress-fill{
+  height:100%; border-radius:5px;
+  transition:width 1.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── BOTTOM NAV ───────────────────────────────────────── */
 .nav{
-  position:fixed;bottom:0;left:0;right:0;
-  background:rgba(10,18,32,0.97);backdrop-filter:blur(12px);
+  position:fixed; bottom:0; left:0; right:0;
+  background:rgba(5,13,26,0.97); backdrop-filter:blur(16px);
   border-top:1px solid var(--border);
   padding:10px 16px;
-  display:flex;align-items:center;justify-content:space-between;
+  display:flex; align-items:center; justify-content:space-between;
   z-index:300;
 }
+.nav::before{
+  content:''; position:absolute; top:-1px; left:0; right:0; height:1px;
+  background:linear-gradient(90deg,transparent,var(--c2),var(--c3),transparent);
+  opacity:0.3;
+}
 .nav-info{text-align:center}
-.nav-lbl{font-size:0.6rem;color:var(--muted);font-weight:600;display:block}
+.nav-lbl{font-size:0.55rem;color:var(--muted);font-weight:700;display:block;font-family:var(--mono);letter-spacing:0.5px}
 .nav-name{font-size:0.78rem;font-weight:800}
 .nav-btn{
-  background:var(--card);border:1px solid var(--border);
-  color:var(--text);padding:9px 18px;border-radius:11px;
-  font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:0.75rem;
-  cursor:pointer;letter-spacing:0.3px;
+  background:var(--card); border:1px solid var(--border);
+  color:var(--text); padding:9px 18px; border-radius:11px;
+  font-family:var(--font); font-weight:700; font-size:0.75rem;
+  cursor:pointer; letter-spacing:0.3px; transition:all 0.18s;
 }
-.nav-btn.go{background:var(--c2);border-color:var(--c2);color:#fff}
-.nav-btn:disabled{opacity:0.25;cursor:not-allowed}
+.nav-btn.go{
+  background:var(--c2); border-color:var(--c2); color:#fff;
+  box-shadow:0 4px 18px rgba(79,156,249,0.28);
+}
+.nav-btn:disabled{opacity:0.2;cursor:not-allowed;box-shadow:none}
+
+@media(max-width:360px){.pk-grid{grid-template-columns:1fr 1fr}.stat3{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
 
-<!-- ══ HEADER ══════════════════════════════════════ -->
+<!-- ══ HEADER ══════════════════════════════════════════ -->
 <div class="hdr">
   <div class="hdr-brand">
-    <span class="hdr-icon">🌾</span>
+    <div class="hdr-logo">🌾</div>
     <div>
-      <div class="hdr-title">Simulator Bertani Padi</div>
-      <div class="hdr-sub">PPL MILENIAL WAJO • PANDUAN PETANI DIGITAL</div>
+      <div class="hdr-title">SimPadi</div>
+      <div class="hdr-sub">PPL MILENIAL WAJO · AGRO-DIGITAL SYSTEM</div>
     </div>
   </div>
-  <div class="hdr-phase" id="hdrPhase">FASE 1/7</div>
+  <div class="hdr-right">
+    <div class="badge-sci">v2.0</div>
+    <div class="badge-phase" id="hdrPhase">FASE 1/7</div>
+  </div>
 </div>
 
-<!-- ══ PHASE TRACKER ═══════════════════════════════ -->
+<!-- ══ PHASE TRACKER ════════════════════════════════════ -->
 <div class="tracker" id="tracker"></div>
 
-<!-- ══ FARM BAR ════════════════════════════════════ -->
+<!-- ══ FARM BAR ═════════════════════════════════════════ -->
 <div class="farm-bar" id="farmBar">
   <div class="farm-bar-row" id="farmBarRow"></div>
 </div>
 
-<!-- ══ CONTENT ════════════════════════════════════ -->
 <div class="wrap">
 
-<!-- ── FASE 1: PEMETAAN LAHAN ───────────────────── -->
+<!-- ────────────────────────────────────────────────────
+  FASE 1: PEMETAAN LAHAN
+──────────────────────────────────────────────────────── -->
 <div class="phase-sec on" id="p1">
   <div class="ph">
-    <span class="ph-icon">🗺️</span>
-    <div class="ph-title" style="color:var(--c1)">PEMETAAN LAHAN SAWAH</div>
-    <div class="ph-desc">Gambar batas petakan sawah di peta, atau gunakan GPS dengan berjalan mengelilingi lahan. Sistem akan menghitung luas dan koordinat pusat lahan secara otomatis.</div>
+    <div class="ph-eyebrow" style="background:rgba(34,211,238,0.08);border:1px solid rgba(34,211,238,0.2);color:var(--c1)">📐 FASE 01 · PEMETAAN LAHAN</div>
+    <div class="ph-title" style="color:var(--c1)">Peta Sawah Presisi</div>
+    <div class="ph-desc">Gambar batas petakan di peta citra satelit, atau rekam GPS dengan berjalan mengelilingi lahan. Luas dan koordinat pusat dihitung secara geodetik otomatis.</div>
   </div>
 
   <div class="card" style="padding:12px">
     <div class="btn-row">
-      <button class="btn btn-sm" style="flex:1;background:var(--c1);color:#000" onclick="tipsPeta()">🗺️ Gambar di Peta</button>
-      <button class="btn btn-sm" style="flex:1;background:var(--c6);color:#000" onclick="mulaiJalan()">🚶 GPS Keliling</button>
+      <button class="btn btn-sm" style="flex:1;background:var(--c1);color:#000;font-weight:800" onclick="tipsPeta()">🗺️ Gambar di Peta</button>
+      <button class="btn btn-sm" style="flex:1;background:var(--c6);color:#000;font-weight:800" onclick="mulaiJalan()">📡 Rekam GPS</button>
     </div>
     <div id="map"></div>
     <div id="selesaiWrap" style="display:none;margin-bottom:8px">
-      <button class="btn" style="background:var(--c3);color:#fff" onclick="selesaiJalan()">✅ SELESAI BERKELILING</button>
+      <button class="btn" style="background:var(--c3);color:#000;font-weight:800" onclick="selesaiJalan()">✅ SELESAI BERKELILING</button>
     </div>
     <div id="hasilUkur" class="res-box" style="display:none">
-      <div style="font-size:0.65rem;color:var(--muted);font-weight:700;letter-spacing:0.5px;margin-bottom:6px">HASIL PENGUKURAN</div>
-      <div id="luasDisplay" style="font-size:1.9rem;font-weight:800;color:var(--c1)"></div>
-      <div id="luasDetail" style="font-size:0.75rem;color:var(--muted);margin-top:3px"></div>
+      <div style="font-family:var(--mono);font-size:0.58rem;color:var(--muted);letter-spacing:0.8px;margin-bottom:8px">📐 HASIL PENGUKURAN GEODETIK</div>
+      <div id="luasDisplay" style="font-size:2rem;font-weight:800;color:var(--c1);font-family:var(--mono)"></div>
+      <div id="luasDetail" style="font-size:0.7rem;color:var(--text2);margin-top:4px"></div>
+      <div id="luasExtra" style="margin-top:10px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px"></div>
     </div>
-    <button class="btn" style="background:rgba(255,255,255,0.05);color:var(--muted);margin-top:6px;font-size:0.72rem" onclick="resetMap()">🔄 Mulai Ulang</button>
+    <button class="btn btn-outline" style="margin-top:8px;font-size:0.72rem" onclick="resetMap()">🔄 Mulai Ulang</button>
   </div>
 
   <div class="ib" style="border-color:var(--c1)">
-    <strong>💡 Cara Menggambar di Peta</strong>
-    Klik ikon poligon di toolbar kiri peta → klik titik-titik batas lahan → tutup dengan klik titik pertama. Atau klik <b>GPS Keliling</b> lalu berjalan mengelilingi lahan.
+    <strong>💡 Panduan Pemetaan</strong>
+    <ul>
+      <li>Klik ikon poligon (🔷) di toolbar kiri peta, lalu klik setiap sudut batas lahan</li>
+      <li>Klik titik <b>pertama</b> kembali untuk menutup & selesai menggambar</li>
+      <li>Atau tekan <b>Rekam GPS</b> dan berjalan mengelilingi lahan secara langsung</li>
+    </ul>
   </div>
 </div>
 
-<!-- ── FASE 2: ANALISIS LOKASI ──────────────────── -->
+<!-- ────────────────────────────────────────────────────
+  FASE 2: ANALISIS LOKASI
+──────────────────────────────────────────────────────── -->
 <div class="phase-sec" id="p2">
   <div class="ph">
-    <span class="ph-icon">🛰️</span>
-    <div class="ph-title" style="color:var(--c2)">ANALISIS KONDISI LOKASI</div>
-    <div class="ph-desc">Sistem membaca koordinat lahan untuk mendeteksi musim, cuaca real-time, topografi, dan pola iklim lokal sebagai dasar perencanaan.</div>
+    <div class="ph-eyebrow" style="background:rgba(79,156,249,0.08);border:1px solid rgba(79,156,249,0.2);color:var(--c2)">🛰️ FASE 02 · ANALISIS LOKASI</div>
+    <div class="ph-title" style="color:var(--c2)">Diagnostik Agro-Iklim</div>
+    <div class="ph-desc">Sistem membaca koordinat lahan untuk mengklasifikasikan zona agroekologi, mendeteksi musim, cuaca real-time, dan tingkat kesesuaian lahan untuk budidaya padi.</div>
   </div>
   <div id="p2-loading" class="loading"><span class="spin">🛰️</span><span class="txt" id="p2txt">MENGHUBUNGKAN KE SATELIT...</span></div>
   <div id="p2-result" style="display:none">
     <div class="stat2" id="p2-stats"></div>
+    <div id="p2-suitability"></div>
     <div class="card">
       <div class="card-t">⚙️ Konfirmasi Kondisi Lahan</div>
       <div class="fg">
         <label class="fl">TIPE TOPOGRAFI</label>
         <select class="fs" id="selTopo">
-          <option value="lembah">Dataran Rendah / Sawah Irigasi</option>
-          <option value="bukit">Dataran Tinggi / Perbukitan</option>
-          <option value="rawa">Rawa / Lebak / DAS</option>
+          <option value="lembah">Dataran Rendah / Sawah Irigasi (0–50 m dpl)</option>
+          <option value="bukit">Dataran Tinggi / Perbukitan (51–300 m dpl)</option>
+          <option value="rawa">Rawa / Lebak / Daerah Aliran Sungai</option>
         </select>
       </div>
       <div class="fg">
@@ -358,21 +650,23 @@ body{
   </div>
 </div>
 
-<!-- ── FASE 3: PILIH VARIETAS ───────────────────── -->
+<!-- ────────────────────────────────────────────────────
+  FASE 3: PILIH VARIETAS
+──────────────────────────────────────────────────────── -->
 <div class="phase-sec" id="p3">
   <div class="ph">
-    <span class="ph-icon">🌾</span>
-    <div class="ph-title" style="color:var(--c3)">PILIHAN VARIETAS PADI</div>
-    <div class="ph-desc">Tentukan target umur panen, lalu sistem akan merekomendasikan varietas terbaik berdasarkan kondisi lahan dan iklim yang telah terdeteksi.</div>
+    <div class="ph-eyebrow" style="background:rgba(16,217,160,0.08);border:1px solid rgba(16,217,160,0.2);color:var(--c3)">🌾 FASE 03 · SELEKSI VARIETAS</div>
+    <div class="ph-title" style="color:var(--c3)">Rekomendasi Varietas Unggul</div>
+    <div class="ph-desc">Sistem mencocokkan database varietas nasional BSIP/BPTP berdasarkan target umur panen, kondisi lahan, dan iklim yang terdeteksi untuk menghasilkan rekomendasi berbasis skor agronomis.</div>
   </div>
   <div class="card">
     <div class="fg">
-      <label class="fl">TARGET UMUR PANEN (HARI)</label>
+      <label class="fl">TARGET UMUR PANEN (HARI SETELAH TANAM)</label>
       <input type="number" class="fi" id="targetUmur" placeholder="Contoh: 110" min="70" max="150">
     </div>
-    <button class="btn" style="background:var(--c3);color:#fff" onclick="cariVarietas()">🔍 CARI VARIETAS TERBAIK</button>
+    <button class="btn" style="background:var(--c3);color:#000;font-weight:800" onclick="cariVarietas()">🔍 ANALISIS VARIETAS TERBAIK</button>
   </div>
-  <div id="p3-loading" class="loading" style="display:none"><span class="spin">🌱</span><span class="txt">MENGANALISIS DATABASE VARIETAS...</span></div>
+  <div id="p3-loading" class="loading" style="display:none"><span class="spin">🌱</span><span class="txt">MENCOCOKKAN DATABASE BSIP/BPTP...</span></div>
   <div id="p3-list"></div>
   <div id="p3-sel" class="ib" style="display:none;border-color:var(--c3)">
     <strong>✅ Varietas Dipilih</strong>
@@ -380,12 +674,14 @@ body{
   </div>
 </div>
 
-<!-- ── FASE 4: JADWAL TANAM ─────────────────────── -->
+<!-- ────────────────────────────────────────────────────
+  FASE 4: JADWAL TANAM
+──────────────────────────────────────────────────────── -->
 <div class="phase-sec" id="p4">
   <div class="ph">
-    <span class="ph-icon">📅</span>
-    <div class="ph-title" style="color:var(--c4)">JADWAL TANAM & KALENDER IKLIM</div>
-    <div class="ph-desc">Tentukan rencana tanggal tanam dan metode tanam. Sistem akan membuat seluruh jadwal kegiatan dan memetakan risiko iklim di setiap fase pertumbuhan.</div>
+    <div class="ph-eyebrow" style="background:rgba(201,125,252,0.08);border:1px solid rgba(201,125,252,0.2);color:var(--c4)">📅 FASE 04 · JADWAL TANAM</div>
+    <div class="ph-title" style="color:var(--c4)">Kalender Fenologi & Risiko Iklim</div>
+    <div class="ph-desc">Sistem membuat jadwal kegiatan berdasarkan fenologi tanaman, akumulasi Growing Degree Days, dan peta risiko iklim per fase pertumbuhan.</div>
   </div>
   <div class="card">
     <div class="fg">
@@ -396,266 +692,275 @@ body{
       <label class="fl">⚙️ METODE TANAM</label>
       <select class="fs" id="selMetode">
         <option value="tapin">Tanam Pindah / Pindang (±25 rumpun/m²)</option>
-        <option value="legowo">Jajar Legowo 2:1 / 4:1 (±33 rumpun/m²)</option>
+        <option value="legowo">Jajar Legowo 2:1 / 4:1 (±33 rumpun/m²) — DIREKOMENDASIKAN</option>
         <option value="tabela_larikan">Tabela Larikan / Drum Seeder (±40 rumpun/m²)</option>
         <option value="tabela_hambur">Tabela Hambur / Sebar (±60 rumpun/m²)</option>
       </select>
     </div>
-    <button class="btn" style="background:var(--c4);color:#fff" onclick="buatJadwal()">📅 BUAT JADWAL OTOMATIS</button>
+    <button class="btn" style="background:var(--c4);color:#fff;font-weight:800" onclick="buatJadwal()">📅 BUAT JADWAL OTOMATIS</button>
   </div>
   <div id="p4-result" style="display:none">
+    <div id="p4-gdd-section"></div>
     <div class="card-t" style="margin:4px 0 8px">📋 Jadwal Kegiatan Usahatani</div>
     <div id="p4-jadwal"></div>
     <div class="card" style="margin-top:12px;padding:14px">
-      <div class="card-t" style="font-size:0.8rem;margin-bottom:8px">📈 Peta Risiko Iklim Per Fase</div>
+      <div class="card-t" style="font-size:0.8rem;margin-bottom:8px">📈 Indeks Risiko Iklim Per Fase</div>
       <div class="chart-box"><canvas id="chartRisiko"></canvas></div>
       <div id="p4-risiko"></div>
     </div>
   </div>
 </div>
 
-<!-- ── FASE 5: DOSIS PUPUK ──────────────────────── -->
+<!-- ────────────────────────────────────────────────────
+  FASE 5: DOSIS PUPUK
+──────────────────────────────────────────────────────── -->
 <div class="phase-sec" id="p5">
   <div class="ph">
-    <span class="ph-icon">🧪</span>
-    <div class="ph-title" style="color:var(--c5)">DOSIS & JADWAL PEMUPUKAN</div>
-    <div class="ph-desc">Rekomendasi dosis pupuk dari database E-RDKK nasional, dihitung otomatis berdasarkan koordinat lahan, luas, dan topografi yang terdeteksi.</div>
+    <div class="ph-eyebrow" style="background:rgba(52,224,154,0.08);border:1px solid rgba(52,224,154,0.2);color:var(--c5)">🧪 FASE 05 · NUTRISI TANAMAN</div>
+    <div class="ph-title" style="color:var(--c5)">Dosis & Jadwal Pemupukan</div>
+    <div class="ph-desc">Rekomendasi dari database E-RDKK nasional dengan perhitungan kebutuhan N-P-K aktual, jadwal 3 tahap, dan faktor koreksi berbasis topografi lahan.</div>
   </div>
-  <div id="p5-loading" class="loading"><span class="spin">🧪</span><span class="txt" id="p5txt">MENCOCOKKAN DATA E-RDKK NASIONAL...</span></div>
+  <div id="p5-loading" class="loading"><span class="spin">🧪</span><span class="txt" id="p5txt">MENCOCOKKAN DATA E-RDKK...</span></div>
   <div id="p5-result" style="display:none">
     <div class="stat2" id="p5-stats"></div>
     <div class="card">
       <div class="card-t">📦 Total Kebutuhan Pupuk</div>
       <div class="pk-grid" id="p5-grid"></div>
+      <div id="p5-npk"></div>
     </div>
     <div class="card">
-      <div class="card-t">⏱️ Jadwal Pemupukan</div>
+      <div class="card-t">⏱️ Jadwal Pemupukan (3 Tahap)</div>
       <div id="p5-jadwal"></div>
     </div>
-    <div class="ib" style="border-color:var(--c5)"><strong>💡 Panduan Pemupukan</strong><div id="p5-tips"></div></div>
+    <div class="ib" style="border-color:var(--c5)">
+      <strong>📚 Panduan Ilmiah Pemupukan</strong>
+      <div id="p5-tips"></div>
+    </div>
   </div>
 </div>
 
-<!-- ── FASE 6: PANTAU LAHAN ─────────────────────── -->
+<!-- ────────────────────────────────────────────────────
+  FASE 6: PANTAU LAHAN
+──────────────────────────────────────────────────────── -->
 <div class="phase-sec" id="p6">
   <div class="ph">
-    <span class="ph-icon">📡</span>
-    <div class="ph-title" style="color:var(--c6)">DASHBOARD PEMANTAUAN LAHAN</div>
-    <div class="ph-desc">Status fase tanaman terkini, kondisi cuaca real-time di lokasi lahan, risiko OPT (hama dan penyakit), serta jadwal kegiatan mendatang.</div>
+    <div class="ph-eyebrow" style="background:rgba(245,166,35,0.08);border:1px solid rgba(245,166,35,0.2);color:var(--c6)">📡 FASE 06 · MONITORING</div>
+    <div class="ph-title" style="color:var(--c6)">Dashboard Pemantauan Lahan</div>
+    <div class="ph-desc">Indeks kesehatan tanaman, analisis Segitiga Penyakit OPT berbasis kondisi cuaca real-time, status fase fenologi, dan jadwal kegiatan mendatang.</div>
   </div>
   <div id="p6-loading" class="loading"><span class="spin">📡</span><span class="txt">MEMUAT DATA REAL-TIME...</span></div>
   <div id="p6-result" style="display:none">
-    <div class="card" id="p6-fase"></div>
+    <div id="p6-fase" class="card"></div>
     <div class="card">
-      <div class="card-t">🌤️ Cuaca Lokasi Lahan</div>
+      <div class="card-t">🌡️ Cuaca Real-Time di Lokasi Lahan</div>
       <div class="stat2" id="p6-cuaca"></div>
       <div id="p6-cuaca-extra"></div>
     </div>
     <div class="card">
-      <div class="card-t">⚠️ Status Risiko OPT</div>
+      <div class="card-t">🔺 Segitiga Epidemiologi OPT</div>
+      <div id="p6-triangle"></div>
       <div id="p6-opt"></div>
     </div>
     <div class="card">
-      <div class="card-t">📋 Jadwal Kegiatan</div>
+      <div class="card-t">📋 Timeline Kegiatan</div>
       <div id="p6-tasks"></div>
     </div>
   </div>
 </div>
 
-<!-- ── FASE 7: ANALISIS BIAYA ───────────────────── -->
+<!-- ────────────────────────────────────────────────────
+  FASE 7: ANALISIS BIAYA
+──────────────────────────────────────────────────────── -->
 <div class="phase-sec" id="p7">
   <div class="ph">
-    <span class="ph-icon">💰</span>
-    <div class="ph-title" style="color:var(--c7)">ANALISIS BIAYA & HASIL PANEN</div>
-    <div class="ph-desc">Hitung total biaya produksi, estimasi pendapatan, keuntungan bersih, dan kelayakan usahatani Anda musim ini.</div>
+    <div class="ph-eyebrow" style="background:rgba(240,76,110,0.08);border:1px solid rgba(240,76,110,0.2);color:var(--c7)">💰 FASE 07 · ANALISIS EKONOMI</div>
+    <div class="ph-title" style="color:var(--c7)">Kelayakan Usahatani</div>
+    <div class="ph-desc">Hitung total biaya produksi, estimasi pendapatan kotor, laba bersih, R/C ratio, dan Break-Even Point untuk menilai kelayakan ekonomi usahatani musim ini.</div>
   </div>
-
   <div class="card">
-    <div class="card-t">📊 Input Biaya Produksi</div>
-    <div class="fg"><label class="fl">💊 PESTISIDA & HERBISIDA (Rp)</label><input type="text" class="fi" id="cPest" placeholder="0" oninput="fmtRp(this)"></div>
-    <div class="fg"><label class="fl">🚜 OLAH LAHAN / TRAKTOR (Rp)</label><input type="text" class="fi" id="cOlah" placeholder="0" oninput="fmtRp(this)"></div>
-    <div class="fg"><label class="fl">⚙️ COMBINE HARVESTER (Rp)</label><input type="text" class="fi" id="cPanen" placeholder="0" oninput="fmtRp(this)"></div>
-    <div class="fg"><label class="fl">💧 PENGAIRAN / BBM POMPA (Rp)</label><input type="text" class="fi" id="cAir" placeholder="0" oninput="fmtRp(this)"></div>
-    <div class="fg"><label class="fl">👥 UPAH TENAGA KERJA (Rp)</label><input type="text" class="fi" id="cTK" placeholder="0" oninput="fmtRp(this)"></div>
-    <div class="fg"><label class="fl">🚚 ANGKUT PANEN / LANGSIR (Rp)</label><input type="text" class="fi" id="cAngkut" placeholder="0" oninput="fmtRp(this)"></div>
-    <div class="fg"><label class="fl">📦 BIAYA LAINNYA (Rp)</label><input type="text" class="fi" id="cLain" placeholder="0" oninput="fmtRp(this)"></div>
+    <div class="card-t">📊 Komponen Biaya Produksi</div>
+    <div class="divider-label"><span>SARANA PRODUKSI (OTOMATIS)</span></div>
+    <div style="opacity:0.7;pointer-events:none">
+      <div class="fg"><label class="fl">🌱 Biaya Benih (Estimasi E-RDKK)</label><input type="text" class="fi" id="cBenih" readonly></div>
+      <div class="fg"><label class="fl">🧪 Biaya Pupuk Urea (Subsidi)</label><input type="text" class="fi" id="cUreaDisp" readonly></div>
+      <div class="fg"><label class="fl">🧪 Biaya Pupuk Phonska/NPK</label><input type="text" class="fi" id="cNpkDisp" readonly></div>
+    </div>
+    <div class="divider-label"><span>BIAYA LAINNYA (ISI MANUAL)</span></div>
+    <div class="fg"><label class="fl">💊 Pestisida &amp; Herbisida (Rp)</label><input type="text" class="fi" id="cPest" placeholder="0" oninput="fmtRp(this)"></div>
+    <div class="fg"><label class="fl">🚜 Olah Lahan / Traktor (Rp)</label><input type="text" class="fi" id="cOlah" placeholder="0" oninput="fmtRp(this)"></div>
+    <div class="fg"><label class="fl">⚙️ Combine Harvester (Rp)</label><input type="text" class="fi" id="cPanen" placeholder="0" oninput="fmtRp(this)"></div>
+    <div class="fg"><label class="fl">💧 Pengairan / BBM Pompa (Rp)</label><input type="text" class="fi" id="cAir" placeholder="0" oninput="fmtRp(this)"></div>
+    <div class="fg"><label class="fl">👥 Upah Tenaga Kerja (Rp)</label><input type="text" class="fi" id="cTK" placeholder="0" oninput="fmtRp(this)"></div>
+    <div class="fg"><label class="fl">🚚 Angkut Panen / Langsir (Rp)</label><input type="text" class="fi" id="cAngkut" placeholder="0" oninput="fmtRp(this)"></div>
+    <div class="fg"><label class="fl">📦 Biaya Lainnya (Rp)</label><input type="text" class="fi" id="cLain" placeholder="0" oninput="fmtRp(this)"></div>
     <hr class="divider">
-    <div class="fg"><label class="fl">🪣 ESTIMASI PRODUKSI (Kg GKP)</label><input type="number" class="fi" id="hasilPanen" placeholder="Contoh: 5000"></div>
-    <div class="fg"><label class="fl">💵 HARGA GABAH (Rp/Kg)</label><input type="text" class="fi" id="hargaGabah" placeholder="Contoh: 6.500" oninput="fmtRp(this)"></div>
-    <button class="btn" style="background:var(--c7);color:#fff" onclick="hitungBiaya()">📊 HITUNG ANALISIS USAHA</button>
+    <div class="divider-label"><span>DATA PANEN</span></div>
+    <div class="fg"><label class="fl">🪣 Estimasi Produksi (Kg GKP)</label><input type="number" class="fi" id="hasilPanen" placeholder="Contoh: 5.000 kg/ha"></div>
+    <div class="fg"><label class="fl">💵 Harga Gabah (Rp/Kg GKP)</label><input type="text" class="fi" id="hargaGabah" placeholder="Contoh: 6.500" oninput="fmtRp(this)"></div>
+    <button class="btn" style="background:var(--c7);color:#fff;font-weight:800" onclick="hitungBiaya()">📊 HITUNG ANALISIS KELAYAKAN</button>
   </div>
-
   <div id="p7-result" style="display:none"></div>
   <div id="p7-summary" style="display:none">
     <div class="card-t" style="text-align:center;margin-bottom:10px">🎉 RINGKASAN SIMULASI MUSIM INI</div>
     <div id="p7-sum-content"></div>
-    <button class="btn" style="background:#25D366;color:#fff" onclick="bagikanWA()">💬 KIRIM RINGKASAN KE WHATSAPP</button>
-    <button class="btn" style="background:rgba(59,130,246,0.15);color:var(--c2);border:1px solid rgba(59,130,246,0.3)" onclick="ulangSimulasi()">🔄 MULAI SIMULASI BARU</button>
+    <button class="btn" style="background:#25D366;color:#fff;font-weight:800" onclick="bagikanWA()">💬 KIRIM RINGKASAN KE WHATSAPP</button>
+    <button class="btn btn-outline" onclick="ulangSimulasi()">🔄 MULAI SIMULASI BARU</button>
   </div>
 </div>
 
 </div><!-- end .wrap -->
 
-<!-- ══ BOTTOM NAV ═══════════════════════════════════ -->
+<!-- ══ BOTTOM NAV ═══════════════════════════════════════ -->
 <div class="nav">
   <button class="nav-btn" id="btnBack" onclick="prevPhase()" disabled>← Kembali</button>
   <div class="nav-info">
-    <span class="nav-lbl" id="navLbl">FASE 1 DARI 7</span>
+    <span class="nav-lbl" id="navLbl">FASE 1 / 7</span>
     <span class="nav-name" id="navName">Pemetaan Lahan</span>
   </div>
   <button class="nav-btn go" id="btnNext" onclick="nextPhase()">Lanjut →</button>
 </div>
 
+<!-- ══ SCRIPT ════════════════════════════════════════════ -->
 <script>
-// ═══════════════════════════════════════════════════════════
-//  CONSTANTS
-// ═══════════════════════════════════════════════════════════
-const URL_PUPUK   = 'https://script.google.com/macros/s/AKfycbyZkyLEeLi7Igk-JXLuYuRsV0ZqTmbevRUQu6rY10rptwNyZ7y3d-YNmJCDn3QgM0Dm/exec';
-const URL_VARDB   = 'https://script.google.com/macros/s/AKfycbyZkUpdSU4mDLF53yaZHCbxW32V-gTGE9q_LorGMYrcul1cA3CEbOot-Ld-1e3flQn6vQ/exec';
-const URL_ZOM     = 'https://script.google.com/macros/s/AKfycbwz7hmlvMapsKMrimrywMLeF19frH_AILGLV1Y_4n7uNd6S3wWxAHm5b_G0fH0asE0v/exec';
-const URL_POLA    = 'https://script.google.com/macros/s/AKfycbzSt9d_oePM5dIvAni8g2_iO67r-CCYTeC4__-D9bJubH_l8p4LSWv9io-_70833VkZ/exec';
+// ═══════════════════════════════════════════
+//  ENDPOINTS
+// ═══════════════════════════════════════════
+const URL_PUPUK = 'https://script.google.com/macros/s/AKfycbyZkyLEeLi7Igk-JXLuYuRsV0ZqTmbevRUQu6rY10rptwNyZ7y3d-YNmJCDn3QgM0Dm/exec';
+const URL_VARDB = 'https://script.google.com/macros/s/AKfycbyZkUpdSU4mDLF53yaZHCbxW32V-gTGE9q_LorGMYrcul1cA3CEbOot-Ld-1e3flQn6vQ/exec';
+const URL_ZOM   = 'https://script.google.com/macros/s/AKfycbwz7hmlvMapsKMrimrywMLeF19frH_AILGLV1Y_4n7uNd6S3wWxAHm5b_G0fH0asE0v/exec';
 
 const PHASES = [
-  { id:1, title:'Pemetaan Lahan',   icon:'🗺️', c:'#22d3ee' },
-  { id:2, title:'Analisis Lokasi',  icon:'🛰️', c:'#3b82f6' },
-  { id:3, title:'Pilih Varietas',   icon:'🌾', c:'#10b981' },
-  { id:4, title:'Jadwal Tanam',     icon:'📅', c:'#d946ef' },
-  { id:5, title:'Dosis Pupuk',      icon:'🧪', c:'#34d399' },
-  { id:6, title:'Pantau Lahan',     icon:'📡', c:'#f59e0b' },
-  { id:7, title:'Analisis Biaya',   icon:'💰', c:'#f43f5e' },
+  {id:1,title:'Pemetaan',   icon:'🗺️',c:'#22d3ee'},
+  {id:2,title:'Lokasi',     icon:'🛰️',c:'#4f9cf9'},
+  {id:3,title:'Varietas',   icon:'🌾',c:'#10d9a0'},
+  {id:4,title:'Jadwal',     icon:'📅',c:'#c97dfc'},
+  {id:5,title:'Pupuk',      icon:'🧪',c:'#34e09a'},
+  {id:6,title:'Monitor',    icon:'📡',c:'#f5a623'},
+  {id:7,title:'Ekonomi',    icon:'💰',c:'#f04c6e'},
 ];
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  STATE
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 const S = {
-  phase: 1,
-  farm:   { area:null, areaM2:null, lat:null, lon:null },
-  loc:    { lat:null, lon:null, elev:0, season:null, rainfall:null, kec:null, kab:null, weather:null, _done:false },
-  var:    { data:null, umur:110 },
-  plan:   { date:null, method:'tapin', density:25 },
-  sched:  {},
-  fert:   { urea:0, npk:0, org:0, costUrea:0, costNpk:0, costBenih:0, seedKg:30, kec:null, _done:false },
-  cost:   { total:0, rev:0, profit:0, rc:0 },
+  phase:1,
+  farm:  {area:null,areaM2:null,perim:null,lat:null,lon:null},
+  loc:   {lat:null,lon:null,elev:0,season:null,rainfall:null,kec:null,kab:null,weather:null,_done:false},
+  var:   {data:null,umur:110},
+  plan:  {date:null,method:'tapin',density:25},
+  sched: {},
+  fert:  {urea:0,npk:0,org:0,costUrea:0,costNpk:0,costBenih:0,seedKg:30,kec:null,_done:false,N:0,P:0,K:0},
+  cost:  {total:0,rev:0,profit:0,rc:0},
 };
 
-// Globals
-let MAP=null, DRAWN=null, gWatch=null, gPts=[], gLine=null, gMark=null;
-let chartRisiko=null, g_vars=[], dbPupuk=[], dbVars=[];
+let MAP=null,DRAWN=null,gWatch=null,gPts=[],gLine=null,gMark=null;
+let chartRisiko=null,chartBiaya=null,g_vars=[],dbPupuk=[],dbVars=[];
+const ER=6378137;
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  UTILS
-// ═══════════════════════════════════════════════════════════
-const addDays = (d,n) => { const r=new Date(d); r.setDate(r.getDate()+n); return r; };
-const fmtDate = d => new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
-const fmtShort= d => new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short'});
-const rp = n  => 'Rp '+Math.round(n).toLocaleString('id-ID');
-const sak= kg => (Math.round(kg/25)/2).toFixed(1);
+// ═══════════════════════════════════════════
+const addDays=(d,n)=>{const r=new Date(d);r.setDate(r.getDate()+n);return r;};
+const fmtDate=d=>new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short',year:'numeric'});
+const fmtShort=d=>new Date(d).toLocaleDateString('id-ID',{day:'numeric',month:'short'});
+const rp=n=>'Rp '+Math.round(n).toLocaleString('id-ID');
+const sak=kg=>(Math.round(kg/25)/2).toFixed(1);
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
 
-function fmtRp(el) {
-  let v = el.value.replace(/[^0-9]/g,'');
-  el.value = v.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
-}
-function getRp(id) {
-  return parseFloat((document.getElementById(id)?.value||'0').replace(/\./g,''))||0;
-}
-function setText(id,html){ const el=document.getElementById(id); if(el) el.innerHTML=html; }
-function show(id){ const el=document.getElementById(id); if(el) el.style.display='block'; }
-function hide(id){ const el=document.getElementById(id); if(el) el.style.display='none'; }
+function fmtRp(el){let v=el.value.replace(/[^0-9]/g,'');el.value=v.replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function getRp(id){return parseFloat((document.getElementById(id)?.value||'0').replace(/\./g,''))||0;}
+function setText(id,html){const el=document.getElementById(id);if(el)el.innerHTML=html;}
+function show(id){const el=document.getElementById(id);if(el)el.style.display='block';}
+function hide(id){const el=document.getElementById(id);if(el)el.style.display='none';}
 
-// ═══════════════════════════════════════════════════════════
+// Scientific bar helper
+function smBar(label,valPct,color,valueLabel){
+  return `<div class="sm-wrap">
+    <div class="sm-row">
+      <span class="sm-label">${label}</span>
+      <span class="sm-val" style="color:${color}">${valueLabel}</span>
+    </div>
+    <div class="sm-track"><div class="sm-fill" style="width:${clamp(valPct,0,100)}%;background:${color}"></div></div>
+  </div>`;
+}
+
+// ═══════════════════════════════════════════
 //  NAVIGATION
-// ═══════════════════════════════════════════════════════════
-function switchPhase(n) {
-  S.phase = n;
-  // phase sections
-  PHASES.forEach(p => {
-    const el = document.getElementById('p'+p.id);
-    if(el) el.className = 'phase-sec' + (p.id===n?' on':'');
+// ═══════════════════════════════════════════
+function switchPhase(n){
+  S.phase=n;
+  PHASES.forEach(p=>{
+    const el=document.getElementById('p'+p.id);
+    if(el)el.className='phase-sec'+(p.id===n?' on':'');
   });
-  buildTracker();
-  buildFarmBar();
-  updateNav();
-  window.scrollTo(0,0);
+  buildTracker();buildFarmBar();updateNav();
+  window.scrollTo({top:0,behavior:'smooth'});
   onEnter(n);
 }
-
-function buildTracker() {
-  const t = document.getElementById('tracker');
-  t.innerHTML = '';
-  PHASES.forEach((p,i) => {
-    if(i>0) {
-      const line = document.createElement('div');
-      line.className = 't-line' + (S.phase > p.id ? ' done' : '');
-      t.appendChild(line);
-    }
-    const dot = document.createElement('div');
-    const isActive = S.phase === p.id;
-    const isDone   = S.phase > p.id;
-    dot.className = 't-dot' + (isActive?' active':'') + (isDone?' done':'');
-    dot.style.color = p.c;
-    dot.onclick = () => switchPhase(p.id);
-    dot.innerHTML = `<div class="t-circle">${isDone ? '✓' : p.icon}</div><div class="t-label">${p.title}</div>`;
-    t.appendChild(dot);
+function buildTracker(){
+  const t=document.getElementById('tracker');t.innerHTML='';
+  PHASES.forEach((p,i)=>{
+    if(i>0){const ln=document.createElement('div');ln.className='t-line'+(S.phase>p.id?' done':'');t.appendChild(ln);}
+    const d=document.createElement('div');
+    const isA=S.phase===p.id,isD=S.phase>p.id;
+    d.className='t-dot'+(isA?' active':'')+(isD?' done':'');
+    d.style.color=p.c;
+    d.onclick=()=>switchPhase(p.id);
+    d.innerHTML=`<div class="t-circle">${isD?'✓':p.icon}</div><div class="t-label">${p.title}</div>`;
+    t.appendChild(d);
   });
 }
-
-function updateNav() {
-  const p = PHASES[S.phase-1];
-  document.getElementById('hdrPhase').textContent = `FASE ${S.phase}/7`;
-  document.getElementById('navLbl').textContent  = `FASE ${S.phase} DARI 7`;
-  document.getElementById('navName').textContent = p.title;
-  document.getElementById('btnBack').disabled = S.phase === 1;
-  const btnNext = document.getElementById('btnNext');
-  btnNext.textContent = S.phase === 7 ? '✅ Selesai' : 'Lanjut →';
-  btnNext.style.background = p.c;
-  btnNext.style.color = ['#22d3ee','#34d399','#d946ef'].includes(p.c) ? '#000' : '#fff';
-  btnNext.style.borderColor = p.c;
+function updateNav(){
+  const p=PHASES[S.phase-1];
+  document.getElementById('hdrPhase').textContent=`FASE ${S.phase}/7`;
+  document.getElementById('navLbl').textContent=`FASE ${S.phase} / 7`;
+  document.getElementById('navName').textContent=p.title;
+  document.getElementById('btnBack').disabled=S.phase===1;
+  const nb=document.getElementById('btnNext');
+  nb.textContent=S.phase===7?'✅ Selesai':'Lanjut →';
+  nb.style.background=p.c;
+  nb.style.color=['#22d3ee','#10d9a0','#34e09a'].includes(p.c)?'#000':'#fff';
+  nb.style.borderColor=p.c;
+  nb.style.boxShadow=`0 4px 18px ${p.c}44`;
+}
+function nextPhase(){if(S.phase<7)switchPhase(S.phase+1);}
+function prevPhase(){if(S.phase>1)switchPhase(S.phase-1);}
+function onEnter(n){
+  if(n===1&&!MAP)setTimeout(initMap,250);
+  if(n===2)runPhase2();
+  if(n===5)runPhase5();
+  if(n===6)runPhase6();
+  if(n===7)prefillP7();
 }
 
-function nextPhase() { if(S.phase < 7) switchPhase(S.phase+1); }
-function prevPhase() { if(S.phase > 1) switchPhase(S.phase-1); }
-
-function onEnter(n) {
-  if(n===1 && !MAP) setTimeout(initMap, 250);
-  if(n===2) runPhase2();
-  if(n===5) runPhase5();
-  if(n===6) runPhase6();
-}
-
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  FARM BAR
-// ═══════════════════════════════════════════════════════════
-function buildFarmBar() {
-  const row = document.getElementById('farmBarRow');
-  const bar = document.getElementById('farmBar');
-  const chips = [];
-  if(S.farm.area)       chips.push({ v: S.farm.area+' Ha', l:'📐 LUAS' });
-  if(S.loc.season)      chips.push({ v: S.loc.season,      l:'🌤️ MUSIM' });
-  if(S.loc.kec)         chips.push({ v: S.loc.kec,         l:'📍 LOKASI' });
-  if(S.var.data)        chips.push({ v: S.var.data.nama,   l:'🌾 VARIETAS' });
-  if(S.plan.date)       chips.push({ v: fmtShort(S.plan.date), l:'📅 TANAM' });
-  if(S.fert.urea)       chips.push({ v: S.fert.urea+' kg', l:'🧪 UREA' });
-  if(chips.length) {
-    bar.className = 'farm-bar on';
-    row.innerHTML = chips.map(c=>`<div class="fb-chip"><span class="fb-val">${c.v}</span><span class="fb-lbl">${c.l}</span></div>`).join('');
-  } else {
-    bar.className = 'farm-bar';
-  }
+// ═══════════════════════════════════════════
+function buildFarmBar(){
+  const row=document.getElementById('farmBarRow');
+  const bar=document.getElementById('farmBar');
+  const chips=[];
+  if(S.farm.area)       chips.push({v:S.farm.area+' Ha', l:'📐 LUAS'});
+  if(S.loc.season)      chips.push({v:S.loc.season,       l:'🌤️ MUSIM'});
+  if(S.loc.kec)         chips.push({v:S.loc.kec,          l:'📍 LOKASI'});
+  if(S.var.data)        chips.push({v:S.var.data.nama,    l:'🌾 VARIETAS'});
+  if(S.plan.date)       chips.push({v:fmtShort(S.plan.date),l:'📅 TANAM'});
+  if(S.fert.urea)       chips.push({v:S.fert.urea+' kg',  l:'🧪 UREA'});
+  if(chips.length){
+    bar.className='farm-bar on';
+    row.innerHTML=chips.map(c=>`<div class="fb-chip"><span class="fb-val">${c.v}</span><span class="fb-lbl">${c.l}</span></div>`).join('');
+  } else bar.className='farm-bar';
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  PHASE 1 — MAP
-// ═══════════════════════════════════════════════════════════
-const ER = 6378137;
-
-function initMap() {
-  if(MAP) { MAP.invalidateSize(); return; }
-  MAP = L.map('map',{zoomControl:true,attributionControl:false}).setView([-4.0,120.0],13);
+// ═══════════════════════════════════════════
+function initMap(){
+  if(MAP){MAP.invalidateSize();return;}
+  MAP=L.map('map',{zoomControl:true,attributionControl:false}).setView([-4.0,120.0],13);
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:22}).addTo(MAP);
   L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{maxZoom:22,opacity:0.8}).addTo(MAP);
-
-  DRAWN = new L.FeatureGroup().addTo(MAP);
+  DRAWN=new L.FeatureGroup().addTo(MAP);
   new L.Control.Draw({
     draw:{
       polygon:{allowIntersection:false,showArea:true,shapeOptions:{color:'#22d3ee',weight:3}},
@@ -664,723 +969,934 @@ function initMap() {
     },
     edit:{featureGroup:DRAWN}
   }).addTo(MAP);
-
-  MAP.on(L.Draw.Event.CREATED, e=>{ DRAWN.clearLayers(); DRAWN.addLayer(e.layer); prosesPolygon(e.layer); });
-  MAP.on(L.Draw.Event.EDITED,  e=>{ e.layers.eachLayer(l=>prosesPolygon(l)); });
-
-  navigator.geolocation && navigator.geolocation.getCurrentPosition(pos=>{
-    MAP.flyTo([pos.coords.latitude, pos.coords.longitude], 17);
-    S.farm.lat = pos.coords.latitude;
-    S.farm.lon = pos.coords.longitude;
-  }, null, {enableHighAccuracy:true,timeout:12000});
+  MAP.on(L.Draw.Event.CREATED,e=>{DRAWN.clearLayers();DRAWN.addLayer(e.layer);prosesPolygon(e.layer);});
+  MAP.on(L.Draw.Event.EDITED,e=>{e.layers.eachLayer(l=>prosesPolygon(l));});
+  navigator.geolocation&&navigator.geolocation.getCurrentPosition(pos=>{
+    MAP.flyTo([pos.coords.latitude,pos.coords.longitude],17);
+    S.farm.lat=pos.coords.latitude;S.farm.lon=pos.coords.longitude;
+  },null,{enableHighAccuracy:true,timeout:12000});
 }
 
-function prosesPolygon(layer) {
-  let pts = layer.getLatLngs();
-  while(Array.isArray(pts[0])) pts = pts[0];
-  const areaM2 = (typeof L.GeometryUtil!=='undefined' && L.GeometryUtil.geodesicArea)
-    ? L.GeometryUtil.geodesicArea(pts)
-    : sphericalExcess(pts);
-  const cen = centroid(pts);
-  S.farm.area  = parseFloat((areaM2/10000).toFixed(4));
-  S.farm.areaM2= areaM2;
-  S.farm.lat   = cen.lat;
-  S.farm.lon   = cen.lng;
-  const m2 = Math.round(areaM2).toLocaleString('id-ID');
+function prosesPolygon(layer){
+  let pts=layer.getLatLngs();
+  while(Array.isArray(pts[0]))pts=pts[0];
+  const areaM2=(typeof L.GeometryUtil!=='undefined'&&L.GeometryUtil.geodesicArea)?L.GeometryUtil.geodesicArea(pts):sphericalExcess(pts);
+  const perimM=perimeterM(pts);
+  const cen=centroid(pts);
+  S.farm.area=parseFloat((areaM2/10000).toFixed(4));
+  S.farm.areaM2=areaM2;
+  S.farm.perim=perimM;
+  S.farm.lat=cen.lat;S.farm.lon=cen.lng;
+  const bahu=(areaM2/7096.24).toFixed(2);
   show('hasilUkur');
-  document.getElementById('luasDisplay').innerHTML = `${S.farm.area} <small style="font-size:0.9rem">Hektar</small>`;
-  document.getElementById('luasDetail').textContent = `${m2} m²  •  Koordinat: ${cen.lat.toFixed(5)}, ${cen.lng.toFixed(5)}`;
+  document.getElementById('luasDisplay').innerHTML=`${S.farm.area} <small style="font-size:1rem">Ha</small>`;
+  document.getElementById('luasDetail').textContent=`${Math.round(areaM2).toLocaleString('id-ID')} m²  •  Koordinat: ${cen.lat.toFixed(5)}, ${cen.lng.toFixed(5)}`;
+  document.getElementById('luasExtra').innerHTML=`
+    <div class="s-card"><span class="s-val" style="color:var(--c1);font-size:0.8rem">${Math.round(areaM2).toLocaleString('id-ID')}</span><span class="s-lbl">m² LUAS</span></div>
+    <div class="s-card"><span class="s-val" style="color:var(--c3);font-size:0.8rem">${bahu}</span><span class="s-lbl">BAHU (7.096 m²)</span></div>
+    <div class="s-card"><span class="s-val" style="color:var(--c6);font-size:0.8rem">${Math.round(perimM)}</span><span class="s-lbl">m KELILING</span></div>`;
   buildFarmBar();
 }
 
-function centroid(pts) {
-  let lat=0,lng=0;
-  pts.forEach(p=>{lat+=p.lat;lng+=p.lng});
-  return {lat:lat/pts.length, lng:lng/pts.length};
-}
-
-function sphericalExcess(pts) {
-  const rad = d => d*Math.PI/180;
-  const n = pts.length; let t=0;
-  for(let i=0;i<n;i++){
-    const a=pts[i], b=pts[(i+1)%n];
-    t += rad(b.lng-a.lng)*(2+Math.sin(rad(a.lat))+Math.sin(rad(b.lat)));
-  }
+function centroid(pts){let la=0,ln=0;pts.forEach(p=>{la+=p.lat;ln+=p.lng});return{lat:la/pts.length,lng:ln/pts.length};}
+function sphericalExcess(pts){
+  const rad=d=>d*Math.PI/180;const n=pts.length;let t=0;
+  for(let i=0;i<n;i++){const a=pts[i],b=pts[(i+1)%n];t+=rad(b.lng-a.lng)*(2+Math.sin(rad(a.lat))+Math.sin(rad(b.lat)));}
   return Math.abs(t*ER*ER/2);
 }
-
-function haversineM(a,b) {
+function haversineM(a,b){
   const rad=d=>d*Math.PI/180;
-  const dLat=rad(b.lat-a.lat), dLng=rad(b.lng-a.lng);
+  const dLat=rad(b.lat-a.lat),dLng=rad(b.lng-a.lng);
   const h=Math.sin(dLat/2)**2+Math.cos(rad(a.lat))*Math.cos(rad(b.lat))*Math.sin(dLng/2)**2;
   return 2*ER*Math.asin(Math.sqrt(h));
 }
-
-function tipsPeta() {
-  alert('🗺️ Cara Menggambar Lahan:\n\n1. Klik ikon segi banyak (poligon) di toolbar kiri peta\n2. Klik titik-titik mengelilingi batas lahan\n3. Klik titik PERTAMA untuk menutup dan selesai\n4. Luas otomatis terhitung\n\nAtau gunakan tombol "GPS Keliling" untuk jalan mengelilingi lahan langsung.');
+function perimeterM(pts){
+  let p=0;const n=pts.length;
+  for(let i=0;i<n;i++)p+=haversineM(pts[i],pts[(i+1)%n]);
+  return p;
 }
 
-function mulaiJalan() {
+function tipsPeta(){alert('🗺️ Cara Menggambar Lahan:\n\n1. Klik ikon poligon di toolbar kiri peta\n2. Klik titik-titik batas lahan satu per satu\n3. Klik titik PERTAMA untuk menutup dan selesai\n\nAtau gunakan tombol "Rekam GPS" dan berjalan mengelilingi lahan.');}
+
+function mulaiJalan(){
   if(!navigator.geolocation){alert('GPS tidak didukung perangkat ini');return;}
-  gPts=[];
-  show('selesaiWrap');
-  alert('🚶 Siap berangkat!\n\nBerjalan perlahan mengelilingi SELURUH batas lahan sawah. GPS aktif merekam posisi tiap langkah. Tekan "SELESAI" setelah kembali ke titik awal.');
-  gWatch = navigator.geolocation.watchPosition(pos=>{
-    if(pos.coords.accuracy > 20) return;
-    const pt = L.latLng(pos.coords.latitude, pos.coords.longitude);
-    if(gPts.length>0 && haversineM(gPts[gPts.length-1],pt) < 2) return;
+  gPts=[];show('selesaiWrap');
+  alert('📡 GPS Aktif!\n\nBerjalan perlahan mengelilingi SELURUH batas lahan sawah. Titik direkam otomatis setiap 2 meter. Tekan "SELESAI" setelah kembali ke titik awal.');
+  gWatch=navigator.geolocation.watchPosition(pos=>{
+    if(pos.coords.accuracy>20)return;
+    const pt=L.latLng(pos.coords.latitude,pos.coords.longitude);
+    if(gPts.length>0&&haversineM(gPts[gPts.length-1],pt)<2)return;
     gPts.push(pt);
-    if(!gMark) gMark=L.circleMarker(pt,{radius:6,color:'#f59e0b',fillColor:'#f59e0b',fillOpacity:1}).addTo(MAP);
+    if(!gMark)gMark=L.circleMarker(pt,{radius:6,color:'#f5a623',fillColor:'#f5a623',fillOpacity:1}).addTo(MAP);
     else gMark.setLatLng(pt);
-    if(gPts.length>1){
-      if(!gLine) gLine=L.polyline(gPts,{color:'#f59e0b',weight:5}).addTo(MAP);
-      else gLine.setLatLngs(gPts);
-    }
+    if(gPts.length>1){if(!gLine)gLine=L.polyline(gPts,{color:'#f5a623',weight:5}).addTo(MAP);else gLine.setLatLngs(gPts);}
     MAP.panTo(pt);
-  }, null, {enableHighAccuracy:true,maximumAge:0});
+  },null,{enableHighAccuracy:true,maximumAge:0});
 }
 
-function selesaiJalan() {
-  if(gPts.length<3){alert('Minimal 3 titik GPS diperlukan! Coba berjalan lebih jauh.');return;}
+function selesaiJalan(){
+  if(gPts.length<3){alert('Minimal 3 titik GPS diperlukan!');return;}
   navigator.geolocation.clearWatch(gWatch);
-  if(gLine){MAP.removeLayer(gLine);gLine=null;}
-  if(gMark){MAP.removeLayer(gMark);gMark=null;}
+  if(gLine){MAP.removeLayer(gLine);gLine=null;}if(gMark){MAP.removeLayer(gMark);gMark=null;}
   DRAWN.clearLayers();
-  const poly = L.polygon(gPts,{color:'#22d3ee',weight:3,fillOpacity:0.15});
-  DRAWN.addLayer(poly);
-  MAP.fitBounds(poly.getBounds(),{padding:[20,20]});
-  prosesPolygon(poly);
-  hide('selesaiWrap');
+  const poly=L.polygon(gPts,{color:'#22d3ee',weight:3,fillOpacity:0.15});
+  DRAWN.addLayer(poly);MAP.fitBounds(poly.getBounds(),{padding:[20,20]});
+  prosesPolygon(poly);hide('selesaiWrap');
 }
 
-function resetMap() {
+function resetMap(){
   if(gWatch){navigator.geolocation.clearWatch(gWatch);gWatch=null;}
-  if(DRAWN) DRAWN.clearLayers();
-  if(gLine){MAP.removeLayer(gLine);gLine=null;}
-  if(gMark){MAP.removeLayer(gMark);gMark=null;}
-  gPts=[];
-  S.farm={area:null,areaM2:null,lat:null,lon:null};
-  hide('hasilUkur');hide('selesaiWrap');
-  buildFarmBar();
+  if(DRAWN)DRAWN.clearLayers();
+  if(gLine){MAP.removeLayer(gLine);gLine=null;}if(gMark){MAP.removeLayer(gMark);gMark=null;}
+  gPts=[];S.farm={area:null,areaM2:null,perim:null,lat:null,lon:null};
+  hide('hasilUkur');hide('selesaiWrap');buildFarmBar();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  PHASE 2 — LOCATION ANALYSIS
-// ═══════════════════════════════════════════════════════════
-async function runPhase2() {
-  if(S.loc._done){ renderP2(); return; }
-  show('p2-loading'); hide('p2-result');
-  setText('p2txt','MENGAMBIL KOORDINAT GPS...');
-  try {
-    let lat = S.farm.lat, lon = S.farm.lon;
-    if(!lat) {
-      const pos = await new Promise((res,rej)=>
-        navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:15000}));
-      lat = pos.coords.latitude;
-      lon = pos.coords.longitude;
+// ═══════════════════════════════════════════
+//  PHASE 2 — LOCATION
+// ═══════════════════════════════════════════
+async function runPhase2(){
+  if(S.loc._done){renderP2();return;}
+  show('p2-loading');hide('p2-result');
+  setText('p2txt','MENDETEKSI KOORDINAT GPS...');
+  try{
+    let lat=S.farm.lat,lon=S.farm.lon;
+    if(!lat){
+      const pos=await new Promise((res,rej)=>navigator.geolocation.getCurrentPosition(res,rej,{enableHighAccuracy:true,timeout:15000}));
+      lat=pos.coords.latitude;lon=pos.coords.longitude;
     }
-    S.loc.lat=lat; S.loc.lon=lon;
+    S.loc.lat=lat;S.loc.lon=lon;
     if(!S.farm.lat){S.farm.lat=lat;S.farm.lon=lon;}
 
-    setText('p2txt','🌍 MEMBALIK GEOCODE LOKASI...');
-    try {
-      const gR = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,{headers:{'User-Agent':'SimPadiPPLWajo/1.0'}});
-      const gD = await gR.json();
-      const a  = gD.address||{};
-      S.loc.kec = a.village||a.suburb||a.municipality||a.town||a.county||'—';
-      S.loc.kab = a.county||a.city||a.state||'';
-    } catch(e){ S.loc.kec='Tidak terdeteksi'; }
+    setText('p2txt','GEOCODING LOKASI...');
+    try{
+      const gR=await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}`,{headers:{'User-Agent':'SimPadiPPLWajo/2.0'}});
+      const gD=await gR.json();const a=gD.address||{};
+      S.loc.kec=a.village||a.suburb||a.municipality||a.town||a.county||'—';
+      S.loc.kab=a.county||a.city||a.state||'';
+    }catch(e){S.loc.kec='Tidak terdeteksi';}
 
-    setText('p2txt','🌤️ MENGAMBIL DATA CUACA & ELEVASI...');
-    const wRes = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,rain,wind_speed_10m,dew_point_2m,weather_code&daily=precipitation_sum&timezone=auto&forecast_days=1`);
-    const wData = await wRes.json();
-    S.loc.weather = wData;
-    S.loc.elev = wData.elevation || 0;
+    setText('p2txt','MENGAMBIL DATA CUACA & ELEVASI...');
+    const wRes=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,rain,wind_speed_10m,dew_point_2m,weather_code&daily=precipitation_sum&timezone=auto&forecast_days=1`);
+    const wData=await wRes.json();
+    S.loc.weather=wData;S.loc.elev=wData.elevation||0;
 
-    // Season detection (monsoonal - Sulawesi)
-    const m = new Date().getMonth()+1;
-    S.loc.season = (m>=10||m<=3) ? 'Rendeng' : 'Gadu';
-    S.loc.rainfall= (m>=11||m<=2) ? 'tinggi' : (m>=4&&m<=9) ? 'rendah' : 'normal';
+    const m=new Date().getMonth()+1;
+    S.loc.season=(m>=10||m<=3)?'Rendeng':'Gadu';
+    S.loc.rainfall=(m>=11||m<=2)?'tinggi':(m>=4&&m<=9)?'rendah':'normal';
 
-    // Try ZOM local
-    setText('p2txt','📊 MENCOCOKKAN POLA IKLIM ZOM...');
-    try {
-      const zR = await fetch(URL_ZOM);
-      const zD = await zR.json();
-      let arr = Array.isArray(zD.data)?zD.data:(Array.isArray(zD)?zD:[]);
-      let best=null, minD=Infinity;
+    setText('p2txt','ANALISIS ZONA AGROIKLIM...');
+    try{
+      const zR=await fetch(URL_ZOM);const zD=await zR.json();
+      let arr=Array.isArray(zD.data)?zD.data:(Array.isArray(zD)?zD:[]);
+      let best=null,minD=Infinity;
       arr.forEach(k=>{
-        const klat=parseFloat(k.lat), klon=parseFloat(k.lon);
-        if(isNaN(klat)||isNaN(klon)) return;
+        const klat=parseFloat(k.lat),klon=parseFloat(k.lon);
+        if(isNaN(klat)||isNaN(klon))return;
         const d=haversineM({lat:klat,lng:klon},{lat,lng:lon});
         if(d<minD){minD=d;best=k;}
       });
-      if(best && minD<150000){
+      if(best&&minD<150000){
         const bKeys=['jan','feb','mar','apr','mei','jun','jul','agu','sep','okt','nov','des'];
-        const ch = parseFloat(best[bKeys[m-1]])||100;
-        S.loc.rainfall = ch>200?'tinggi':ch>100?'normal':'rendah';
-        S.loc.kec = S.loc.kec==='—'?best.kabupaten_kota:S.loc.kec;
+        const ch=parseFloat(best[bKeys[m-1]])||100;
+        S.loc.rainfall=ch>200?'tinggi':ch>100?'normal':'rendah';
+        S.loc.kec=S.loc.kec==='—'?best.kabupaten_kota:S.loc.kec;
       }
-    } catch(e){}
+    }catch(e){}
 
-    S.loc._done = true;
-    renderP2();
-  } catch(err) {
-    document.getElementById('p2-loading').innerHTML = `
+    S.loc._done=true;renderP2();
+  }catch(err){
+    document.getElementById('p2-loading').innerHTML=`
       <div style="color:var(--c7);text-align:center;padding:20px">
         <span style="font-size:2rem;display:block;margin-bottom:8px">❌</span>
-        <b>Gagal Mengambil Data</b><br>
-        <small style="color:var(--muted)">${err.message}</small><br><br>
+        <b>Gagal Mengambil Data</b><br><small style="color:var(--muted)">${err.message}</small><br><br>
         <button class="btn btn-sm" style="background:var(--c2);color:#fff" onclick="S.loc._done=false;runPhase2()">🔄 Coba Lagi</button>
       </div>`;
   }
 }
 
-function renderP2() {
-  hide('p2-loading'); show('p2-result');
-  const w = S.loc.weather?.current||{};
-  const elev = Math.round(S.loc.elev);
-  const topoLabel = elev>200?`Dataran Tinggi (${elev}m)`:elev>50?`Perbukitan (${elev}m)`:`Dataran Rendah (${elev}m)`;
-  const topoVal   = elev>200?'bukit':elev>50?'lembah':'lembah';
-  const musimLabel= S.loc.season==='Rendeng'?'🌧️ Rendeng':'☀️ Gadu';
-  const chLabel   = S.loc.rainfall==='tinggi'?'Tinggi':S.loc.rainfall==='rendah'?'Rendah':'Normal';
+function renderP2(){
+  hide('p2-loading');show('p2-result');
+  const w=S.loc.weather?.current||{};
+  const elev=Math.round(S.loc.elev);
+  const topoLabel=elev>200?`Dataran Tinggi (${elev}m)`:elev>50?`Perbukitan (${elev}m)`:`Dataran Rendah (${elev}m)`;
+  const topoVal=elev>200?'bukit':elev>50?'lembah':'lembah';
+  const musimLabel=S.loc.season==='Rendeng'?'🌧️ Rendeng':'☀️ Gadu';
+  const chLabel=S.loc.rainfall==='tinggi'?'Tinggi':S.loc.rainfall==='rendah'?'Rendah':'Normal';
+
+  // Suitability scoring
+  const temp=w.temperature_2m||28;
+  const rh=w.relative_humidity_2m||75;
+  const tempScore=temp>=24&&temp<=32?100:temp>=20&&temp<24?70:temp>32&&temp<=35?65:40;
+  const rhScore=rh>=70&&rh<=90?100:rh>60&&rh<70?80:rh>90?65:40;
+  const elevScore=elev<=200?100:elev<=400?80:elev<=600?60:40;
+  const overallScore=Math.round((tempScore*0.4+rhScore*0.3+elevScore*0.3));
+  const suitLabel=overallScore>=80?'SANGAT SESUAI':overallScore>=65?'SESUAI':'KURANG SESUAI';
+  const suitColor=overallScore>=80?'var(--c3)':overallScore>=65?'var(--c6)':'var(--c7)';
 
   setText('p2-stats',`
-    <div class="s-card"><span class="s-val" style="color:var(--c2);font-size:0.78rem">${S.loc.lat?.toFixed(4)||'-'}, ${S.loc.lon?.toFixed(4)||'-'}</span><span class="s-lbl">📍 KOORDINAT LAHAN</span></div>
-    <div class="s-card"><span class="s-val" style="color:var(--c6)">${musimLabel}</span><span class="s-lbl">🌤️ MUSIM SAAT INI</span></div>
-    <div class="s-card"><span class="s-val" style="color:var(--c3);font-size:0.78rem">${topoLabel}</span><span class="s-lbl">⛰️ TOPOGRAFI</span></div>
+    <div class="s-card"><span class="s-val" style="color:var(--c2);font-size:0.72rem">${S.loc.lat?.toFixed(5)||'-'}, ${S.loc.lon?.toFixed(5)||'-'}</span><span class="s-lbl">📍 KOORDINAT</span></div>
+    <div class="s-card"><span class="s-val" style="color:var(--c6)">${musimLabel}</span><span class="s-lbl">🌤️ MUSIM</span></div>
+    <div class="s-card"><span class="s-val" style="color:var(--c3);font-size:0.72rem">${topoLabel}</span><span class="s-lbl">⛰️ TOPOGRAFI</span></div>
     <div class="s-card"><span class="s-val" style="color:var(--c4)">${chLabel}</span><span class="s-lbl">🌧️ CURAH HUJAN</span></div>
-    <div class="s-card"><span class="s-val" style="color:#fff;font-size:0.78rem">${S.loc.kec||'—'}</span><span class="s-lbl">🏘️ DESA / LOKASI</span></div>
-    <div class="s-card"><span class="s-val" style="color:#fff">${w.temperature_2m||'—'}°C</span><span class="s-lbl">🌡️ SUHU UDARA</span></div>
+    <div class="s-card"><span class="s-val" style="color:#fff;font-size:0.72rem">${S.loc.kec||'—'}</span><span class="s-lbl">🏘️ DESA</span></div>
+    <div class="s-card"><span class="s-val" style="color:var(--c1)">${w.temperature_2m||'—'}°C</span><span class="s-lbl">🌡️ SUHU</span></div>
   `);
-  try{ document.getElementById('selTopo').value = topoVal; }catch(e){}
+
+  setText('p2-suitability',`
+    <div class="card" style="border-color:${suitColor}22">
+      <div class="card-t">🌿 Indeks Kesesuaian Lahan untuk Padi</div>
+      ${smBar('KESESUAIAN SUHU UDARA',tempScore,'var(--c3)',`${temp}°C — ${tempScore}%`)}
+      ${smBar('KESESUAIAN KELEMBAPAN',rhScore,'var(--c4)',`${rh}% RH — ${rhScore}%`)}
+      ${smBar('KESESUAIAN ELEVASI',elevScore,'var(--c2)',`${elev} m dpl — ${elevScore}%`)}
+      <div style="margin-top:10px;display:flex;justify-content:space-between;align-items:center;padding:10px 12px;background:var(--deep);border-radius:10px;border:1px solid ${suitColor}33">
+        <div>
+          <div style="font-size:0.78rem;font-weight:800;color:${suitColor}">${suitLabel}</div>
+          <div style="font-size:0.65rem;color:var(--muted);margin-top:2px">Skor kesesuaian lahan (FAO-AEZ)</div>
+        </div>
+        <div style="font-family:var(--mono);font-size:1.5rem;font-weight:800;color:${suitColor}">${overallScore}%</div>
+      </div>
+      <span class="sci-ref">📚 Ref: FAO Agro-Ecological Zone Framework · Suhu optimal padi: 24–32°C (Yoshida, 1981)</span>
+    </div>
+  `);
+
+  try{document.getElementById('selTopo').value=topoVal;}catch(e){}
   setText('p2-cuaca',`
     <div class="ib" style="border-color:var(--c2)">
-      <strong>🌤️ Kondisi Cuaca Terkini di Lokasi Lahan</strong>
+      <strong>🌤️ Kondisi Atmosfer Terkini di Lokasi Lahan</strong>
       <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:8px">
-        <div style="text-align:center"><div style="font-size:1rem;font-weight:800;color:var(--c2)">${w.temperature_2m||'—'}°C</div><div style="font-size:0.6rem;color:var(--muted)">Suhu</div></div>
-        <div style="text-align:center"><div style="font-size:1rem;font-weight:800;color:var(--c3)">${w.relative_humidity_2m||'—'}%</div><div style="font-size:0.6rem;color:var(--muted)">Kelembapan</div></div>
-        <div style="text-align:center"><div style="font-size:1rem;font-weight:800;color:var(--c1)">${w.wind_speed_10m||'0'} km/j</div><div style="font-size:0.6rem;color:var(--muted)">Angin</div></div>
+        <div style="text-align:center"><div style="font-size:0.95rem;font-weight:800;color:var(--c2);font-family:var(--mono)">${w.temperature_2m||'—'}°C</div><div style="font-size:0.58rem;color:var(--muted)">Suhu</div></div>
+        <div style="text-align:center"><div style="font-size:0.95rem;font-weight:800;color:var(--c3);font-family:var(--mono)">${w.relative_humidity_2m||'—'}%</div><div style="font-size:0.58rem;color:var(--muted)">Kelembapan</div></div>
+        <div style="text-align:center"><div style="font-size:0.95rem;font-weight:800;color:var(--c1);font-family:var(--mono)">${w.wind_speed_10m||'0'} km/j</div><div style="font-size:0.58rem;color:var(--muted)">Angin</div></div>
       </div>
     </div>
     <div class="ib" style="border-color:var(--c3)">
-      <strong>✅ Kondisi Terdeteksi — Konfirmasi di Bawah</strong>
-      Lahan di <b>${S.loc.kec||'—'}</b>, elevasi ${elev}m. Sedang memasuki musim <b>${S.loc.season}</b> dengan curah hujan <b>${chLabel}</b>. Sesuaikan topografi dan sumber air jika berbeda, lalu lanjutkan.
+      <strong>✅ Kondisi Terdeteksi — Konfirmasi di Bawah Jika Perlu</strong>
+      Lahan di <b>${S.loc.kec||'—'}</b> (${S.loc.kab||''}), elevasi ${elev}m dpl. Musim <b>${S.loc.season}</b>, curah hujan <b>${chLabel}</b>. Sesuaikan topografi dan sumber air jika berbeda dari hasil deteksi.
     </div>
   `);
   buildFarmBar();
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  PHASE 3 — VARIETY
-// ═══════════════════════════════════════════════════════════
-async function cariVarietas() {
-  const tu = parseInt(document.getElementById('targetUmur').value);
-  if(!tu||tu<70||tu>150){alert('Masukkan target umur panen antara 70–150 hari!');return;}
-  show('p3-loading'); hide('p3-sel');
-  setText('p3-list','');
-  try {
-    if(!dbVars.length){
-      const r = await fetch(URL_VARDB);
-      dbVars = await r.json();
-    }
-    const topo    = document.getElementById('selTopo')?.value||'lembah';
-    const air     = document.getElementById('selAir')?.value||'irigasi';
-    const rainfall= S.loc.rainfall||'normal';
-    const lahanTipe = air==='irigasi'?'irigasi':air==='tadah hujan'?'tadah hujan':'rawa';
+// ═══════════════════════════════════════════
+async function cariVarietas(){
+  const tu=parseInt(document.getElementById('targetUmur').value);
+  if(!tu||tu<70||tu>150){alert('Masukkan target umur panen antara 70–150 HST!');return;}
+  show('p3-loading');hide('p3-sel');setText('p3-list','');
+  try{
+    if(!dbVars.length){const r=await fetch(URL_VARDB);dbVars=await r.json();}
+    const topo=document.getElementById('selTopo')?.value||'lembah';
+    const air=document.getElementById('selAir')?.value||'irigasi';
+    const rainfall=S.loc.rainfall||'normal';
+    const lahanTipe=air==='irigasi'?'irigasi':air==='tadah hujan'?'tadah hujan':'rawa';
 
-    let scored = dbVars.map(v=>{
+    let scored=dbVars.map(v=>{
       let sk=0;
       const diff=Math.abs((parseInt(v.umur)||110)-tu);
-      if(diff<=3)sk+=40; else if(diff<=7)sk+=25; else if(diff<=14)sk+=10;
-      if((v.lahan||'').toLowerCase().includes(lahanTipe.split(' ')[0])) sk+=35;
-      if((v.curahHujanDb||'').toLowerCase().includes(rainfall)) sk+=25;
-      return {...v,sk};
+      if(diff<=3)sk+=40;else if(diff<=7)sk+=25;else if(diff<=14)sk+=10;
+      if((v.lahan||'').toLowerCase().includes(lahanTipe.split(' ')[0]))sk+=35;
+      if((v.curahHujanDb||'').toLowerCase().includes(rainfall))sk+=25;
+      return{...v,sk};
     }).filter(v=>v.sk>=30).sort((a,b)=>b.sk-a.sk||parseFloat(b.potensi)-parseFloat(a.potensi)).slice(0,8);
 
-    g_vars = scored;
-    hide('p3-loading');
+    g_vars=scored;hide('p3-loading');
     if(!scored.length){setText('p3-list','<div class="ib" style="border-color:var(--c7)">❌ Tidak ada varietas yang cocok. Coba ubah target umur.</div>');return;}
 
-    setText('p3-list', scored.map((v,i)=>`
+    setText('p3-list',scored.map((v,i)=>{
+      const sk=v.sk;
+      const skColor=sk>=80?'var(--c3)':sk>=60?'var(--c6)':'var(--muted)';
+      // Resistance badges
+      const hamaBadge=v.tahanHama?`<span class="vb vb-tahan">🛡️ ${v.tahanHama}</span>`:'';
+      const penyBadge=v.tahanPenyakit?`<span class="vb vb-tahan">🛡️ ${v.tahanPenyakit}</span>`:'';
+      const potensiParsed=parseFloat(v.potensi)||0;
+      const potBadge=potensiParsed>=8?'<span class="vb vb-unggul">⭐ POTENSI TINGGI</span>':potensiParsed>=7?'<span class="vb vb-sedang">✨ POTENSI SEDANG</span>':'';
+      return `
       <div class="v-card" id="vc${i}" onclick="pilihVarietas(${i})">
-        <div class="v-name">${i+1}. ${v.nama} <span style="font-size:0.65rem;color:var(--muted);font-weight:500">(Skor ${v.sk})</span></div>
-        <div class="v-meta">⏱️ <span>${v.umur} HST</span> &nbsp; 📊 <span>${v.potensi} t/ha</span></div>
-        <div class="v-note">🛡️ Tahan: ${v.tahanHama||'—'} • ${v.tahanPenyakit||'—'}</div>
-        <div class="v-note" style="margin-top:2px">📝 ${v.catatan||'—'}</div>
-      </div>`).join(''));
-  } catch(e){
+        <div class="v-card-accent"></div>
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px">
+          <div class="v-name">${i+1}. ${v.nama}</div>
+          <div style="font-family:var(--mono);font-size:0.68rem;font-weight:800;color:${skColor};background:${skColor}18;padding:2px 8px;border-radius:5px;border:1px solid ${skColor}33">SKOR ${sk}</div>
+        </div>
+        <div class="v-meta">
+          <div class="v-meta-item">⏱️ <span>${v.umur} HST</span></div>
+          <div class="v-meta-item">📊 <span>${v.potensi} t/ha</span></div>
+          <div class="v-meta-item">🏞️ <span>${v.lahan||'—'}</span></div>
+        </div>
+        <div class="v-badges">${hamaBadge}${penyBadge}${potBadge}</div>
+        <div class="v-note">${v.catatan||'—'}</div>
+      </div>`;
+    }).join(''));
+  }catch(e){
     hide('p3-loading');
-    setText('p3-list',`<div class="ib" style="border-color:var(--c7)">❌ Gagal memuat DB: ${e.message}</div>`);
+    setText('p3-list',`<div class="ib" style="border-color:var(--c7)">❌ Gagal memuat database: ${e.message}</div>`);
   }
 }
 
-function pilihVarietas(i) {
-  const v = g_vars[i];
-  S.var.data = v;
-  S.var.umur = parseInt(v.umur)||110;
+function pilihVarietas(i){
+  const v=g_vars[i];
+  S.var.data=v;S.var.umur=parseInt(v.umur)||110;
   document.querySelectorAll('.v-card').forEach(c=>c.classList.remove('sel'));
   document.getElementById('vc'+i)?.classList.add('sel');
   show('p3-sel');
-  setText('p3-sel-teks',`<b style="color:var(--c3)">${v.nama}</b> — ${v.umur} HST — Potensi ${v.potensi} t/ha<br><small style="color:var(--muted)">Tahan: ${v.tahanHama||'—'} | ${v.tahanPenyakit||'—'}</small>`);
+  setText('p3-sel-teks',`<b style="color:var(--c3)">${v.nama}</b> · ${v.umur} HST · Potensi ${v.potensi} t/ha<br><small style="color:var(--muted)">Tahan: ${v.tahanHama||'—'} | ${v.tahanPenyakit||'—'}</small>`);
   buildFarmBar();
 }
 
-// ═══════════════════════════════════════════════════════════
-//  PHASE 4 — SCHEDULE + CLIMATE RISK
-// ═══════════════════════════════════════════════════════════
-function buatJadwal() {
-  const tgl = document.getElementById('tglTanam').value;
+// ═══════════════════════════════════════════
+//  PHASE 4 — SCHEDULE
+// ═══════════════════════════════════════════
+function buatJadwal(){
+  const tgl=document.getElementById('tglTanam').value;
   if(!tgl){alert('Pilih tanggal rencana tanam terlebih dahulu!');return;}
-  S.plan.date   = tgl;
-  S.plan.method = document.getElementById('selMetode').value;
-  const umur = S.var.umur||110;
-  const T    = new Date(tgl);
-
-  S.sched = {
-    persiapan : addDays(T,-21),
-    bajak     : addDays(T,-14),
-    pesemaian : addDays(T,-14),
-    lumpur    : addDays(T,-7),
-    tanam     : T,
-    f1        : addDays(T,7),
-    f2        : addDays(T,25),
-    hpt1      : addDays(T,21),
-    f3        : addDays(T,45),
-    hpt2      : addDays(T,50),
-    kering    : addDays(T,umur-10),
-    panen     : addDays(T,umur),
+  S.plan.date=tgl;S.plan.method=document.getElementById('selMetode').value;
+  const umur=S.var.umur||110;const T=new Date(tgl);
+  S.sched={
+    persiapan:addDays(T,-21),bajak:addDays(T,-14),pesemaian:addDays(T,-14),
+    lumpur:addDays(T,-7),tanam:T,f1:addDays(T,7),f2:addDays(T,25),
+    hpt1:addDays(T,21),f3:addDays(T,45),hpt2:addDays(T,50),
+    kering:addDays(T,umur-10),panen:addDays(T,umur),
   };
+  const metodeLabel={tapin:'Tanam Pindah (±25 rumpun/m²)',legowo:'Jajar Legowo 2:1 (±33 rumpun/m²)',tabela_larikan:'Tabela Larikan (±40 rumpun/m²)',tabela_hambur:'Tabela Hambur (±60 rumpun/m²)'}[S.plan.method]||S.plan.method;
 
-  const metodeLabel = {tapin:'Tanam Pindah (±25 rumpun/m²)',legowo:'Jajar Legowo (±33 rumpun/m²)',tabela_larikan:'Tabela Larikan (±40 rumpun/m²)',tabela_hambur:'Tabela Hambur (±60 rumpun/m²)'}[S.plan.method]||S.plan.method;
+  // GDD Table (approximate for rice, Tbase=10°C)
+  const tempBase=S.loc.weather?.current?.temperature_2m||28;
+  const gddPerDay=Math.max(0,tempBase-10);
+  const gddFases=[
+    {f:'Pesemaian/Perkecambahan',hari:'0–14',gdd:Math.round(gddPerDay*14),note:'Inisiasi akar & koleoptil'},
+    {f:'Vegetatif (Anakan)',hari:'15–45',gdd:Math.round(gddPerDay*30),note:'Anakan aktif; max LAI'},
+    {f:'Generatif (Bunting)',hari:'46–70',gdd:Math.round(gddPerDay*25),note:'Booting — fase kritis air'},
+    {f:'Pembungaan & Pengisian',hari:'71–95',gdd:Math.round(gddPerDay*25),note:'Akumulasi asimilat biji'},
+    {f:'Masak & Panen',hari:'96–'+umur,gdd:Math.round(gddPerDay*(umur-95)),note:'Pematangan fisiologis'},
+  ];
+  setText('p4-gdd-section',`
+    <div class="card">
+      <div class="card-t">🌡️ Akumulasi Growing Degree Days (GDD)</div>
+      ${gddFases.map(g=>`
+        <div class="gdd-row">
+          <div class="gdd-val" style="color:var(--c4)">${g.gdd}°C</div>
+          <div>
+            <div class="gdd-phase">${g.f} <span style="font-family:var(--mono);font-size:0.6rem;color:var(--muted)">(HST ${g.hari})</span></div>
+            <div class="gdd-note">${g.note}</div>
+          </div>
+        </div>`).join('')}
+      <span class="sci-ref">📚 Ref: Tbase = 10°C · Suhu harian estimasi: ${tempBase}°C (McMaster &amp; Wilhelm, 1997)</span>
+    </div>
+  `);
 
-  const jadwal = [
-    {d:S.sched.persiapan, t:'🔧 Persiapan Lahan',     ds:'Survey lahan, perbaikan pematang dan saluran irigasi'},
-    {d:S.sched.bajak,     t:'🚜 Pembajakan & Garu',   ds:'Olah tanah, ratakan petakan, genangi 5–7 hari'},
-    {d:S.sched.pesemaian, t:'🌱 Persemaian Benih',     ds:'Rendam benih 48 jam → semai tipis di pesemaian'},
-    {d:S.sched.tanam,     t:'🌾 PENANAMAN',            ds:metodeLabel},
-    {d:S.sched.f1,        t:'🧪 Pemupukan I (7 HST)',  ds:'Urea + Phonska — fase awal tumbuh'},
-    {d:S.sched.f2,        t:'🧪 Pemupukan II (25 HST)',ds:'Urea + Phonska — fase anakan maksimum'},
-    {d:S.sched.hpt1,      t:'🔍 Monitoring PHT I',     ds:'Amati OPT: WBC, penggerek, tungro, gulma'},
-    {d:S.sched.f3,        t:'🧪 Pemupukan III (45 HST)',ds:'Phonska tanpa Urea — mendukung pembungaan'},
-    {d:S.sched.hpt2,      t:'🔍 Monitoring PHT II',    ds:'Amati Blast, Hawar Pelepah, Tikus sawah'},
-    {d:S.sched.kering,    t:'💧 Pengeringan Lahan',     ds:`Stop pengairan 10 hari sebelum panen`},
-    {d:S.sched.panen,     t:'🚜 PANEN',                 ds:`Target hari ke-${umur} setelah tanam`},
+  const jadwal=[
+    {d:S.sched.persiapan,t:'🔧 Persiapan Lahan',ds:'Survey, perbaikan pematang dan saluran irigasi',tag:'PRAPANEN'},
+    {d:S.sched.bajak,t:'🚜 Pembajakan & Penggaruan',ds:'Olah tanah 2x, ratakan petakan, genangi 5–7 hari',tag:'PRAPANEN'},
+    {d:S.sched.pesemaian,t:'🌱 Persemaian Benih',ds:'Rendam benih 48 jam → inkubasi → semai tipis di pesemaian',tag:'PRAPANEN'},
+    {d:S.sched.tanam,t:'🌾 PENANAMAN',ds:metodeLabel,tag:'TANAM'},
+    {d:S.sched.f1,t:'🧪 Pemupukan I (7 HST)',ds:'Urea + Phonska — fase awal pertumbuhan aktif',tag:'VEGETATIF'},
+    {d:S.sched.f2,t:'🧪 Pemupukan II (25 HST)',ds:'Urea + Phonska — mendukung anakan maksimum',tag:'VEGETATIF'},
+    {d:S.sched.hpt1,t:'🔍 Monitoring PHT I',ds:'Amati: WBC, penggerek batang, tungro, gulma dominan',tag:'VEGETATIF'},
+    {d:S.sched.f3,t:'🧪 Pemupukan III (45 HST)',ds:'Phonska tanpa Urea — dukung inisiasi malai (bunting)',tag:'GENERATIF'},
+    {d:S.sched.hpt2,t:'🔍 Monitoring PHT II',ds:'Amati: Blast, Hawar Pelepah (RShB), Tikus sawah',tag:'GENERATIF'},
+    {d:S.sched.kering,t:'💧 Pengeringan Lahan',ds:`Hentikan pengairan ${umur-Math.round(S.sched.kering)} hari sebelum panen`,tag:'MASAK'},
+    {d:S.sched.panen,t:'🚜 PANEN',ds:`Target hari ke-${umur} HST — kadar air GKP ≤ 25%`,tag:'PANEN'},
   ];
 
-  setText('p4-jadwal', jadwal.map(j=>`
+  setText('p4-jadwal',jadwal.map(j=>`
     <div class="sch-item">
       <div><div class="sch-date" style="color:var(--c4)">${fmtShort(j.d)}</div></div>
-      <div><div class="sch-task">${j.t}</div><div class="sch-desc">${j.ds}</div></div>
+      <div>
+        <div class="sch-task">${j.t}</div>
+        <div class="sch-desc">${j.ds}</div>
+        <span class="sch-tag">${j.tag}</span>
+      </div>
     </div>`).join(''));
 
   show('p4-result');
-  renderRisikoChart();
-  buildFarmBar();
+  renderRisikoChart();buildFarmBar();
 }
 
-function renderRisikoChart() {
-  const m = new Date(S.plan.date).getMonth();
-  const basah = [9,10,11,0,1,2];
-  const fases  = ['Tanam','Vegetatif','Generatif','Panen'];
-  const mFases = [m,(m+1)%12,(m+2)%12,(m+Math.floor((S.var.umur||110)/30))%12];
-
-  const skor = mFases.map((b,i)=>{
-    const isW = basah.includes(b);
-    if(i===0) return isW?35:20;
-    if(i===1) return isW?40:28;
-    if(i===2) return isW?72:30;  // generatif kritis
-    return     isW?82:15;         // panen kritis kalau hujan
+function renderRisikoChart(){
+  const m=new Date(S.plan.date).getMonth();
+  const basah=[9,10,11,0,1,2];
+  const fases=['Tanam','Vegetatif','Generatif','Panen'];
+  const mFases=[m,(m+1)%12,(m+2)%12,(m+Math.floor((S.var.umur||110)/30))%12];
+  const skor=mFases.map((b,i)=>{
+    const isW=basah.includes(b);
+    if(i===0)return isW?38:22;
+    if(i===1)return isW?45:30;
+    if(i===2)return isW?75:35;
+    return isW?85:18;
   });
-
-  const warna = s => s>=65?'#f43f5e':s>=40?'#f59e0b':'#10b981';
-  const ctx = document.getElementById('chartRisiko').getContext('2d');
-  if(chartRisiko) chartRisiko.destroy();
-  chartRisiko = new Chart(ctx,{
+  const warna=s=>s>=65?'#f04c6e':s>=40?'#f5a623':'#10d9a0';
+  const ctx=document.getElementById('chartRisiko').getContext('2d');
+  if(chartRisiko)chartRisiko.destroy();
+  chartRisiko=new Chart(ctx,{
     type:'bar',
     data:{
       labels:fases,
       datasets:[{
+        label:'Indeks Risiko (%)',
         data:skor,
         backgroundColor:skor.map(s=>warna(s)+'28'),
         borderColor:skor.map(warna),
-        borderWidth:2,
-        borderRadius:8,
+        borderWidth:2,borderRadius:8,borderSkipped:false,
       }]
     },
     options:{
       responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>`Risiko: ${ctx.parsed.y}%`}}
+      },
       scales:{
-        y:{beginAtZero:true,max:100,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#556b8a',font:{size:10}}},
-        x:{grid:{display:false},ticks:{color:'#8da2be',font:{size:10}}}
+        y:{beginAtZero:true,max:100,
+          grid:{color:'rgba(255,255,255,0.04)'},
+          ticks:{color:'#3d5570',font:{size:10,family:'JetBrains Mono'}},
+          border:{color:'transparent'}},
+        x:{grid:{display:false},
+          ticks:{color:'#8ea8c8',font:{size:10}},
+          border:{color:'transparent'}}
       }
     }
   });
-
-  const lvl  = s => s>=65?'TINGGI':s>=40?'SEDANG':'AMAN';
-  const cls  = s => s>=65?'r-hi':s>=40?'r-md':'r-lo';
-  const info = (f,s,b)=>{
-    if(f==='Generatif'&&s>=65)return 'Fase paling kritis! Hujan lebat saat bunting → malai hampa (puso) dan serangan Blast masif. Siapkan fungisida sistemik.';
-    if(f==='Panen'&&s>=65)return 'Panen di musim hujan berisiko: padi rebah, gabah berkecambah, Combine terhambat lumpur. Pertimbangkan pengering (dryer).';
-    if(f==='Vegetatif'&&s>=40)return 'Kelembapan tinggi memicu Hawar Pelepah dan ledakan Wereng Batang Coklat. Pantau tiap minggu.';
-    return s<35?'Kondisi iklim relatif aman. Tetap lakukan monitoring rutin.':`Waspadai perubahan cuaca mendadak di fase ${f.toLowerCase()} ini.`;
+  const lvl=s=>s>=65?'TINGGI':s>=40?'SEDANG':'AMAN';
+  const cls=s=>s>=65?'r-hi':s>=40?'r-md':'r-lo';
+  const info=(f,s)=>{
+    if(f==='Generatif'&&s>=65)return 'Fase paling kritis! Hujan saat bunting → malai hampa (sterility) dan infeksi Pyricularia oryzae (Blast). Siapkan fungisida propikonazol atau trifloksistrobin.';
+    if(f==='Panen'&&s>=65)return 'Risiko rebah batang, gabah berkecambah di malai, dan Combine terhambat. Pertimbangkan dryer (mesin pengering) atau percepat panen 5 hari.';
+    if(f==='Vegetatif'&&s>=40)return 'Kelembapan tinggi → ledakan Nilaparvata lugens (WBC) dan Rhizoctonia solani (Hawar Pelepah). Pantau tiap 3–5 hari dengan metode PHT.';
+    return s<35?'Kondisi iklim relatif favorable. Lanjutkan monitoring rutin mingguan.':  `Waspadai perubahan cuaca mendadak pada fase ${f.toLowerCase()}.`;
   };
-
-  const bulanBasah = [9,10,11,0,1,2];
-  setText('p4-risiko', fases.map((f,i)=>`
+  const tglMap=['tanam','f1','f2','panen'];
+  setText('p4-risiko',fases.map((f,i)=>`
     <div class="ib" style="border-color:${warna(skor[i])};margin-bottom:8px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
-        <strong style="font-size:0.78rem">${f} (${fmtShort(S.sched[['tanam','f1','f2','panen'][i]])})</strong>
-        <span class="rbadge ${cls(skor[i])}">${lvl(skor[i])}</span>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <strong style="font-size:0.75rem;margin-bottom:0">${f} (${fmtShort(S.sched[tglMap[i]]||new Date())})</strong>
+        <span class="rbadge ${cls(skor[i])}">${skor[i]}% — ${lvl(skor[i])}</span>
       </div>
-      <div style="font-size:0.73rem;color:var(--muted)">${info(f,skor[i],bulanBasah.includes(mFases[i]))}</div>
+      <div style="font-size:0.72rem;color:var(--text2)">${info(f,skor[i])}</div>
     </div>`).join(''));
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  PHASE 5 — FERTILIZER
-// ═══════════════════════════════════════════════════════════
-async function runPhase5() {
-  if(S.fert._done){ renderP5(); return; }
-  show('p5-loading'); hide('p5-result');
-  setText('p5txt','MEMUAT DATABASE E-RDKK NASIONAL...');
-  try {
-    if(!dbPupuk.length){
-      const r = await fetch(URL_PUPUK);
-      dbPupuk = await r.json();
-    }
+// ═══════════════════════════════════════════
+async function runPhase5(){
+  if(S.fert._done){renderP5();return;}
+  show('p5-loading');hide('p5-result');
+  setText('p5txt','MEMUAT DATABASE E-RDKK...');
+  try{
+    if(!dbPupuk.length){const r=await fetch(URL_PUPUK);dbPupuk=await r.json();}
     setText('p5txt','MENCOCOKKAN KECAMATAN...');
-    const kIn  = (S.loc.kec||'').toLowerCase().trim();
-    const kabIn= (S.loc.kab||'').toLowerCase().trim();
-    let match = dbPupuk.find(d=>(d.kec||'').toLowerCase().includes(kIn)&&kIn.length>2);
-    if(!match) match = dbPupuk.find(d=>(d.kab||'').toLowerCase().includes(kabIn)&&kabIn.length>2);
-    if(!match) match = { kec:'Rata-rata Nasional', kab:'(Default E-RDKK)', u:200, n:300, o:1000 };
+    const kIn=(S.loc.kec||'').toLowerCase().trim();
+    const kabIn=(S.loc.kab||'').toLowerCase().trim();
+    let match=dbPupuk.find(d=>(d.kec||'').toLowerCase().includes(kIn)&&kIn.length>2);
+    if(!match)match=dbPupuk.find(d=>(d.kab||'').toLowerCase().includes(kabIn)&&kabIn.length>2);
+    if(!match)match={kec:'Rata-rata Nasional',kab:'(Default E-RDKK)',u:200,n:300,o:1000};
 
-    const luas  = S.farm.area||1;
-    const topo  = document.getElementById('selTopo')?.value||'lembah';
-    const tf    = {lembah:1.0,bukit:0.7,rawa:0.5}[topo]||1.0;
+    const luas=S.farm.area||1;
+    const topo=document.getElementById('selTopo')?.value||'lembah';
+    const tf={lembah:1.0,bukit:0.7,rawa:0.5}[topo]||1.0;
 
-    const u1 = luas*match.u*0.57*tf, u2 = luas*match.u*0.43*tf;
-    const p1 = luas*match.n*0.40*tf, p2 = luas*match.n*0.30*tf, p3 = luas*match.n*0.30*tf;
-    const org= luas*match.o*tf;
+    const u1=luas*match.u*0.57*tf,u2=luas*match.u*0.43*tf;
+    const p1=luas*match.n*0.40*tf,p2=luas*match.n*0.30*tf,p3=luas*match.n*0.30*tf;
+    const org=luas*match.o*tf;
 
-    S.fert.urea     = Math.round(u1+u2);
-    S.fert.npk      = Math.round(p1+p2+p3);
-    S.fert.org      = Math.round(org);
-    S.fert.costUrea = (u1+u2)*1800;
-    S.fert.costNpk  = (p1+p2+p3)*1840;
-    S.fert.kec      = `${match.kec} ${match.kab?'('+match.kab+')':''}`;
+    S.fert.urea=Math.round(u1+u2);
+    S.fert.npk=Math.round(p1+p2+p3);
+    S.fert.org=Math.round(org);
+    S.fert.costUrea=(u1+u2)*1800;
+    S.fert.costNpk=(p1+p2+p3)*1840;
+    S.fert.kec=`${match.kec}${match.kab?' ('+match.kab+')':''}`;
 
-    const density = {tapin:30,legowo:30,tabela_larikan:50,tabela_hambur:100}[S.plan.method]||30;
-    S.fert.seedKg    = luas*density;
-    S.fert.costBenih = S.fert.seedKg*18500;
-    S.fert._done = true;
+    // NPK content calculation (scientific)
+    // Urea: 46% N | Phonska (15-15-15): 15% N, 15% P2O5, 15% K2O
+    S.fert.N=Math.round(S.fert.urea*0.46+S.fert.npk*0.15);
+    S.fert.P=Math.round(S.fert.npk*0.15);
+    S.fert.K=Math.round(S.fert.npk*0.15);
 
-    const T = S.plan.date ? new Date(S.plan.date) : new Date();
-    S.fert._sched = {
-      t1:{d:addDays(T,7),  u:u1, n:p1},
-      t2:{d:addDays(T,25), u:u2, n:p2},
-      t3:{d:addDays(T,45), u:0,  n:p3},
+    const density={tapin:30,legowo:30,tabela_larikan:50,tabela_hambur:100}[S.plan.method]||30;
+    S.fert.seedKg=luas*density;
+    S.fert.costBenih=S.fert.seedKg*18500;
+    S.fert._done=true;
+
+    const T=S.plan.date?new Date(S.plan.date):new Date();
+    S.fert._sched={
+      t1:{d:addDays(T,7),u:u1,n:p1},
+      t2:{d:addDays(T,25),u:u2,n:p2},
+      t3:{d:addDays(T,45),u:0,n:p3},
     };
-
     renderP5();
-  } catch(err) {
+  }catch(err){
     document.getElementById('p5-loading').innerHTML=`<div style="color:var(--c7);text-align:center">${err.message}<br><br><button class="btn btn-sm" style="background:var(--c2);color:#fff" onclick="S.fert._done=false;runPhase5()">🔄 Coba Lagi</button></div>`;
   }
 }
 
-function renderP5() {
-  hide('p5-loading'); show('p5-result');
+function renderP5(){
+  hide('p5-loading');show('p5-result');
+  const topo=document.getElementById('selTopo')?.value||'lembah';
+  const tf={lembah:'100%',bukit:'70%',rawa:'50%'}[topo]||'100%';
+  const maxN=Math.max(S.fert.N,1);
+
   setText('p5-stats',`
-    <div class="s-card"><span class="s-val" style="color:var(--c5);font-size:0.74rem">${S.fert.kec||'—'}</span><span class="s-lbl">📍 DATA E-RDKK DARI</span></div>
+    <div class="s-card"><span class="s-val" style="color:var(--c5);font-size:0.68rem">${S.fert.kec||'—'}</span><span class="s-lbl">📍 SUMBER DATA E-RDKK</span></div>
     <div class="s-card"><span class="s-val" style="color:var(--c3)">${S.farm.area||'—'} Ha</span><span class="s-lbl">📐 LUAS LAHAN</span></div>
   `);
+
   setText('p5-grid',`
-    <div class="pk-card"><div class="pk-name">UREA</div><div class="pk-val" style="color:var(--c1)">${S.fert.urea}<small>kg</small></div><div class="pk-sak">${sak(S.fert.urea)} sak @50kg</div></div>
-    <div class="pk-card"><div class="pk-name">NPK/PHONSKA</div><div class="pk-val" style="color:var(--c4)">${S.fert.npk}<small>kg</small></div><div class="pk-sak">${sak(S.fert.npk)} sak @50kg</div></div>
-    <div class="pk-card"><div class="pk-name">ORGANIK</div><div class="pk-val" style="color:var(--c3)">${S.fert.org}<small>kg</small></div><div class="pk-sak">Jika tersedia</div></div>
+    <div class="pk-card" style="border-color:rgba(34,211,238,0.2)">
+      <div class="pk-name">UREA (46% N)</div>
+      <div class="pk-val" style="color:var(--c1)">${S.fert.urea}<small> kg</small></div>
+      <div class="pk-sak">${sak(S.fert.urea)} sak @50kg</div>
+    </div>
+    <div class="pk-card" style="border-color:rgba(201,125,252,0.2)">
+      <div class="pk-name">PHONSKA/NPK</div>
+      <div class="pk-val" style="color:var(--c4)">${S.fert.npk}<small> kg</small></div>
+      <div class="pk-sak">${sak(S.fert.npk)} sak @50kg</div>
+    </div>
+    <div class="pk-card" style="border-color:rgba(52,224,154,0.2)">
+      <div class="pk-name">ORGANIK</div>
+      <div class="pk-val" style="color:var(--c5)">${S.fert.org}<small> kg</small></div>
+      <div class="pk-sak">Pupuk kandang</div>
+    </div>
   `);
-  const fs = S.fert._sched||{};
+
+  setText('p5-npk',`
+    <div class="npk-section">
+      <div class="npk-title">KANDUNGAN HARA AKTUAL YANG DITERIMA TANAMAN (kg UNSUR MURNI)</div>
+      <div class="npk-item">
+        <div class="npk-label-row">
+          <div><span class="npk-letter" style="color:#22d3ee">N</span><span class="npk-fullname">Nitrogen (pertumbuhan daun, klorofil)</span></div>
+          <span class="npk-kg" style="color:#22d3ee">${S.fert.N} kg</span>
+        </div>
+        <div class="npk-track"><div class="npk-fill" style="width:100%;background:#22d3ee"></div></div>
+      </div>
+      <div class="npk-item">
+        <div class="npk-label-row">
+          <div><span class="npk-letter" style="color:#c97dfc">P</span><span class="npk-fullname">Fosfor / P₂O₅ (perakaran, pembungaan)</span></div>
+          <span class="npk-kg" style="color:#c97dfc">${S.fert.P} kg</span>
+        </div>
+        <div class="npk-track"><div class="npk-fill" style="width:${Math.round((S.fert.P/maxN)*100)}%;background:#c97dfc"></div></div>
+      </div>
+      <div class="npk-item">
+        <div class="npk-label-row">
+          <div><span class="npk-letter" style="color:#34e09a">K</span><span class="npk-fullname">Kalium / K₂O (ketegaran batang, imunitas)</span></div>
+          <span class="npk-kg" style="color:#34e09a">${S.fert.K} kg</span>
+        </div>
+        <div class="npk-track"><div class="npk-fill" style="width:${Math.round((S.fert.K/maxN)*100)}%;background:#34e09a"></div></div>
+      </div>
+      <span class="sci-ref">📚 Ref: Urea = 46% N · Phonska 15-15-15 · Koreksi topografi (${topo}): ${tf} dari standar E-RDKK Nasional</span>
+    </div>
+  `);
+
+  const fs=S.fert._sched||{};
   setText('p5-jadwal',`
-    ${schRow(fs.t1?.d,'🧪 Pemupukan I (7 HST)',`Urea: ${Math.round(fs.t1?.u||0)} kg + Phonska: ${Math.round(fs.t1?.n||0)} kg`,'var(--c5)')}
-    ${schRow(fs.t2?.d,'🧪 Pemupukan II (25 HST)',`Urea: ${Math.round(fs.t2?.u||0)} kg + Phonska: ${Math.round(fs.t2?.n||0)} kg`,'var(--c5)')}
-    ${schRow(fs.t3?.d,'🧪 Pemupukan III (45 HST)',`Phonska saja: ${Math.round(fs.t3?.n||0)} kg (tanpa Urea)`,'var(--c5)')}
+    ${schRow(fs.t1?.d,'🧪 Pemupukan I (7 HST)',`Urea: ${Math.round(fs.t1?.u||0)} kg + Phonska: ${Math.round(fs.t1?.n||0)} kg — fase vegetatif awal`,'var(--c5)')}
+    ${schRow(fs.t2?.d,'🧪 Pemupukan II (25 HST)',`Urea: ${Math.round(fs.t2?.u||0)} kg + Phonska: ${Math.round(fs.t2?.n||0)} kg — anakan maksimum`,'var(--c5)')}
+    ${schRow(fs.t3?.d,'🧪 Pemupukan III (45 HST)',`Phonska: ${Math.round(fs.t3?.n||0)} kg (tanpa Urea) — inisiasi malai / bunting`,'var(--c5)')}
   `);
+
   setText('p5-tips',`
-    • Aplikasikan pagi/sore hari, hindari cuaca terik<br>
-    • Lahan harus tergenang 2–3 cm saat pemupukan Urea<br>
-    • Pemupukan III tanpa Urea untuk cegah over-nitrogen saat bunting<br>
-    • Faktor koreksi topografi (${document.getElementById('selTopo')?.value||'lembah'}): ${document.getElementById('selTopo')?.value==='bukit'?'70%':document.getElementById('selTopo')?.value==='rawa'?'50%':'100%'} dari standar E-RDKK
+    <ul>
+      <li>Aplikasi pagi/sore, hindari saat cuaca terik (maks. suhu &lt;30°C)</li>
+      <li>Lahan <b>tergenang 2–3 cm</b> saat pemupukan Urea — mencegah penguapan N (volatilisasi)</li>
+      <li>Pemupukan III <b>tanpa Urea</b> untuk mencegah over-N yang memperpanjang fase vegetatif</li>
+      <li>Gunakan <b>Bagan Warna Daun (BWD/LCC)</b> sebagai panduan dosis lapangan</li>
+      <li>Pupuk organik dapat meningkatkan efisiensi pupuk kimia 15–20% (BPTP, 2021)</li>
+    </ul>
   `);
   buildFarmBar();
 }
 
 function schRow(d,task,desc,color='var(--c4)'){
-  if(!d) return '';
-  return `<div class="sch-item"><div><div class="sch-date" style="color:${color}">${fmtShort(d)}</div></div><div><div class="sch-task">${task}</div><div class="sch-desc">${desc}</div></div></div>`;
+  if(!d)return'';
+  return `<div class="sch-item">
+    <div><div class="sch-date" style="color:${color}">${fmtShort(d)}</div></div>
+    <div><div class="sch-task">${task}</div><div class="sch-desc">${desc}</div></div>
+  </div>`;
 }
 
-// ═══════════════════════════════════════════════════════════
-//  PHASE 6 — MONITORING DASHBOARD
-// ═══════════════════════════════════════════════════════════
-async function runPhase6() {
-  show('p6-loading'); hide('p6-result');
-  try {
-    let w = S.loc.weather?.current;
-    if(!w) {
-      const lat=S.loc.lat||S.farm.lat, lon=S.loc.lon||S.farm.lon;
-      if(!lat) throw new Error('Koordinat belum tersedia. Lengkapi Fase 1 & 2 terlebih dahulu.');
-      const r = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,rain,wind_speed_10m,dew_point_2m&timezone=auto`);
-      const d = await r.json();
-      S.loc.weather = d;
-      w = d.current;
+// ═══════════════════════════════════════════
+//  PHASE 6 — MONITORING
+// ═══════════════════════════════════════════
+async function runPhase6(){
+  show('p6-loading');hide('p6-result');
+  try{
+    let w=S.loc.weather?.current;
+    if(!w){
+      const lat=S.loc.lat||S.farm.lat,lon=S.loc.lon||S.farm.lon;
+      if(!lat)throw new Error('Koordinat belum tersedia. Lengkapi Fase 1 & 2 terlebih dahulu.');
+      const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,rain,wind_speed_10m,dew_point_2m&timezone=auto`);
+      const d=await r.json();S.loc.weather=d;w=d.current;
     }
     renderP6(w);
-  } catch(err) {
+  }catch(err){
     document.getElementById('p6-loading').innerHTML=`<div style="color:var(--c7);text-align:center;padding:20px">${err.message}<br><br><button class="btn btn-sm" style="background:var(--c2);color:#fff" onclick="runPhase6()">🔄 Coba Lagi</button></div>`;
   }
 }
 
-function renderP6(w) {
-  hide('p6-loading'); show('p6-result');
-  const umur = S.var.umur||110;
-  const today= new Date();
-  const tDate= S.plan.date ? new Date(S.plan.date) : null;
-  const hariKe = tDate ? Math.floor((today-tDate)/86400000) : -7;
+function renderP6(w){
+  hide('p6-loading');show('p6-result');
+  const umur=S.var.umur||110;
+  const today=new Date();
+  const tDate=S.plan.date?new Date(S.plan.date):null;
+  const hariKe=tDate?Math.floor((today-tDate)/86400000):-7;
 
-  // Crop phase
-  let fase, faseC;
-  if(!tDate||hariKe<0){ fase='⏳ Belum Tanam — Masa Persiapan'; faseC='var(--muted)'; }
-  else if(hariKe<=15) { fase='🌱 Persemaian / Awal Tanam';   faseC='var(--c3)'; }
-  else if(hariKe<=45) { fase='🌿 Vegetatif (Anakan)';         faseC='var(--c1)'; }
-  else if(hariKe<=Math.round(umur*0.75)){ fase='🌾 Generatif (Bunting & Berbunga)'; faseC='var(--c6)'; }
-  else if(hariKe<umur){ fase='🍚 Pengisian Biji & Masak Susu'; faseC='var(--c4)'; }
-  else                { fase='✅ SIAP PANEN!';                  faseC='var(--c7)'; }
+  let fase,faseC;
+  if(!tDate||hariKe<0){fase='⏳ Belum Tanam — Masa Persiapan';faseC='var(--muted)';}
+  else if(hariKe<=15){fase='🌱 Persemaian / Awal Tanam';faseC='var(--c3)';}
+  else if(hariKe<=45){fase='🌿 Vegetatif (Anakan Aktif)';faseC='var(--c1)';}
+  else if(hariKe<=Math.round(umur*0.75)){fase='🌾 Generatif (Bunting & Berbunga)';faseC='var(--c6)';}
+  else if(hariKe<umur){fase='🍚 Pengisian Biji & Masak Susu';faseC='var(--c4)';}
+  else{fase='✅ SIAP PANEN!';faseC='var(--c7)';}
 
-  const prgMax = umur;
-  const prgPct = tDate ? Math.min(100,Math.max(0,Math.round((hariKe/prgMax)*100))) : 0;
+  const prgPct=tDate?clamp(Math.round((hariKe/umur)*100),0,100):0;
+
+  // Health Index Calculation
+  const temp=w?.temperature_2m||28;
+  const rh=w?.relative_humidity_2m||75;
+  const rain=w?.rain||0;
+  const wind=w?.wind_speed_10m||0;
+  const dp=w?.dew_point_2m||20;
+  const tempScore=temp>=24&&temp<=32?100:temp>=20&&temp<24?75:temp>32&&temp<=36?60:35;
+  const rhScore=rh>=70&&rh<=85?100:rh>60&&rh<70?80:rh>85&&rh<=90?75:50;
+  const rainScore=rain<2?90:rain<10?70:rain<30?55:30;
+  const windScore=wind<20?90:wind<40?70:50;
+  const healthIdx=Math.round(tempScore*0.35+rhScore*0.35+rainScore*0.2+windScore*0.1);
+  const healthColor=healthIdx>=75?'#10d9a0':healthIdx>=55?'#f5a623':'#f04c6e';
+  const healthLabel=healthIdx>=75?'OPTIMAL':healthIdx>=55?'SEDANG':'PERLU PERHATIAN';
+
+  const r36=36, cx=36, cy=36, circ=2*Math.PI*r36*0.85;
+  const offset=circ*(1-healthIdx/100);
 
   setText('p6-fase',`
-    <div class="card-t">🌱 Status Fase Tanaman</div>
-    <div style="font-size:1rem;font-weight:800;color:${faseC};margin-bottom:6px">${fase}</div>
-    ${tDate?`<div style="font-size:0.74rem;color:var(--muted);margin-bottom:8px">Hari ke-${Math.max(0,hariKe)} dari ${umur} hari • Tanam: ${fmtDate(tDate)} • Target panen: ${S.sched.panen?fmtDate(S.sched.panen):'—'}</div>`:''}
-    <div style="background:var(--deep);border-radius:8px;height:8px;overflow:hidden">
-      <div style="width:${prgPct}%;height:100%;background:${faseC};border-radius:8px;transition:width 1s"></div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+      <div>
+        <div style="font-size:1rem;font-weight:800;color:${faseC};margin-bottom:3px">${fase}</div>
+        ${tDate?`<div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted)">Hari ke-${Math.max(0,hariKe)} / ${umur} · Tanam: ${fmtDate(tDate)} · Panen: ${S.sched.panen?fmtDate(S.sched.panen):'—'}</div>`:''}
+      </div>
+      <div style="text-align:center;flex-shrink:0">
+        <div style="font-family:var(--mono);font-size:1rem;font-weight:800;color:${faseC}">${prgPct}%</div>
+        <div style="font-size:0.55rem;color:var(--muted)">SELESAI</div>
+      </div>
     </div>
-    <div style="font-size:0.62rem;color:var(--muted);margin-top:4px;text-align:right">${prgPct}% selesai</div>
+    <div class="phase-progress-track">
+      <div class="phase-progress-fill" style="width:${prgPct}%;background:${faseC}"></div>
+    </div>
+    <div class="card-t" style="margin-top:12px;margin-bottom:10px">💚 Indeks Kesehatan Tanaman</div>
+    <div class="health-wrap">
+      <div class="health-ring">
+        <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="${cx}" cy="${cy}" r="${r36*0.85}" stroke="var(--border)" stroke-width="6"/>
+          <circle cx="${cx}" cy="${cy}" r="${r36*0.85}" stroke="${healthColor}" stroke-width="6"
+            stroke-linecap="round"
+            stroke-dasharray="${circ}" stroke-dashoffset="${offset}"
+            transform="rotate(-90 ${cx} ${cy})"
+            style="transition:stroke-dashoffset 1.2s ease"/>
+        </svg>
+        <div class="health-ring-pct" style="color:${healthColor}">${healthIdx}</div>
+      </div>
+      <div class="health-info">
+        <div class="h-title" style="color:${healthColor}">${healthLabel}</div>
+        <div class="h-sub">Indeks komposit berbasis suhu, kelembapan, dan intensitas hujan di lokasi lahan saat ini. Nilai >75 = kondisi ideal budidaya padi.</div>
+      </div>
+    </div>
   `);
 
-  setText('p6-cuaca', w?`
+  setText('p6-cuaca',w?`
     <div class="s-card"><span class="s-val" style="color:var(--c2)">${w.temperature_2m}°C</span><span class="s-lbl">🌡️ SUHU</span></div>
     <div class="s-card"><span class="s-val" style="color:var(--c3)">${w.relative_humidity_2m}%</span><span class="s-lbl">💧 KELEMBAPAN</span></div>
     <div class="s-card"><span class="s-val" style="color:var(--c1)">${w.rain||0} mm</span><span class="s-lbl">🌧️ HUJAN/JAM</span></div>
     <div class="s-card"><span class="s-val" style="color:var(--c6)">${w.wind_speed_10m} km/j</span><span class="s-lbl">💨 ANGIN</span></div>
   `:'<div class="ib">Data cuaca tidak tersedia.</div>');
 
-  // Pest risk scores
-  const dp     = w ? (w.temperature_2m - w.dew_point_2m) : 4;
-  const rh     = w?.relative_humidity_2m||70;
-  const temp   = w?.temperature_2m||28;
-  const rain   = w?.rain||0;
+  // Disease Triangle Model (Host × Pathogen × Environment)
+  const blastE=clamp((rh>=85?40:rh>=75?20:5)+(dp!==null&&dp<=2?25:10)+(temp<=27?20:temp<=30?10:0),0,100);
+  const blastH=S.var.data?.tahanHama?.toLowerCase().includes('blas')?20:60;
+  const blastRisk=Math.round(Math.cbrt(blastE*blastH*100)/10);
 
-  const blastS  = (rh>=85?30:0)+(dp<=2?30:0)+(temp<=27?20:0)+(rain>=0.5&&rain<10?10:0);
-  const werengS = (temp>=25&&temp<=30?35:10)+(rh>=80?30:0)+(rain<5?10:0);
-  const pbpS    = 25+(rh>=80?25:0)+(temp>=24&&temp<=29?30:0);
-  const tikusS  = (hariKe>=60?40:15)+20;
-  const shBlS   = (temp>=28&&temp<=32?35:0)+(rh>=85?35:0)+(hariKe>45?20:0);
+  const wbcE=clamp((temp>=25&&temp<=30?40:20)+(rh>=80?30:15)+(rain<5?15:0),0,100);
+  const wbcH=S.var.data?.tahanHama?.toLowerCase().includes('wbc')?20:65;
+  const wbcRisk=Math.round(Math.cbrt(wbcE*wbcH*100)/10);
 
-  const rRow = (nama,icon,skor)=>{
+  const pbpE=clamp(25+(rh>=80?25:10)+(temp>=24&&temp<=29?30:15),0,100);
+  const pbpH=50;
+  const pbpRisk=Math.round(Math.cbrt(pbpE*pbpH*100)/10);
+
+  const tikusRisk=clamp((hariKe>=60?55:20)+15,0,100);
+  const rhbE=clamp((temp>=28&&temp<=32?35:10)+(rh>=85?35:20)+(hariKe>45?20:5),0,100);
+  const rhbRisk=Math.round(Math.cbrt(rhbE*55*100)/10);
+
+  const avgEnv=Math.round((blastE+wbcE+pbpE+rhbE)/4);
+  const avgHost=Math.round((blastH+wbcH+pbpH+55)/4);
+
+  setText('p6-triangle',`
+    <div class="dtri">
+      <div class="dt-f">
+        <span class="dt-icon">🌿</span>
+        <div class="dt-name">INANG (HOST)</div>
+        <div class="dt-score" style="color:${avgHost<40?'var(--c3)':'var(--c6)'}">${avgHost}</div>
+      </div>
+      <div class="dt-f">
+        <span class="dt-icon">🦠</span>
+        <div class="dt-name">PATOGEN</div>
+        <div class="dt-score" style="color:var(--c7)">OPT Aktif</div>
+      </div>
+      <div class="dt-f">
+        <span class="dt-icon">🌡️</span>
+        <div class="dt-name">LINGKUNGAN</div>
+        <div class="dt-score" style="color:${avgEnv<40?'var(--c3)':avgEnv<70?'var(--c6)':'var(--c7)'}">${avgEnv}%</div>
+      </div>
+    </div>
+    <div class="ib" style="border-color:var(--muted);font-size:0.7rem">
+      <strong>📐 Model Segitiga Penyakit (Disease Triangle)</strong>
+      Risiko OPT merupakan fungsi dari: <b>Kerentanan Inang</b> (varietas) × <b>Tekanan Patogen</b> (keberadaan) × <b>Kondisi Lingkungan</b> (T°C, RH, curah hujan). Nilai di bawah mencerminkan perkalian ketiga faktor tersebut.
+    </div>
+  `);
+
+  const rRow=(nama,icon,skor,tip)=>{
     const lv=skor>=65?'TINGGI':skor>=40?'SEDANG':'RENDAH';
     const cl=skor>=65?'r-hi':skor>=40?'r-md':'r-lo';
-    const tip= skor>=65?'⚠️ Segera pantau & siapkan pengendalian':skor>=40?'👁️ Lakukan monitoring mingguan':'✅ Kondisi aman saat ini';
-    return `<div class="risk-row"><div><div class="rn">${icon} ${nama}</div><div style="font-size:0.67rem;color:var(--muted)">${tip}</div></div><span class="rbadge ${cl}">${lv}</span></div>`;
+    return `<div class="risk-row">
+      <div><div class="rn">${icon} ${nama}</div><div class="rt">${tip||''}</div></div>
+      <span class="rbadge ${cl}">${lv} (${skor}%)</span>
+    </div>`;
   };
 
   setText('p6-opt',
-    rRow('Blas Padi',        '🍃',blastS)+
-    rRow('Hawar Pelepah',    '🍂',shBlS)+
-    rRow('Wereng Batang',    '🪳',werengS)+
-    rRow('Penggerek Batang', '🐛',pbpS)+
-    rRow('Tikus Sawah',      '🐀',tikusS)+
-    `<div style="font-size:0.68rem;color:var(--muted);padding:8px;text-align:center">Skor berbasis suhu ${temp}°C, kelembapan ${rh}%, dan fase tanaman</div>`
+    rRow('Blast Padi (Pyricularia oryzae)','🍃',blastRisk,'Paling destruktif saat suhu 22–28°C dan RH ≥85%')+
+    rRow('Hawar Pelepah (Rhizoctonia solani)','🍂',rhbRisk,'Berkembang di lahan rapat dan genangan dalam')+
+    rRow('Wereng Batang Coklat (N. lugens)','🪳',wbcRisk,'Ledakan pada tanaman subur nitrogen tinggi')+
+    rRow('Penggerek Batang (Scirpophaga sp.)','🐛',pbpRisk,'Aktif sepanjang musim; amati gejala sundep')+
+    rRow('Tikus Sawah (Rattus argentiventer)','🐀',tikusRisk,'Serangan puncak saat malai terbentuk')+
+    `<span class="sci-ref">📚 Ref: Model epidemiologi Segitiga Penyakit · Data cuaca: Open-Meteo API · Suhu ${temp}°C, RH ${rh}%, Dewpoint ${dp}°C</span>`
   );
 
-  // Task timeline
-  const schedEntries = S.sched && S.plan.date ? [
-    {n:'Pemupukan I',        d:S.sched.f1},
-    {n:'Pemupukan II',       d:S.sched.f2},
-    {n:'Monitoring PHT I',   d:S.sched.hpt1},
-    {n:'Pemupukan III',      d:S.sched.f3},
-    {n:'Monitoring PHT II',  d:S.sched.hpt2},
-    {n:'Pengeringan Lahan',  d:S.sched.kering},
-    {n:'🚜 PANEN',          d:S.sched.panen},
-  ] : [];
+  const schedEntries=S.sched&&S.plan.date?[
+    {n:'Pemupukan I',d:S.sched.f1},{n:'Pemupukan II',d:S.sched.f2},
+    {n:'Monitoring PHT I',d:S.sched.hpt1},{n:'Pemupukan III',d:S.sched.f3},
+    {n:'Monitoring PHT II',d:S.sched.hpt2},{n:'Pengeringan Lahan',d:S.sched.kering},
+    {n:'🚜 TARGET PANEN',d:S.sched.panen},
+  ]:[];
 
   if(!schedEntries.length){
-    setText('p6-tasks','<div class="ib">Jadwal belum dibuat. Kembali ke Fase 4.</div>');
-  } else {
-    setText('p6-tasks', schedEntries.map(e=>{
-      const diff = Math.floor((new Date(e.d)-today)/86400000);
+    setText('p6-tasks','<div class="ib">Jadwal belum dibuat. Kembali ke Fase 4 untuk membuat jadwal.</div>');
+  }else{
+    setText('p6-tasks',schedEntries.map(e=>{
+      const diff=Math.floor((new Date(e.d)-today)/86400000);
       let cls,when,dotC;
-      if(diff<-3)     { cls='done';    when=`${Math.abs(diff)} hari lalu`;           dotC='#556b8a'; }
-      else if(diff<0) { cls='overdue'; when=`⚠️ Terlambat ${Math.abs(diff)} hari!`; dotC='#f43f5e'; }
-      else if(diff===0){ cls='today';  when='📌 HARI INI!';                          dotC='#f59e0b'; }
-      else            { cls='upcoming';when=`${diff} hari lagi (${fmtShort(e.d)})`;  dotC='#10b981'; }
-      return `<div class="task ${cls}"><div class="t-dot-sm" style="background:${dotC}"></div><div><div class="t-title">${e.n}</div><div class="t-when">${fmtDate(e.d)} • ${when}</div></div></div>`;
+      if(diff<-3){cls='done';when=`${Math.abs(diff)} hari lalu`;dotC='#3d5570';}
+      else if(diff<0){cls='overdue';when=`⚠️ Terlambat ${Math.abs(diff)} hari!`;dotC='#f04c6e';}
+      else if(diff===0){cls='today';when='📌 HARI INI!';dotC='#f5a623';}
+      else{cls='upcoming';when=`${diff} hari lagi`;dotC='#10d9a0';}
+      return `<div class="task ${cls}"><div class="task-dot" style="background:${dotC}"></div>
+        <div><div class="t-title">${e.n}</div>
+        <div class="t-when">${fmtDate(e.d)} &nbsp;·&nbsp; ${when}</div></div></div>`;
     }).join(''));
   }
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  PHASE 7 — COST ANALYSIS
-// ═══════════════════════════════════════════════════════════
-function hitungBiaya() {
-  const hasil = parseFloat(document.getElementById('hasilPanen').value)||0;
-  const harga = getRp('hargaGabah');
+// ═══════════════════════════════════════════
+function prefillP7(){
+  if(S.fert.costBenih){
+    const fmtV=v=>Math.round(v).toLocaleString('id-ID').replace(/,/g,'.');
+    const el=id=>document.getElementById(id);
+    if(el('cBenih'))el('cBenih').value=fmtV(S.fert.costBenih);
+    if(el('cUreaDisp'))el('cUreaDisp').value=fmtV(S.fert.costUrea);
+    if(el('cNpkDisp'))el('cNpkDisp').value=fmtV(S.fert.costNpk);
+  }
+}
+
+function hitungBiaya(){
+  const hasil=parseFloat(document.getElementById('hasilPanen').value)||0;
+  const harga=getRp('hargaGabah');
   if(!hasil||!harga){alert('Isi estimasi produksi dan harga gabah terlebih dahulu!');return;}
 
+  const cBenih=S.fert.costBenih||0;
+  const cUrea=S.fert.costUrea||0;
+  const cNpk=S.fert.costNpk||0;
   const cPest=getRp('cPest'),cOlah=getRp('cOlah'),cPanen=getRp('cPanen');
   const cAir=getRp('cAir'),cTK=getRp('cTK'),cAngkut=getRp('cAngkut'),cLain=getRp('cLain');
+  const total=cBenih+cUrea+cNpk+cPest+cOlah+cPanen+cAir+cTK+cAngkut+cLain;
+  const rev=hasil*harga;
+  const profit=rev-total;
+  const rc=total>0?(rev/total).toFixed(2):'0';
+  const bepProd=harga>0?Math.ceil(total/harga):0;
+  const bepH=hasil>0?Math.round(total/hasil):0;
+  const biayaPerKg=hasil>0?Math.round(total/hasil):0;
+  const hasilPerHa=S.farm.area?Math.round(hasil/S.farm.area):hasil;
 
-  const cBenih = S.fert.costBenih||0;
-  const cUrea  = S.fert.costUrea||0;
-  const cNpk   = S.fert.costNpk||0;
-  const total  = cBenih+cUrea+cNpk+cPest+cOlah+cPanen+cAir+cTK+cAngkut+cLain;
-  const rev    = hasil*harga;
-  const profit = rev-total;
-  const rc     = total>0?(rev/total).toFixed(2):'0';
-  const bepProd= harga>0?Math.ceil(total/harga):0;
-  const bepH   = hasil>0?Math.round(total/hasil):0;
+  S.cost={total,rev,profit,rc};
 
-  S.cost = {total,rev,profit,rc};
+  const statusRC=parseFloat(rc)>=2?{t:'✅ LAYAK — R/C ≥ 2',c:'var(--c3)'}:parseFloat(rc)>=1?{t:'⚠️ MARJINAL — Waspadai Risiko',c:'var(--c6)'}:{t:'❌ TIDAK LAYAK / RUGI',c:'var(--c7)'};
 
-  const statusRC = parseFloat(rc)>=2?{t:'✅ LAYAK USAHA',c:'var(--c3)'}:parseFloat(rc)>=1?{t:'⚠️ MARJINAL',c:'var(--c6)'}:{t:'❌ RUGI / TIDAK LAYAK',c:'var(--c7)'};
-
-  const biayaRows = [
-    cBenih&&['🌱 Benih', `${Math.round(S.fert.seedKg)} kg`, cBenih],
-    cUrea&&['🧪 Urea Subsidi', `${S.fert.urea||0} kg`, cUrea],
-    cNpk&&['🧪 Phonska/NPK', `${S.fert.npk||0} kg`, cNpk],
-    cPest&&['💊 Pestisida',null,cPest],
-    cOlah&&['🚜 Olah Lahan',null,cOlah],
-    cPanen&&['⚙️ Combine Harvester',null,cPanen],
-    cAir&&['💧 Pengairan',null,cAir],
-    cTK&&['👥 Tenaga Kerja',null,cTK],
-    cAngkut&&['🚚 Angkut Panen',null,cAngkut],
-    cLain&&['📦 Lainnya',null,cLain],
+  const biayaItems=[
+    cBenih&&{n:'🌱 Benih',sub:`${Math.round(S.fert.seedKg)} kg`,v:cBenih},
+    cUrea&&{n:'🧪 Urea (Subsidi)',sub:`${S.fert.urea||0} kg`,v:cUrea},
+    cNpk&&{n:'🧪 Phonska/NPK',sub:`${S.fert.npk||0} kg`,v:cNpk},
+    cPest&&{n:'💊 Pestisida & Herbisida',sub:null,v:cPest},
+    cOlah&&{n:'🚜 Olah Lahan',sub:null,v:cOlah},
+    cPanen&&{n:'⚙️ Combine Harvester',sub:null,v:cPanen},
+    cAir&&{n:'💧 Pengairan',sub:null,v:cAir},
+    cTK&&{n:'👥 Tenaga Kerja',sub:null,v:cTK},
+    cAngkut&&{n:'🚚 Angkut Panen',sub:null,v:cAngkut},
+    cLain&&{n:'📦 Lainnya',sub:null,v:cLain},
   ].filter(Boolean);
 
   setText('p7-result',`
     <div class="card">
-      <div class="card-t">📋 Rincian Biaya</div>
-      ${biayaRows.map(([nm,sub,val])=>`
+      <div class="card-t">📋 Rincian Biaya Produksi</div>
+      ${biayaItems.map(x=>`
         <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);font-size:0.8rem">
-          <div><span>${nm}</span>${sub?`<small style="color:var(--muted);display:block;font-size:0.65rem">${sub}</small>`:''}
-          </div><b>${rp(val)}</b>
+          <div><span style="font-weight:600">${x.n}</span>${x.sub?`<div style="font-size:0.62rem;color:var(--muted);font-family:var(--mono)">${x.sub}</div>`:''}</div>
+          <b style="font-family:var(--mono)">${rp(x.v)}</b>
         </div>`).join('')}
-      <div style="display:flex;justify-content:space-between;padding:10px 0 0;font-size:0.88rem">
-        <span style="font-weight:800">💰 TOTAL BIAYA</span>
-        <b style="color:var(--c7);font-size:1rem">${rp(total)}</b>
+      <div style="display:flex;justify-content:space-between;padding:11px 0 0;font-size:0.9rem">
+        <span style="font-weight:800">💰 TOTAL BIAYA PRODUKSI</span>
+        <b style="color:var(--c7);font-family:var(--mono);font-size:1rem">${rp(total)}</b>
       </div>
     </div>
-    <div class="card" style="border:1px solid rgba(16,185,129,0.2)">
+    <div class="card" style="border-color:rgba(16,217,160,0.15)">
+      <div class="card-t">📈 Analisis Kelayakan Finansial</div>
       <div class="stat2">
-        <div class="s-card"><span class="s-val" style="color:var(--c3)">${rp(rev)}</span><span class="s-lbl">💵 PENDAPATAN</span></div>
+        <div class="s-card"><span class="s-val" style="color:var(--c3)">${rp(rev)}</span><span class="s-lbl">💵 PENDAPATAN KOTOR</span></div>
         <div class="s-card"><span class="s-val" style="color:${profit>=0?'var(--c3)':'var(--c7)'}">${rp(profit)}</span><span class="s-lbl">🏆 LABA BERSIH</span></div>
-        <div class="s-card"><span class="s-val" style="color:var(--c6)">${rc}</span><span class="s-lbl">📈 R/C RATIO</span></div>
-        <div class="s-card"><span class="s-val" style="color:${statusRC.c};font-size:0.72rem">${statusRC.t}</span><span class="s-lbl">✅ KELAYAKAN</span></div>
+        <div class="s-card"><span class="s-val" style="color:var(--c6);font-family:var(--mono)">${rc}</span><span class="s-lbl">📈 R/C RATIO</span></div>
+        <div class="s-card"><span class="s-val" style="color:${statusRC.c};font-size:0.7rem">${statusRC.t}</span><span class="s-lbl">✅ KELAYAKAN</span></div>
       </div>
-      <div class="ib" style="border-color:var(--muted);margin-bottom:0;padding:10px 12px">
-        <strong>⚖️ Titik Impas (BEP)</strong>
-        📉 Produksi minimal: <b>${bepProd.toLocaleString('id-ID')} kg GKP</b><br>
-        🏷️ Harga jual minimal: <b>${rp(bepH)} / kg</b>
+      <div class="stat2" style="margin-top:0">
+        <div class="s-card"><span class="s-val" style="color:var(--c1);font-family:var(--mono)">${hasilPerHa.toLocaleString('id-ID')}</span><span class="s-lbl">kg/ha PRODUKTIVITAS</span></div>
+        <div class="s-card"><span class="s-val" style="color:var(--c4);font-family:var(--mono)">${biayaPerKg.toLocaleString('id-ID')}</span><span class="s-lbl">Rp/kg BIAYA PRODUKSI</span></div>
       </div>
+      <div class="card-sci" style="margin-bottom:0">
+        <div style="font-size:0.7rem;font-weight:800;margin-bottom:5px">⚖️ Titik Impas (Break-Even Point)</div>
+        <div style="font-size:0.8rem;margin-bottom:3px">📉 Produksi minimal: <b style="font-family:var(--mono);color:var(--c2)">${bepProd.toLocaleString('id-ID')} kg</b> GKP</div>
+        <div style="font-size:0.8rem">🏷️ Harga jual minimal: <b style="font-family:var(--mono);color:var(--c4)">${rp(bepH)}</b> per kg</div>
+        <span class="sci-ref">📚 R/C ≥ 2.0 = usahatani layak secara ekonomis (FAO Farm Economics Framework)</span>
+      </div>
+    </div>
+    <div class="card" style="padding:14px">
+      <div class="card-t" style="font-size:0.8rem;margin-bottom:10px">🥧 Struktur Biaya Produksi</div>
+      <div class="chart-box-pie"><canvas id="chartBiaya"></canvas></div>
     </div>
   `);
 
   show('p7-result');
-  renderSummary();
-  show('p7-summary');
+
+  // Pie chart
+  setTimeout(()=>{
+    const validItems=biayaItems.filter(x=>x.v>0);
+    const ctx2=document.getElementById('chartBiaya')?.getContext('2d');
+    if(!ctx2||!validItems.length)return;
+    if(chartBiaya)chartBiaya.destroy();
+    chartBiaya=new Chart(ctx2,{
+      type:'doughnut',
+      data:{
+        labels:validItems.map(x=>x.n.replace(/^[^\s]+\s/,'')),
+        datasets:[{
+          data:validItems.map(x=>x.v),
+          backgroundColor:['#22d3ee33','#c97dfc33','#34e09a33','#f04c6e33','#f5a62333','#4f9cf933','#10d9a033','#c97dfc33','#f5a62333','#22d3ee33'],
+          borderColor:['#22d3ee','#c97dfc','#34e09a','#f04c6e','#f5a623','#4f9cf9','#10d9a0','#c97dfc','#f5a623','#22d3ee'],
+          borderWidth:2,
+          hoverOffset:8,
+        }]
+      },
+      options:{
+        responsive:true,maintainAspectRatio:false,
+        plugins:{
+          legend:{
+            display:true,position:'right',
+            labels:{color:'#8eaac8',font:{size:10,family:'JetBrains Mono'},boxWidth:10,padding:8}
+          },
+          tooltip:{callbacks:{label:ctx=>{const pct=Math.round((ctx.parsed/total)*100);return ` ${rp(ctx.parsed)} (${pct}%)`;},}}
+        }
+      }
+    });
+  },200);
+
+  renderSummary();show('p7-summary');
 }
 
-function renderSummary() {
-  const chips = [
-    {v:S.farm.area?S.farm.area+' Ha':'—',   l:'Luas Lahan'},
-    {v:S.var.data?.nama||'—',               l:'Varietas'},
-    {v:S.plan.date?fmtShort(S.plan.date):'—',l:'Tanam'},
+function renderSummary(){
+  const chips=[
+    {v:S.farm.area?S.farm.area+' Ha':'—',l:'Luas Lahan'},
+    {v:S.var.data?.nama||'—',l:'Varietas'},
+    {v:S.plan.date?fmtShort(S.plan.date):'—',l:'Tanggal Tanam'},
     {v:S.sched.panen?fmtShort(S.sched.panen):'—',l:'Target Panen'},
-    {v:S.fert.urea?(S.fert.urea+' kg'):'—', l:'Total Urea'},
-    {v:S.fert.npk?(S.fert.npk+' kg'):'—',   l:'Total NPK'},
-    {v:rp(S.cost.total||0),                  l:'Total Biaya'},
-    {v:rp(S.cost.profit||0),                 l:'Est. Keuntungan'},
+    {v:S.fert.urea?(S.fert.urea+' kg'):'—',l:'Total Urea'},
+    {v:S.fert.npk?(S.fert.npk+' kg'):'—',l:'Total NPK'},
+    {v:rp(S.cost.total||0),l:'Total Biaya'},
+    {v:rp(S.cost.profit||0),l:'Est. Keuntungan'},
   ];
   setText('p7-sum-content',`
     <div class="finish">
       <span class="f-ico">🌾</span>
       <div class="f-ttl">RINGKASAN SIMULASI USAHATANI</div>
       <div class="sum-grid">${chips.map(c=>`<div class="sum-chip"><div class="sum-v">${c.v}</div><div class="sum-l">${c.l}</div></div>`).join('')}</div>
-    </div>`);
+    </div>
+  `);
 }
 
-function bagikanWA() {
-  const teks =
-`🌾 *SIMULATOR BERTANI PADI*
-_PPL Milenial Wajo — Panduan Petani Digital_
+function bagikanWA(){
+  const teks=
+`🌾 *SIMPADI — AGRO-DIGITAL FARMING SYSTEM*
+_PPL Milenial Wajo v2.0_
 
 📍 *PROFIL LAHAN*
-• Luas : ${S.farm.area||'—'} Hektar
-• Lokasi: ${S.loc.kec||'—'}, ${S.loc.kab||''}
-• Musim : ${S.loc.season||'—'}
-• Topografi: ${document.getElementById('selTopo')?.options[document.getElementById('selTopo')?.selectedIndex]?.text||'—'}
+• Luas       : ${S.farm.area||'—'} Hektar
+• Keliling   : ${S.farm.perim?Math.round(S.farm.perim)+' m':'—'}
+• Lokasi     : ${S.loc.kec||'—'}, ${S.loc.kab||''}
+• Musim      : ${S.loc.season||'—'}
+• Topografi  : ${document.getElementById('selTopo')?.options[document.getElementById('selTopo')?.selectedIndex]?.text||'—'}
 
 🌾 *VARIETAS & JADWAL*
-• Varietas : ${S.var.data?.nama||'—'} (${S.var.umur||'—'} HST)
-• Metode Tanam : ${({tapin:'Tanam Pindah',legowo:'Jajar Legowo',tabela_larikan:'Tabela Larikan',tabela_hambur:'Tabela Hambur'}[S.plan.method]||'—')}
-• Tanggal Tanam : ${S.plan.date?fmtDate(S.plan.date):'—'}
-• Target Panen  : ${S.sched.panen?fmtDate(S.sched.panen):'—'}
+• Varietas   : ${S.var.data?.nama||'—'} (${S.var.umur||'—'} HST)
+• Potensi    : ${S.var.data?.potensi||'—'} t/ha
+• Metode     : ${({tapin:'Tanam Pindah',legowo:'Jajar Legowo',tabela_larikan:'Tabela Larikan',tabela_hambur:'Tabela Hambur'}[S.plan.method]||'—')}
+• Tgl Tanam  : ${S.plan.date?fmtDate(S.plan.date):'—'}
+• Target Panen: ${S.sched.panen?fmtDate(S.sched.panen):'—'}
 
-🧪 *REKOMENDASI PUPUK*
-• Urea (${sak(S.fert.urea||0)} sak) : ${S.fert.urea||0} kg
-• NPK/Phonska (${sak(S.fert.npk||0)} sak) : ${S.fert.npk||0} kg
-• Organik : ${S.fert.org||0} kg
-• Sumber data: ${S.fert.kec||'E-RDKK Nasional'}
+🧪 *REKOMENDASI PUPUK (E-RDKK)*
+• Urea  : ${S.fert.urea||0} kg (${sak(S.fert.urea||0)} sak)
+• Phonska: ${S.fert.npk||0} kg (${sak(S.fert.npk||0)} sak)
+• Organik: ${S.fert.org||0} kg
+• Hara N : ${S.fert.N||0} kg · P: ${S.fert.P||0} kg · K: ${S.fert.K||0} kg
 
-💰 *ANALISIS USAHA*
-• Total Biaya  : ${rp(S.cost.total||0)}
-• Pendapatan   : ${rp(S.cost.rev||0)}
-• Laba Bersih  : ${rp(S.cost.profit||0)}
-• R/C Ratio    : ${S.cost.rc||0}
+💰 *ANALISIS EKONOMI*
+• Total Biaya : ${rp(S.cost.total||0)}
+• Pendapatan  : ${rp(S.cost.rev||0)}
+• Laba Bersih : ${rp(S.cost.profit||0)}
+• R/C Ratio   : ${S.cost.rc||0}
 
-_Digenerate oleh Simulator Bertani Padi — PPL Milenial Wajo_`;
+_SimPadi v2.0 · PPL Milenial Wajo · Agro-Digital System_`;
   window.open('https://wa.me/?text='+encodeURIComponent(teks),'_blank');
 }
 
-function ulangSimulasi() {
-  if(!confirm('Mulai simulasi baru? Semua data yang sudah diisi akan dihapus.')) return;
+function ulangSimulasi(){
+  if(!confirm('Mulai simulasi baru? Semua data akan dihapus.'))return;
   Object.assign(S,{
     phase:1,
-    farm:{area:null,areaM2:null,lat:null,lon:null},
+    farm:{area:null,areaM2:null,perim:null,lat:null,lon:null},
     loc:{lat:null,lon:null,elev:0,season:null,rainfall:null,kec:null,kab:null,weather:null,_done:false},
     var:{data:null,umur:110},
     plan:{date:null,method:'tapin',density:25},
     sched:{},
-    fert:{urea:0,npk:0,org:0,costUrea:0,costNpk:0,costBenih:0,seedKg:30,kec:null,_done:false},
+    fert:{urea:0,npk:0,org:0,costUrea:0,costNpk:0,costBenih:0,seedKg:30,kec:null,_done:false,N:0,P:0,K:0},
     cost:{total:0,rev:0,profit:0,rc:0},
   });
   g_vars=[];
-  if(DRAWN) DRAWN.clearLayers();
+  if(DRAWN)DRAWN.clearLayers();
   hide('hasilUkur');
   switchPhase(1);
 }
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 //  INIT
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
-  buildTracker();
-  updateNav();
-  setTimeout(initMap, 400);
-  // Preload DBs in background
+  buildTracker();updateNav();
+  setTimeout(initMap,400);
+  // Preload databases
   fetch(URL_PUPUK).then(r=>r.json()).then(d=>{dbPupuk=d;}).catch(()=>{});
   fetch(URL_VARDB).then(r=>r.json()).then(d=>{dbVars=d;}).catch(()=>{});
 });
