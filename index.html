@@ -547,6 +547,170 @@ body {
 .nav-btn:disabled{opacity:0.2;cursor:not-allowed;box-shadow:none}
 
 @media(max-width:360px){.pk-grid{grid-template-columns:1fr 1fr}.stat3{grid-template-columns:1fr 1fr}}
+
+/* ── AI CHAT BUTTON ──────────────────────────────────── */
+.ai-fab{
+  position:fixed; bottom:82px; right:16px; z-index:400;
+  width:52px; height:52px; border-radius:50%;
+  background:linear-gradient(135deg,#4f9cf9,#10d9a0);
+  border:none; cursor:pointer; box-shadow:0 4px 20px rgba(79,156,249,0.5);
+  display:flex; align-items:center; justify-content:center;
+  font-size:1.35rem; transition:all 0.22s; flex-shrink:0;
+}
+.ai-fab:hover{transform:scale(1.1);box-shadow:0 6px 26px rgba(79,156,249,0.7)}
+.ai-fab:active{transform:scale(0.96)}
+.ai-fab .ai-pulse{
+  position:absolute; inset:-4px; border-radius:50%;
+  border:2px solid rgba(79,156,249,0.4);
+  animation:pulse-ring 2s ease-out infinite;
+}
+
+/* ── AI CHAT PANEL ───────────────────────────────────── */
+.ai-panel{
+  position:fixed; inset:0; z-index:500;
+  background:rgba(5,13,26,0.92); backdrop-filter:blur(10px);
+  display:flex; flex-direction:column;
+  transform:translateY(100%); transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);
+  pointer-events:none;
+}
+.ai-panel.open{transform:translateY(0); pointer-events:all;}
+.ai-panel-inner{
+  max-width:480px; margin:0 auto; width:100%;
+  height:100%; display:flex; flex-direction:column;
+}
+.ai-header{
+  padding:12px 16px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  background:rgba(12,27,46,0.98); flex-shrink:0;
+}
+.ai-header-brand{display:flex;align-items:center;gap:10px}
+.ai-logo-wrap{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,rgba(79,156,249,0.2),rgba(16,217,160,0.2));
+  border:1px solid rgba(79,156,249,0.3);
+  display:flex;align-items:center;justify-content:center;font-size:1.2rem;
+}
+.ai-close{
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,0.07);border:1px solid var(--border);
+  color:var(--text2);font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:background 0.2s;
+}
+.ai-close:hover{background:rgba(255,255,255,0.12)}
+.ai-msgs{
+  flex:1;overflow-y:auto;padding:16px;
+  display:flex;flex-direction:column;gap:10px;
+  scrollbar-width:thin;scrollbar-color:var(--muted) transparent;
+}
+.ai-msg{max-width:88%;display:flex;flex-direction:column;gap:4px}
+.ai-msg.user{align-self:flex-end;align-items:flex-end}
+.ai-msg.bot{align-self:flex-start;align-items:flex-start}
+.ai-bubble{
+  padding:10px 14px; border-radius:14px;
+  font-size:0.8rem; line-height:1.6;
+}
+.ai-msg.user .ai-bubble{
+  background:var(--c2); color:#fff;
+  border-radius:14px 4px 14px 14px;
+}
+.ai-msg.bot .ai-bubble{
+  background:var(--card); border:1px solid var(--border);
+  color:var(--text); border-radius:4px 14px 14px 14px;
+}
+.ai-time{font-size:0.55rem;color:var(--muted);font-family:var(--mono)}
+.ai-typing{display:flex;gap:4px;align-items:center;padding:10px 14px;background:var(--card);border:1px solid var(--border);border-radius:4px 14px 14px 14px;display:none}
+.ai-typing.show{display:flex}
+.ai-typing span{width:6px;height:6px;border-radius:50%;background:var(--muted);animation:bounce-dot 1.2s ease-in-out infinite}
+.ai-typing span:nth-child(2){animation-delay:0.2s}
+.ai-typing span:nth-child(3){animation-delay:0.4s}
+@keyframes bounce-dot{0%,80%,100%{transform:scale(0.6);opacity:0.4}40%{transform:scale(1);opacity:1}}
+.ai-chips{
+  padding:8px 16px; display:flex; gap:6px;
+  overflow-x:auto; scrollbar-width:none; flex-shrink:0;
+  border-top:1px solid var(--border); background:var(--panel);
+}
+.ai-chips::-webkit-scrollbar{display:none}
+.ai-chip{
+  flex-shrink:0; padding:6px 12px; border-radius:20px;
+  background:rgba(79,156,249,0.1); border:1px solid rgba(79,156,249,0.25);
+  color:var(--c2); font-size:0.7rem; font-weight:700;
+  cursor:pointer; white-space:nowrap; transition:all 0.2s;
+}
+.ai-chip:hover{background:rgba(79,156,249,0.2)}
+.ai-input-row{
+  display:flex; gap:8px; padding:10px 14px 16px;
+  background:rgba(12,27,46,0.98); border-top:1px solid var(--border);
+  flex-shrink:0;
+}
+.ai-input{
+  flex:1; background:var(--deep); border:1px solid var(--border);
+  border-radius:22px; padding:10px 16px; color:var(--text);
+  font-family:var(--font); font-size:0.82rem; resize:none;
+  max-height:100px; min-height:40px;
+  transition:border-color 0.2s;
+}
+.ai-input:focus{outline:none;border-color:rgba(79,156,249,0.5)}
+.ai-send{
+  width:40px;height:40px;flex-shrink:0;
+  background:var(--c2); border:none; border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;cursor:pointer;transition:all 0.2s;
+  box-shadow:0 2px 10px rgba(79,156,249,0.3);
+}
+.ai-send:hover{transform:scale(1.05);background:#6aadff}
+.ai-send:disabled{opacity:0.4;cursor:not-allowed;transform:none}
+
+/* ── WEATHER FORECAST ─────────────────────────────────── */
+.fc-day{
+  background:var(--deep); border:1px solid var(--border);
+  border-radius:11px; padding:10px 7px; text-align:center;
+  flex:1; min-width:0; transition:border-color 0.2s;
+}
+.fc-day.today-fc{border-color:rgba(79,156,249,0.4);background:rgba(79,156,249,0.05)}
+.fc-day:hover{border-color:var(--border2)}
+.fc-weekday{font-size:0.56rem;font-weight:800;letter-spacing:0.5px;color:var(--muted);margin-bottom:4px;font-family:var(--mono)}
+.fc-icon{font-size:1.3rem;margin-bottom:4px;display:block}
+.fc-temp{font-size:0.75rem;font-weight:800;font-family:var(--mono);color:var(--c2)}
+.fc-rain{font-size:0.58rem;color:var(--muted);margin-top:2px;font-family:var(--mono)}
+.fc-row{display:flex;gap:5px;margin-bottom:10px}
+
+/* ── SOIL ASSESSMENT ──────────────────────────────────── */
+.soil-param{
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;background:var(--deep);
+  border:1px solid var(--border);border-radius:10px;margin-bottom:6px;
+}
+.soil-icon{font-size:1.2rem;flex-shrink:0}
+.soil-name{font-size:0.72rem;font-weight:700;margin-bottom:2px}
+.soil-val{font-size:0.65rem;color:var(--muted)}
+.soil-badge{
+  margin-left:auto;flex-shrink:0;
+  font-size:0.6rem;font-weight:800;padding:3px 8px;border-radius:6px;
+}
+
+/* ── YIELD PREDICTION ─────────────────────────────────── */
+.yield-gauge{
+  display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(135deg,rgba(16,217,160,0.05),rgba(79,156,249,0.04));
+  border:1px solid rgba(16,217,160,0.18);
+  border-radius:14px;padding:14px;margin-bottom:10px;
+}
+.yield-main .ym-val{font-family:var(--mono);font-size:1.8rem;font-weight:800;color:var(--c3)}
+.yield-main .ym-unit{font-size:0.7rem;color:var(--muted);margin-top:2px}
+.yield-range{text-align:right}
+.yield-range .yr-label{font-size:0.58rem;color:var(--muted);font-family:var(--mono);letter-spacing:0.5px;display:block}
+.yield-range .yr-val{font-size:0.78rem;font-weight:800;font-family:var(--mono);color:var(--text2)}
+.yield-factor{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 10px;background:var(--deep);
+  border:1px solid var(--border);border-radius:9px;margin-bottom:5px;
+}
+.yield-factor .yf-icon{font-size:1rem;flex-shrink:0}
+.yield-factor .yf-name{font-size:0.7rem;font-weight:700;flex:1}
+.yield-factor .yf-score{font-family:var(--mono);font-size:0.72rem;font-weight:800}
+.yield-factor .yf-bar-track{height:4px;background:var(--border);border-radius:2px;flex:1;min-width:40px;overflow:hidden}
+.yield-factor .yf-bar-fill{height:100%;border-radius:2px;transition:width 1s ease}
 </style>
 </head>
 <body>
@@ -627,6 +791,7 @@ body {
   <div id="p2-result" style="display:none">
     <div class="stat2" id="p2-stats"></div>
     <div id="p2-suitability"></div>
+    <div id="p2-soil"></div>
     <div class="card">
       <div class="card-t">⚙️ Konfirmasi Kondisi Lahan</div>
       <div class="fg">
@@ -765,6 +930,12 @@ body {
       <div class="card-t">📋 Timeline Kegiatan</div>
       <div id="p6-tasks"></div>
     </div>
+    <div class="card" id="p6-forecast-card" style="display:none">
+      <div class="card-t">🌦️ Prakiraan Cuaca 7 Hari</div>
+      <div id="p6-forecast"></div>
+      <div class="chart-box" style="height:150px"><canvas id="chartForecast"></canvas></div>
+      <div id="p6-fc-advice" class="ib" style="border-color:var(--c6);margin-bottom:0"></div>
+    </div>
   </div>
 </div>
 
@@ -800,6 +971,12 @@ body {
     <button class="btn" style="background:var(--c7);color:#fff;font-weight:800" onclick="hitungBiaya()">📊 HITUNG ANALISIS KELAYAKAN</button>
   </div>
   <div id="p7-result" style="display:none"></div>
+  <div id="p7-yield-pred" style="display:none">
+    <div class="card">
+      <div class="card-t">🌾 Model Prediksi Hasil Panen</div>
+      <div id="p7-yield-content"></div>
+    </div>
+  </div>
   <div id="p7-summary" style="display:none">
     <div class="card-t" style="text-align:center;margin-bottom:10px">🎉 RINGKASAN SIMULASI MUSIM INI</div>
     <div id="p7-sum-content"></div>
@@ -809,6 +986,61 @@ body {
 </div>
 
 </div><!-- end .wrap -->
+
+<!-- ══ AI KONSULTASI TANI ════════════════════════════════ -->
+<button class="ai-fab" onclick="toggleAI()" title="Konsultasi AI Pertanian">
+  <div class="ai-pulse"></div>
+  🤖
+</button>
+
+<div class="ai-panel" id="aiPanel">
+  <div class="ai-panel-inner">
+    <div class="ai-header">
+      <div class="ai-header-brand">
+        <div class="ai-logo-wrap">🌾</div>
+        <div>
+          <div style="font-size:0.85rem;font-weight:800">AI Konsultasi Tani</div>
+          <div style="font-size:0.58rem;color:var(--c3);font-weight:700;letter-spacing:0.5px">Powered by Claude · SimPadi v2.0</div>
+        </div>
+      </div>
+      <button class="ai-close" onclick="toggleAI()">✕</button>
+    </div>
+
+    <!-- Quick question chips -->
+    <div class="ai-chips" id="aiChips">
+      <div class="ai-chip" onclick="sendChip('Hama apa yang menyerang padi saat musim hujan?')">🪳 Hama musim hujan</div>
+      <div class="ai-chip" onclick="sendChip('Bagaimana cara mengatasi gejala blas pada padi?')">🍃 Penyakit Blast</div>
+      <div class="ai-chip" onclick="sendChip('Kapan waktu terbaik menanam padi di Sulawesi Selatan?')">📅 Waktu tanam ideal</div>
+      <div class="ai-chip" onclick="sendChip('Cara meningkatkan hasil panen padi metode Jajar Legowo?')">📈 Tips Jajar Legowo</div>
+      <div class="ai-chip" onclick="sendChip('Apa fungsi Bagan Warna Daun (BWD) dalam pemupukan padi?')">🍀 BWD / LCC</div>
+      <div class="ai-chip" onclick="sendChip('Analisis kondisi lahan saya sekarang berdasarkan data yang sudah diinput.')">🔍 Analisis lahanku</div>
+    </div>
+
+    <div class="ai-msgs" id="aiMsgs">
+      <div class="ai-msg bot">
+        <div class="ai-bubble">
+          👋 <b>Halo, Sobat Tani!</b><br><br>
+          Saya asisten AI pertanian padi yang siap membantu Anda. Saya dapat:<br>
+          • Menjawab pertanyaan teknis budidaya padi<br>
+          • Menganalisis kondisi lahan dan cuaca Anda<br>
+          • Memberikan rekomendasi pengendalian OPT<br>
+          • Menjelaskan teknik pemupukan dan PHT<br><br>
+          Pilih pertanyaan cepat di atas, atau ketik pertanyaan Anda! 🌾
+        </div>
+        <div class="ai-time">SimPadi AI · Siap</div>
+      </div>
+      <div class="ai-typing" id="aiTyping">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+
+    <div class="ai-input-row">
+      <textarea class="ai-input" id="aiInput" placeholder="Tanya soal padi, hama, pupuk, atau analisis lahan..." rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAI()}"></textarea>
+      <button class="ai-send" id="aiSendBtn" onclick="sendAI()">➤</button>
+    </div>
+  </div>
+</div>
 
 <!-- ══ BOTTOM NAV ═══════════════════════════════════════ -->
 <div class="nav">
@@ -896,6 +1128,7 @@ function switchPhase(n){
   buildTracker();buildFarmBar();updateNav();
   window.scrollTo({top:0,behavior:'smooth'});
   onEnter(n);
+  if(n===6) setTimeout(loadForecast, 1500);
 }
 function buildTracker(){
   const t=document.getElementById('tracker');t.innerHTML='';
@@ -1175,6 +1408,7 @@ function renderP2(){
       Lahan di <b>${S.loc.kec||'—'}</b> (${S.loc.kab||''}), elevasi ${elev}m dpl. Musim <b>${S.loc.season}</b>, curah hujan <b>${chLabel}</b>. Sesuaikan topografi dan sumber air jika berbeda dari hasil deteksi.
     </div>
   `);
+  renderSoilAssessment(elev,S.loc.season,S.loc.rainfall);
   buildFarmBar();
 }
 
@@ -1782,6 +2016,7 @@ function hitungBiaya(){
   `);
 
   show('p7-result');
+  renderYieldPrediction(hasil, harga, total);
 
   // Pie chart
   setTimeout(()=>{
@@ -1891,12 +2126,358 @@ function ulangSimulasi(){
 }
 
 // ═══════════════════════════════════════════
+//  SOIL ASSESSMENT
+// ═══════════════════════════════════════════
+function renderSoilAssessment(elev,season,rainfall){
+  // Estimate soil properties by elevation/zone (Sulawesi typology)
+  const isLowland = elev<=100;
+  const isHighland = elev>200;
+  const isWetSeason = season==='Rendeng';
+  const isHighRain = rainfall==='tinggi';
+
+  // Estimated soil type
+  const soilType = isLowland
+    ? (isHighRain ? 'Vertisol / Alluvial Gleik':'Inceptisol / Alluvial')
+    : isHighland ? 'Ultisol / Latosol Merah Kuning' : 'Inceptisol / Kambisol';
+
+  // Estimated pH
+  const pHEst = isLowland&&isHighRain ? 5.2 : isLowland ? 5.8 : isHighland ? 4.9 : 5.5;
+  const pHStatus = pHEst<5.0?{l:'Sangat Masam',c:'#f04c6e',b:'r-hi'}:pHEst<5.5?{l:'Masam',c:'#f5a623',b:'r-md'}:pHEst<=6.5?{l:'Optimal (Agak Masam)',c:'#10d9a0',b:'r-lo'}:{l:'Netral',c:'#4f9cf9',b:'r-lo'};
+
+  // Organic matter
+  const OMEst = isLowland&&isWetSeason ? 2.8 : isHighland ? 1.5 : 2.2;
+  const OMStatus = OMEst<1.5?{l:'Rendah',c:'#f04c6e'}:OMEst<2.5?{l:'Sedang',c:'#f5a623'}:{l:'Cukup',c:'#10d9a0'};
+
+  // CEC
+  const CECEst = soilType.includes('Vertisol') ? 35 : soilType.includes('Ultisol') ? 12 : 22;
+  const CECStatus = CECEst<10?{l:'Rendah',c:'#f04c6e'}:CECEst<25?{l:'Sedang',c:'#f5a623'}:{l:'Tinggi',c:'#10d9a0'};
+
+  // Drainage
+  const drainageEst = isLowland&&isHighRain ? 'Terhambat–Agak Terhambat' : isLowland ? 'Baik–Agak Cepat' : 'Baik';
+  const drainageStatus = isLowland&&isHighRain ? {c:'#4f9cf9',l:'✅ Sesuai Padi Sawah'} : {c:'#f5a623',l:'⚠️ Perlu Penggenangan'};
+
+  // N/P/K status
+  const Nst = OMEst>=2.5?{l:'Cukup',c:'#10d9a0'}:{l:'Perlu Pemupukan',c:'#f5a623'};
+  const Pst = isLowland?{l:'Sedang',c:'#f5a623'}:{l:'Rendah',c:'#f04c6e'};
+  const Kst = isLowland&&isHighRain?{l:'Sedang',c:'#f5a623'}:{l:'Cukup',c:'#10d9a0'};
+
+  setText('p2-soil',`
+    <div class="card">
+      <div class="card-t">🪱 Asesmen Kesuburan Tanah (Estimasi)</div>
+      <div class="soil-param">
+        <span class="soil-icon">🌍</span>
+        <div><div class="soil-name">Ordo / Jenis Tanah</div><div class="soil-val">Estimasi berdasar elevasi &amp; iklim lokasi</div></div>
+        <span class="soil-badge" style="background:rgba(79,156,249,0.1);color:var(--c2);border:1px solid rgba(79,156,249,0.2);font-size:0.55rem">${soilType}</span>
+      </div>
+      <div class="soil-param">
+        <span class="soil-icon">🧪</span>
+        <div><div class="soil-name">Estimasi pH Tanah</div><div class="soil-val">Padi optimal pada pH 5.5–6.5</div></div>
+        <span class="soil-badge ${pHStatus.b}" style="border:1px solid ${pHStatus.c}33">${pHEst.toFixed(1)} — ${pHStatus.l}</span>
+      </div>
+      <div class="soil-param">
+        <span class="soil-icon">🍂</span>
+        <div><div class="soil-name">Bahan Organik (BO)</div><div class="soil-val">Ideal >3% untuk produktivitas tinggi</div></div>
+        <span class="soil-badge" style="background:${OMStatus.c}18;color:${OMStatus.c};border:1px solid ${OMStatus.c}33">${OMEst}% — ${OMStatus.l}</span>
+      </div>
+      <div class="soil-param">
+        <span class="soil-icon">⚗️</span>
+        <div><div class="soil-name">KTK (CEC)</div><div class="soil-val">Kapasitas Tukar Kation — kemampuan simpan hara</div></div>
+        <span class="soil-badge" style="background:${CECStatus.c}18;color:${CECStatus.c};border:1px solid ${CECStatus.c}33">${CECEst} cmol/kg — ${CECStatus.l}</span>
+      </div>
+      <div class="soil-param">
+        <span class="soil-icon">💧</span>
+        <div><div class="soil-name">Drainase Lahan</div><div class="soil-val">${drainageEst}</div></div>
+        <span class="soil-badge" style="background:${drainageStatus.c}18;color:${drainageStatus.c};border:1px solid ${drainageStatus.c}33;font-size:0.55rem">${drainageStatus.l}</span>
+      </div>
+      <div style="margin-top:10px">
+        <div style="font-size:0.62rem;color:var(--muted);font-weight:700;letter-spacing:0.5px;margin-bottom:7px;font-family:var(--mono)">STATUS HARA MAKRO</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px">
+          ${['N (Nitrogen)','P (Fosfor)','K (Kalium)'].map((n,i)=>{const s=[Nst,Pst,Kst][i];return`<div style="background:${s.c}10;border:1px solid ${s.c}28;border-radius:9px;padding:8px;text-align:center"><div style="font-family:var(--mono);font-size:0.82rem;font-weight:800;color:${s.c}">${n.split(' ')[0]}</div><div style="font-size:0.55rem;color:${s.c};margin-top:2px">${s.l}</div></div>`}).join('')}
+        </div>
+      </div>
+      <span class="sci-ref">📚 Estimasi berdasar ordo tanah Sulawesi Selatan (Puslittanak, 2003) · pH dan BO berkorelasi dengan elevasi dan rezim curah hujan. Konfirmasi dengan uji tanah lapangan (BPTP).</span>
+    </div>
+  `);
+}
+
+// ═══════════════════════════════════════════
+//  7-DAY WEATHER FORECAST
+// ═══════════════════════════════════════════
+let chartForecast=null;
+async function loadForecast(){
+  const lat=S.loc.lat||S.farm.lat,lon=S.loc.lon||S.farm.lon;
+  if(!lat)return;
+  try{
+    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&daily=temperature_2m_max,temperature_2m_min,precipitation_sum,weathercode&timezone=auto&forecast_days=7`);
+    const d=await r.json();
+    renderForecast(d.daily);
+  }catch(e){console.warn('Forecast gagal',e);}
+}
+
+const WC_ICON={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',48:'🌫️',51:'🌦️',53:'🌦️',55:'🌧️',61:'🌧️',63:'🌧️',65:'🌧️',71:'❄️',80:'🌧️',81:'🌧️',95:'⛈️',96:'⛈️'};
+function wcIcon(code){return WC_ICON[code]||WC_ICON[Math.floor(code/10)*10]||'🌤️';}
+const DAYS=['Min','Sen','Sel','Rab','Kam','Jum','Sab'];
+
+function renderForecast(daily){
+  show('p6-forecast-card');
+  const dates=daily.time;
+  const tmax=daily.temperature_2m_max;
+  const tmin=daily.temperature_2m_min;
+  const prec=daily.precipitation_sum;
+  const codes=daily.weathercode;
+
+  // Advice for planting window
+  const rainDays=prec.filter(p=>p>5).length;
+  const avgRain=prec.reduce((a,b)=>a+b,0)/7;
+  let advice,adviceColor;
+  if(avgRain>10){advice='⚠️ Curah hujan tinggi minggu ini (rata-rata '+avgRain.toFixed(1)+' mm/hari). Waspadai risiko Blast dan rebah batang. Tunda pemupukan Urea saat hujan lebat.';adviceColor='var(--c7)';}
+  else if(avgRain>3){advice='🌦️ Cuaca berawan dengan hujan ringan–sedang. Kondisi yang perlu dipantau, terutama bila tanaman sedang fase generatif (bunting-berbunga).';adviceColor='var(--c6)';}
+  else{advice='✅ Cuaca relatif cerah minggu ini. Waktu yang tepat untuk pemupukan, aplikasi pestisida, dan monitoring PHT secara rutin.';adviceColor='var(--c3)';}
+
+  setText('p6-forecast',`
+    <div class="fc-row">
+      ${dates.map((dt,i)=>{
+        const d=new Date(dt);
+        const isToday=i===0;
+        const avgT=Math.round((tmax[i]+tmin[i])/2);
+        return`<div class="fc-day${isToday?' today-fc':''}">
+          <div class="fc-weekday">${isToday?'HARI INI':DAYS[d.getDay()]}</div>
+          <span class="fc-icon">${wcIcon(codes[i])}</span>
+          <div class="fc-temp">${avgT}°</div>
+          <div class="fc-rain">${prec[i].toFixed(1)}mm</div>
+        </div>`;
+      }).join('')}
+    </div>
+  `);
+
+  setText('p6-fc-advice',`<strong>💡 Prakiraan Kegiatan Lahan</strong>${advice}`);
+  document.getElementById('p6-fc-advice').style.borderColor=adviceColor;
+
+  const ctx=document.getElementById('chartForecast')?.getContext('2d');
+  if(!ctx)return;
+  if(chartForecast)chartForecast.destroy();
+  chartForecast=new Chart(ctx,{
+    type:'bar',
+    data:{
+      labels:dates.map((_,i)=>i===0?'Hari Ini':DAYS[new Date(dates[i]).getDay()]),
+      datasets:[
+        {type:'line',label:'Suhu Rata (°C)',data:tmax.map((t,i)=>Math.round((t+tmin[i])/2)),borderColor:'#f5a623',backgroundColor:'transparent',tension:0.4,pointRadius:3,yAxisID:'y1',borderWidth:2},
+        {type:'bar',label:'Hujan (mm)',data:prec,backgroundColor:prec.map(p=>p>10?'rgba(240,76,110,0.5)':p>3?'rgba(245,166,35,0.4)':'rgba(79,156,249,0.4)'),borderRadius:5,yAxisID:'y',borderWidth:0},
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{
+        y:{type:'linear',position:'left',beginAtZero:true,grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#4f9cf9',font:{size:9,family:'JetBrains Mono'}},border:{color:'transparent'}},
+        y1:{type:'linear',position:'right',beginAtZero:false,grid:{display:false},ticks:{color:'#f5a623',font:{size:9,family:'JetBrains Mono'}},border:{color:'transparent'}},
+        x:{grid:{display:false},ticks:{color:'#8eaac8',font:{size:9}},border:{color:'transparent'}}
+      }
+    }
+  });
+}
+
+// ═══════════════════════════════════════════
+//  YIELD PREDICTION MODEL
+// ═══════════════════════════════════════════
+function renderYieldPrediction(hasilInput, harga, totalBiaya){
+  const gp=parseFloat(S.var.data?.potensi)||7; // Genetic potential (t/ha)
+  const luas=S.farm.area||1;
+
+  // Factor scores (0-1)
+  const fVar  = gp>=8?1.0:gp>=7?0.92:0.82; // Varietas
+  const fMet  = {legowo:0.97,tabela_larikan:0.92,tapin:0.88,tabela_hambur:0.82}[S.plan.method]||0.88;
+  const fIklim= S.loc.rainfall==='tinggi'&&S.loc.season==='Rendeng'?0.88:S.loc.rainfall==='rendah'?0.82:0.92;
+  const fPupuk= S.fert.urea>0?0.93:0.75;
+  const fElev = S.loc.elev<=100?1.0:S.loc.elev<=300?0.93:0.85;
+  const fPHT  = 0.90; // assumed PHT implementation
+
+  // Predicted yield (t/ha) — multiplicative model
+  const predTperHa = gp * fVar * fMet * fIklim * fPupuk * fElev * fPHT;
+  const predKgTotal= predTperHa * luas * 1000;
+  const rangeLow   = (predTperHa * 0.82).toFixed(1);
+  const rangeHigh  = (predTperHa * 1.10).toFixed(1);
+
+  // Yield gap analysis
+  const actualTHa  = (hasilInput/luas/1000).toFixed(2);
+  const gapPct     = Math.round(((gp-predTperHa)/gp)*100);
+
+  const factors=[
+    {icon:'🌾',name:'Potensi Genetik Varietas',score:fVar,val:`${gp} t/ha maks`},
+    {icon:'🚜',name:'Metode &amp; Kerapatan Tanam',score:fMet,val:(fMet*100).toFixed(0)+'%'},
+    {icon:'🌦️',name:'Faktor Iklim &amp; Musim',score:fIklim,val:(fIklim*100).toFixed(0)+'%'},
+    {icon:'🧪',name:'Pemupukan (Berimbang)',score:fPupuk,val:(fPupuk*100).toFixed(0)+'%'},
+    {icon:'⛰️',name:'Kesesuaian Elevasi',score:fElev,val:(fElev*100).toFixed(0)+'%'},
+    {icon:'🛡️',name:'PHT (Pengendalian OPT)',score:fPHT,val:(fPHT*100).toFixed(0)+'%'},
+  ];
+
+  const scoreColor=s=>s>=0.95?'var(--c3)':s>=0.85?'var(--c5)':s>=0.75?'var(--c6)':'var(--c7)';
+
+  show('p7-yield-pred');
+  setText('p7-yield-content',`
+    <div class="yield-gauge">
+      <div class="yield-main">
+        <div class="ym-val">${predTperHa.toFixed(2)} t/ha</div>
+        <div class="ym-unit">Estimasi hasil untuk ${luas} Ha → <b>${Math.round(predKgTotal).toLocaleString('id-ID')} kg</b></div>
+      </div>
+      <div class="yield-range">
+        <span class="yr-label">RENTANG PREDIKSI</span>
+        <span class="yr-val">${rangeLow}–${rangeHigh} t/ha</span>
+        <span class="yr-label" style="margin-top:4px">TARGET PETANI</span>
+        <span class="yr-val" style="color:var(--c6)">${actualTHa} t/ha</span>
+      </div>
+    </div>
+    <div style="margin-bottom:10px">
+      ${factors.map(f=>`
+        <div class="yield-factor">
+          <span class="yf-icon">${f.icon}</span>
+          <span class="yf-name">${f.name}</span>
+          <div class="yf-bar-track"><div class="yf-bar-fill" style="width:${f.score*100}%;background:${scoreColor(f.score)}"></div></div>
+          <span class="yf-score" style="color:${scoreColor(f.score)}">${f.val}</span>
+        </div>`).join('')}
+    </div>
+    <div class="card-sci" style="margin-bottom:0">
+      <div style="font-size:0.7rem;font-weight:800;margin-bottom:5px">📉 Analisis Yield Gap</div>
+      <div style="font-size:0.78rem">Potensi genetik varietas <b style="font-family:var(--mono);color:var(--c4)">${gp} t/ha</b> — Prediksi kondisi Anda <b style="font-family:var(--mono);color:var(--c3)">${predTperHa.toFixed(2)} t/ha</b></div>
+      <div style="font-size:0.72rem;color:var(--text2);margin-top:4px">Yield gap <b style="color:var(--c6)">${gapPct}%</b> dapat dipersempit dengan optimasi manajemen (Jajar Legowo + PHT intensif + pemupukan tepat waktu).</div>
+      <span class="sci-ref">📚 Model perkalian faktor hasil (Sinclair &amp; Muchow, 1999) · Yield gap analysis (van Ittersum &amp; Rabbinge, 1997)</span>
+    </div>
+  `);
+}
+
+// ═══════════════════════════════════════════
+//  AI KONSULTASI TANI (Claude API)
+// ═══════════════════════════════════════════
+let aiOpen=false;
+let aiHistory=[];
+let aiLoading=false;
+
+function toggleAI(){
+  aiOpen=!aiOpen;
+  const panel=document.getElementById('aiPanel');
+  panel.classList.toggle('open',aiOpen);
+  if(aiOpen) document.getElementById('aiInput')?.focus();
+}
+
+function buildSystemPrompt(){
+  const ctx=[];
+  if(S.farm.area)        ctx.push(`Luas lahan: ${S.farm.area} ha`);
+  if(S.loc.kec)          ctx.push(`Lokasi: ${S.loc.kec}, ${S.loc.kab||''}`);
+  if(S.loc.season)       ctx.push(`Musim: ${S.loc.season}`);
+  if(S.loc.rainfall)     ctx.push(`Curah hujan: ${S.loc.rainfall}`);
+  if(S.loc.elev)         ctx.push(`Elevasi: ${S.loc.elev}m dpl`);
+  if(S.var.data)         ctx.push(`Varietas: ${S.var.data.nama} (${S.var.umur} HST, potensi ${S.var.data.potensi} t/ha)`);
+  if(S.plan.date)        ctx.push(`Tanggal tanam: ${fmtDate(S.plan.date)}`);
+  if(S.plan.method)      ctx.push(`Metode tanam: ${S.plan.method}`);
+  if(S.fert.urea)        ctx.push(`Pupuk Urea: ${S.fert.urea} kg, NPK: ${S.fert.npk} kg`);
+  if(S.loc.weather?.current){
+    const w=S.loc.weather.current;
+    ctx.push(`Cuaca saat ini: ${w.temperature_2m}°C, RH ${w.relative_humidity_2m}%, hujan ${w.rain||0}mm/jam`);
+  }
+
+  return `Anda adalah konsultan agronomi padi senior dari BSIP (Balai Standarisasi Instrumen Pertanian) Indonesia yang juga berpengalaman sebagai Petugas Penyuluh Lapangan (PPL) di Sulawesi Selatan.
+
+Data lahan petani yang sedang berkonsultasi:
+${ctx.length?ctx.map(c=>'• '+c).join('\n'):'• Data belum diisi dalam simulator'}
+
+Panduan respons:
+- Gunakan bahasa Indonesia yang ramah namun informatif dan ilmiah
+- Berikan jawaban praktis dan actionable yang bisa langsung dilakukan petani
+- Sertakan nilai/angka spesifik, dosis, atau waktu yang relevan
+- Jika data lahan tersedia, sesuaikan rekomendasi dengan kondisi spesifik petani
+- Pertahankan respons ringkas (100-200 kata) namun substansial
+- Gunakan emoji secukupnya agar ramah dibaca di mobile`;
+}
+
+async function sendAI(){
+  const input=document.getElementById('aiInput');
+  const msg=(input?.value||'').trim();
+  if(!msg||aiLoading)return;
+  input.value='';
+  addAIMsg(msg,'user');
+  await callAI(msg);
+}
+
+function sendChip(text){
+  addAIMsg(text,'user');
+  callAI(text);
+}
+
+function addAIMsg(text,role){
+  const msgs=document.getElementById('aiMsgs');
+  const now=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const div=document.createElement('div');
+  div.className=`ai-msg ${role}`;
+  div.innerHTML=`<div class="ai-bubble">${escapeHtml(text).replace(/\n/g,'<br>')}</div><div class="ai-time">${now}</div>`;
+  msgs.insertBefore(div,document.getElementById('aiTyping'));
+  msgs.scrollTop=msgs.scrollHeight;
+  if(role==='user')aiHistory.push({role:'user',content:text});
+}
+
+function addAIBotMsg(text){
+  const msgs=document.getElementById('aiMsgs');
+  const now=new Date().toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});
+  const div=document.createElement('div');
+  div.className='ai-msg bot';
+  div.innerHTML=`<div class="ai-bubble">${text.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>').replace(/•/g,'&bull;')}</div><div class="ai-time">SimPadi AI · ${now}</div>`;
+  msgs.insertBefore(div,document.getElementById('aiTyping'));
+  msgs.scrollTop=msgs.scrollHeight;
+  aiHistory.push({role:'assistant',content:text});
+}
+
+function escapeHtml(t){return t.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+async function callAI(userMsg){
+  aiLoading=true;
+  const sendBtn=document.getElementById('aiSendBtn');
+  if(sendBtn)sendBtn.disabled=true;
+  const typing=document.getElementById('aiTyping');
+  if(typing)typing.classList.add('show');
+  const msgs=document.getElementById('aiMsgs');
+  if(msgs)msgs.scrollTop=msgs.scrollHeight;
+
+  try{
+    const messages=[
+      ...aiHistory.filter(h=>h.role!=='assistant'||aiHistory.indexOf(h)>aiHistory.length-10),
+    ];
+    // Ensure last message is from user
+    if(messages[messages.length-1]?.role!=='user'){
+      messages.push({role:'user',content:userMsg});
+    }
+
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1000,
+        system:buildSystemPrompt(),
+        messages:messages.slice(-12), // keep last 12 turns
+      })
+    });
+    const data=await resp.json();
+    const fullResp=data.content?.map(b=>b.text||'').join('')||'Maaf, tidak dapat memproses permintaan saat ini.';
+    if(typing)typing.classList.remove('show');
+    addAIBotMsg(fullResp);
+  }catch(err){
+    if(typing)typing.classList.remove('show');
+    addAIBotMsg('❌ Koneksi gagal. Pastikan terhubung ke internet dan coba lagi.\n\n_Error: '+err.message+'_');
+  }finally{
+    aiLoading=false;
+    if(sendBtn)sendBtn.disabled=false;
+    document.getElementById('aiInput')?.focus();
+  }
+}
+
+
+
+// ═══════════════════════════════════════════
 //  INIT
 // ═══════════════════════════════════════════
 document.addEventListener('DOMContentLoaded',()=>{
   buildTracker();updateNav();
   setTimeout(initMap,400);
-  // Preload databases
+  // Preload databases in background
   fetch(URL_PUPUK).then(r=>r.json()).then(d=>{dbPupuk=d;}).catch(()=>{});
   fetch(URL_VARDB).then(r=>r.json()).then(d=>{dbVars=d;}).catch(()=>{});
 });
